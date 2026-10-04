@@ -140,6 +140,13 @@ def sync_once() -> dict[str, int]:
         if has_annonces and has_reference:
             score()
             notify_new_deals(sync_started)
+            if os.getenv("PUBLISH_PASSWORD"):
+                try:
+                    from immo.publish import publish
+                    publish()
+                except Exception as exc:
+                    # Le site en ligne est un confort : son échec n'invalide pas la synchronisation.
+                    print(f"Publication du site en échec : {exc}", flush=True)
         print(f"Synchronisation terminée : {total} brutes, {failures} recherches en échec.")
         return {"collected": total, "failed_searches": failures}
     finally:

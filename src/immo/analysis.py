@@ -79,6 +79,12 @@ TRAVAUX = (
     "gros travaux|refection complete|remise au gout|a rafraichir"
 )
 
+# Formulations qui annulent une mention de travaux (« aucun travaux à prévoir »).
+SANS_TRAVAUX = (
+    "aucuns? travaux|sans travaux|pas de travaux|aucun gros travaux|travaux (?:deja )?realises|"
+    "travaux recents|entierement renove|refait a neuf|renove recemment|renovation recente"
+)
+
 CONFIANCE_FIABLE = """
     nb_ventes >= 10 AND score_comparabilite<=.65
     AND (q3_eur_m2-q1_eur_m2)/NULLIF(median_eur_m2,0)<=.28
@@ -179,7 +185,8 @@ WITH prix_signaux AS (
                OR lower(coalesce(a.details_json,'')) LIKE '%"sous compromis": "oui"%' AS non_disponible,
            regexp_matches(lower(strip_accents(coalesce(a.description,''))),
                 'loi carrez.{{0,80}}loggia|loggia.{{0,80}}loi carrez|ancienne loggia') AS surface_atypique,
-           regexp_matches({TEXT}, '{TRAVAUX}') OR f.travaux_annonces > 0 AS travaux_probables,
+           (regexp_matches({TEXT}, '{TRAVAUX}') AND NOT regexp_matches({TEXT}, '{SANS_TRAVAUX}'))
+               OR f.travaux_annonces > 0 AS travaux_probables,
            lower(coalesce(json_extract_string(try_cast(a.details_json AS JSON),
                 '$."Procédure de copropriété en cours"'), 'non'))='oui' AS procedure_copropriete,
            f.charges_copro_annuelles AS charges_copropriete_annuelles,
@@ -231,9 +238,11 @@ WITH prix_signaux AS (
            -- normes DPE (G interdit à la location depuis 2025, F en 2028).
            CASE WHEN travaux_annonces > 0 THEN travaux_annonces
                 WHEN regexp_matches(lower(strip_accents(coalesce(titre,'') || ' ' || coalesce(description,''))), '{TRAVAUX_LOURDS}')
+                     AND NOT regexp_matches(lower(strip_accents(coalesce(titre,'') || ' ' || coalesce(description,''))), '{SANS_TRAVAUX}')
                      AND segment IN ('residentiel','immeuble')
                      THEN surface_bati * {h['travaux_renovation_m2']}
                 WHEN regexp_matches(lower(strip_accents(coalesce(titre,'') || ' ' || coalesce(description,''))), '{TRAVAUX}')
+                     AND NOT regexp_matches(lower(strip_accents(coalesce(titre,'') || ' ' || coalesce(description,''))), '{SANS_TRAVAUX}')
                      AND segment IN ('residentiel','immeuble')
                      THEN surface_bati * {h['travaux_renovation_m2']} * .4
                 WHEN upper(coalesce(dpe,''))='G' AND segment IN ('residentiel','immeuble')
