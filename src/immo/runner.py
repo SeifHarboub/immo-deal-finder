@@ -191,6 +191,11 @@ def normalize(source: str) -> None:
                 ) > 1
             )
         """)
+        from immo.lifecycle import record_prices, refresh_activity
+        refresh_activity(con, source)
+        record_prices(con, source)
+        from immo.finance import refresh_finance
+        refresh_finance(con, source)
         from immo.comparables import refresh_comparables
         refresh_comparables(con, source)
         from immo.rent_estimates import refresh_rent_estimates

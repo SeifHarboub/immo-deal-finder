@@ -121,11 +121,13 @@ class AgencyJsonLdConnector(Connector):
                     if attempt < 2:
                         time.sleep(2 * (attempt + 1))
                         continue
+                    self._sitemap_failed = True
                     return
                 response.raise_for_status()
                 break
             except requests.RequestException:
                 if attempt == 2:
+                    self._sitemap_failed = True
                     return
                 time.sleep(2 * (attempt + 1))
         if response is None:
@@ -134,6 +136,7 @@ class AgencyJsonLdConnector(Connector):
         try:
             root = ElementTree.fromstring(content)
         except ElementTree.ParseError:
+            self._sitemap_failed = True
             return
         locations = [node.text.strip() for node in root.iter() if node.tag.endswith("loc") and node.text]
         if root.tag.endswith("sitemapindex"):
@@ -228,15 +231,25 @@ class AgencyJsonLdConnector(Connector):
             known = set()
         visited: set[str] = set()
         candidates: list[str] = []
+        self._sitemap_failed = False
+        # Le sitemap est toujours lu en entier, même quand la limite du cycle
+        # est atteinte : sa liste complète sert d'inventaire des annonces encore
+        # en ligne, et une annonce qui en sort est marquée retirée.
         for url in self._sitemap_urls(self.sitemap_url):
             if url in visited:
                 continue
             visited.add(url)
-            if url in known:
+            if url in known or (limit and len(candidates) >= limit):
                 continue
-            if limit and len(candidates) >= limit:
-                break
             candidates.append(url)
+        if not c.max_pages:
+            try:
+                from immo.lifecycle import record_inventory
+                from immo.warehouse import connect
+                with connect() as con:
+                    record_inventory(con, self.source, visited, complete=not self._sitemap_failed)
+            except Exception as exc:
+                print(f"Inventaire {self.source} non enregistré : {exc}", flush=True)
 
         workers = max(1, int(os.getenv(
             f"AGENCY_FETCH_WORKERS_{suffix}", os.getenv("AGENCY_FETCH_WORKERS", "3")
