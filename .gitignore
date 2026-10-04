@@ -12,3 +12,4 @@ data/schema-report.json
 .playwright-profile/
 data/runtime/
 data/*.txt
+data/encheres-state/
