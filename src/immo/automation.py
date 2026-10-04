@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import fcntl
+import json
 import os
 from pathlib import Path
 import plistlib
@@ -47,6 +48,7 @@ def sync_once() -> dict[str, int]:
         lock.close()
         return {"collected": 0, "failed_searches": 0}
 
+    sync_started = datetime.now(timezone.utc).replace(tzinfo=None)
     try:
         # Un arrêt système peut laisser un run marqué « running ». Au démarrage
         # suivant, il ne peut plus être actif puisque le verrou vient d'être acquis.
@@ -135,11 +137,37 @@ def sync_once() -> dict[str, int]:
             has_annonces = con.execute("SELECT count(*) FROM annonces_stg").fetchone()[0] > 0
         if has_annonces and has_reference:
             score()
+            notify_new_deals(sync_started)
         print(f"Synchronisation terminée : {total} brutes, {failures} recherches en échec.")
         return {"collected": total, "failed_searches": failures}
     finally:
         fcntl.flock(lock, fcntl.LOCK_UN)
         lock.close()
+
+
+def notify_new_deals(since: datetime) -> int:
+    """Notification macOS pour les nouvelles affaires apparues pendant la synchronisation."""
+    minimum = float(os.getenv("NOTIFY_MIN_SCORE", "75"))
+    with connect() as con:
+        rows = con.execute("""
+            SELECT strategie, ville, prix, round(score_global)
+            FROM deal_analysis
+            WHERE active IS NOT false AND rang_doublon = 1
+              AND score_global >= ? AND first_seen_at >= ?
+            ORDER BY score_global DESC
+        """, [minimum, since]).fetchall()
+    if not rows:
+        return 0
+    labels = {"decote": "sous le marché", "rendement": "locatif", "murs": "murs", "fonds": "fonds"}
+    best = rows[0]
+    price = f"{int(best[2] or 0):,}".replace(",", " ")
+    message = f"Meilleure : {labels.get(best[0], best[0])} à {best[1] or '?'}, {price} € (score {int(best[3])})"
+    title = f"{len(rows)} nouvelle{'s' if len(rows) > 1 else ''} affaire{'s' if len(rows) > 1 else ''}"
+    print(f"{title}. {message}", flush=True)
+    if sys.platform == "darwin" and os.getenv("NOTIFY_MACOS", "true").lower() in {"1", "true", "yes"}:
+        script = f'display notification {json.dumps(message)} with title "Immo Radar" subtitle {json.dumps(title)}'
+        subprocess.run(["osascript", "-e", script], capture_output=True, timeout=10)
+    return len(rows)
 
 
 def plist_path() -> Path:
