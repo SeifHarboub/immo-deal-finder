@@ -21,7 +21,7 @@ import unicodedata
 import duckdb
 
 
-PARSER_VERSION = 6
+PARSER_VERSION = 7
 
 _AMOUNT = r"(\d{1,3}(?:[  .]\d{3})+(?:,\d+)?|\d+(?:[.,]\d+)?)\s*(k|m|millions?|milliers?)?\s*(?:€|euros?|eur\b|(?<=\d)e\b)"
 _AMOUNT_RE = re.compile(_AMOUNT, re.I)
@@ -295,7 +295,13 @@ def segment(type_bien: str | None, text: str, finance: "Finance") -> str:
             # rendement des murs n'est pas observable séparément.
             if not _MURS.search(text) or re.search(r"murs et (?:le )?fonds|fonds et (?:les )?murs", text):
                 return "fonds"
-        if type_bien == "autre" and (finance.immeuble_rapport or re.search(r"^vente immeuble|\bimmeuble\b", text)):
+        # Un « immeuble » de parc d'activités n'est pas un immeuble de rapport :
+        # il faut un titre d'immeuble et un vocabulaire de logements.
+        if type_bien == "autre" and (
+            finance.immeuble_rapport
+            or (re.search(r"^(?:vente )?immeuble", text)
+                and not re.search(r"activite|entrepot|atelier|bureaux|industriel|logistique|stockage", text[:300]))
+        ):
             return "immeuble"
         return "murs" if type_bien in {"local_commercial", "bureau"} else "autre"
     if type_bien in {"appartement", "maison"}:

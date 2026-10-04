@@ -1,0 +1,683 @@
+{
+ "total": 905924,
+ "from": 0,
+ "perPage": 4,
+ "realEstateAds": [
+  {
+   "blurInfo": {
+    "type": "disk",
+    "radius": 750,
+    "bbox": [
+     -0.6015406050075799,
+     44.83461095145269,
+     -0.5825360950947861,
+     44.84808623938913
+    ],
+    "origin": "accounts",
+    "position": {
+     "lat": 44.84134859542091,
+     "lon": -0.592038350051183
+    },
+    "centroid": {
+     "lat": 44.84134859542091,
+     "lon": -0.592038350051183
+    }
+   },
+   "city": "Bordeaux",
+   "postalCode": "33000",
+   "chargingStations": {
+    "providers": []
+   },
+   "id": "hektor-1223_EXPERTIMO22-268804",
+   "adType": "buy",
+   "propertyType": "flat",
+   "reference": "1223_20260426",
+   "description": "Venez découvrir dans une résidence de standing cet appartement lumineux en parfait état, situé au 5ème étage, offrant une vue sur la ville grâce à ses grandes baies vitrées.<br> Il propose un grand séjour de 40 m2 avec baies vitrées ouvrant sur un balcon fermé de 5 m2, une cuisine séparée refaite en 2021 , aménagée et équipée .<br> Un dégagement conduit vers le coin nuit composé de 2 chambres donnant chacune sur un balcon fermé (2023) de 8m2 avec baies vitrées alu, une salle d'eau récente , un dressing aménagé de 6m2 et un wc indépendant<br> Résidence sécurisée de très haut standing avec piscine.<br> Chauffage individuel gaz (2025), climatisation réversible, double vitrage, volet roulant électrique....<br> Une place de parking souterrain ainsi qu'en cave complète ce superbe appartement,<br> LES PLUS: Résidence entretenue, travaux dans l'appartement réalisés entre 2021 et 2025, vue dégagée. Résidence avec piscine .LIBRE DE SUITE<br> Appartement LIBRE .Quelques photo de home staging virtuel sont proposées pour se projeter .<br> Proches de toutes commodités : transports, education ( maternelle, primaire, secondaire,enseignement supérieur,) loisirs, culture, santé....<br> Opportunité à saisir !!<br> Contactez dès maintenant LOUISE FLAMARY-EI-au TEL: <span class=\"importDescriptionDecorator\" data-type=\"phone\">0000000001</span> pour organiser une visite<br> RSAC:792465007<br> <br> <br>Cette annonce vous est proposée par FLAMARY Louise  - EI - NoRSAC: 792 465 007, Enregistré à Greffe du tribunal de commerce de BORDEAIUX<br>   - Annonce rédigée et publiée par un Agent Mandataire -",
+   "title": "En vente à Bordeaux  Secteur SAINT SEURIN -FONDAUDEGE : Bel",
+   "publicationDate": "2026-10-04T09:46:37.142Z",
+   "modificationDate": "2026-10-04T09:46:37.142Z",
+   "newProperty": false,
+   "yearOfConstruction": 1975,
+   "accountType": "mandatary",
+   "isBienIciExclusive": false,
+   "price": 483600,
+   "agencyFeePercentage": 4,
+   "surfaceArea": 105,
+   "roomsQuantity": 4,
+   "bedroomsQuantity": 2,
+   "floor": 5,
+   "floorQuantity": 14,
+   "showerRoomsQuantity": 1,
+   "toiletQuantity": 1,
+   "balconyQuantity": 2,
+   "balconySurfaceArea": 13,
+   "hasElevator": true,
+   "hasCellar": true,
+   "parkingPlacesQuantity": 1,
+   "hasIntercom": true,
+   "hasCaretaker": true,
+   "hasTerrace": false,
+   "hasAirConditioning": true,
+   "hasPool": true,
+   "isDisabledPeopleFriendly": true,
+   "hasFirePlace": false,
+   "isExclusiveSaleMandate": false,
+   "photos": [
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_e12c4941fd3515713af4c2e6ad511377.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_e12c4941fd3515713af4c2e6ad511377.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_e12c4941fd3515713af4c2e6ad511377.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_169b2fd6f316397a2d093810d2cdff0b.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_169b2fd6f316397a2d093810d2cdff0b.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_169b2fd6f316397a2d093810d2cdff0b.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_519faf24bc1f8705e0abc4d227e10da1.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_519faf24bc1f8705e0abc4d227e10da1.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_519faf24bc1f8705e0abc4d227e10da1.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_530fa6ef41830a27a7f74b9faef70fa5.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_530fa6ef41830a27a7f74b9faef70fa5.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_530fa6ef41830a27a7f74b9faef70fa5.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_b3424ba7839fd32862c79044f1cb3eba.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_b3424ba7839fd32862c79044f1cb3eba.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_b3424ba7839fd32862c79044f1cb3eba.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_e238ffb2aeea5ca7eff870936ce5eec2.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_e238ffb2aeea5ca7eff870936ce5eec2.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_e238ffb2aeea5ca7eff870936ce5eec2.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_887510c62a113111b1111f8add106e6c.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_887510c62a113111b1111f8add106e6c.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_887510c62a113111b1111f8add106e6c.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_271f0d3360a1ad80fb4b8ad78fcdebb2.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_271f0d3360a1ad80fb4b8ad78fcdebb2.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_271f0d3360a1ad80fb4b8ad78fcdebb2.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_c5a44b97cf1cf15979b30eca1719d8fe.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_c5a44b97cf1cf15979b30eca1719d8fe.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_c5a44b97cf1cf15979b30eca1719d8fe.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_79d6f820fc623088656364d15aea2cd2.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_79d6f820fc623088656364d15aea2cd2.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_79d6f820fc623088656364d15aea2cd2.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_d049184a1d984383bff59d6c54ff1930.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_d049184a1d984383bff59d6c54ff1930.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_d049184a1d984383bff59d6c54ff1930.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_30dc2e0995dfdcb5ea9ff8c528bb5c68.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_30dc2e0995dfdcb5ea9ff8c528bb5c68.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_30dc2e0995dfdcb5ea9ff8c528bb5c68.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_bae1b412540e1b8668cd5927e4089dd6.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_bae1b412540e1b8668cd5927e4089dd6.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_bae1b412540e1b8668cd5927e4089dd6.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_c2d1f312f753a0a5b0288ba5497b60da.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_c2d1f312f753a0a5b0288ba5497b60da.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_c2d1f312f753a0a5b0288ba5497b60da.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_eeb818d3774b4b6393678e8938de5f27.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_eeb818d3774b4b6393678e8938de5f27.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_eeb818d3774b4b6393678e8938de5f27.jpg"
+    },
+    {
+     "url_photo": "https://expertimo.staticlbi.com/original/images/biens/1223/ea9da3a6e2fd458ab4ae3fb8778f55de/photo_3a84ae0a13cedc3afdb43c61adabe2ac.jpg",
+     "photo": "hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_3a84ae0a13cedc3afdb43c61adabe2ac.jpg",
+     "url": "https://file.bienici.com/photo/hektor-1223_EXPERTIMO22-268804_expertimo.staticlbi.com_original_images_biens_1223_ea9da3a6e2fd458ab4ae3fb8778f55de_photo_3a84ae0a13cedc3afdb43c61adabe2ac.jpg"
+    }
+   ],
+   "workToDo": false,
+   "energyValue": 118,
+   "energyClassification": "C",
+   "greenhouseGazValue": 23,
+   "greenhouseGazClassification": "C",
+   "isInCondominium": true,
+   "condominiumPartsQuantity": 489,
+   "isCondominiumInProcedure": false,
+   "feesChargedTo": "purchaser",
+   "priceWithoutFees": 465000,
+   "agencyFeeUrl": "https://www.reseau-expertimo.fr/i/redac/honoraires?honofor=1747",
+   "energyPerformanceDiagnosticDate": "2025-03-21",
+   "useJuly2021EnergyPerformanceDiagnostic": true,
+   "minEnergyConsumption": 1136,
+   "maxEnergyConsumption": 1536,
+   "energySimulationReferenceDate": "2022-01-01",
+   "averageAnnualEnergyConsumption": 0,
+   "epdFinalEnergyConsumption": 108,
+   "exposition": "Sud Ouest",
+   "adCreatedByPro": true,
+   "district": {
+    "id_polygone": 201004,
+    "id_type": 1,
+    "name": "Bordeaux - Croix Blanche",
+    "libelle": "Croix Blanche",
+    "cp": "33000",
+    "code_insee": "33063",
+    "id": 201004,
+    "insee_code": "33063",
+    "postal_code": "33000",
+    "type_id": 1
+   },
+   "status": {
+    "onTheMarket": true,
+    "closedByUser": false,
+    "autoImported": true,
+    "isLeading": false,
+    "highlighted": false,
+    "is3dHighlighted": false
+   },
+   "departmentCode": "33",
+   "addressKnown": true,
+   "displayDistrictName": true,
+   "pricePerSquareMeter": 4428.571428571428,
+   "postalCodeForSearchFilters": "33000",
+   "descriptionTextLength": 1487,
+   "userRelativeData": {
+    "importAccountId": "584fd128b442a40099b9b67a",
+    "accountIds": [
+     "hektor-1223_EXPERTIMO22"
+    ],
+    "searchAccountIds": [
+     "hektor-1223_EXPERTIMO22",
+     "624ab3dfc3a5ba00b0c6e839",
+     "contract-type-mandatary",
+     "584fd128b442a40099b9b67a"
+    ],
+    "isAdmin": false,
+    "isAdModifier": false,
+    "canSetAsFeatured": false,
+    "canSeeExactPosition": false,
+    "canSeeAddress": false,
+    "canSeeStats": false,
+    "canOpenAdDetail": true,
+    "canSeeRealDates": false,
+    "canSeePublicationCertificateHtml": false,
+    "canSeePublicationCertificatePdf": false
+   },
+   "priceHasDecreased": false,
+   "transactionType": "buy",
+   "adTypeFR": "vente",
+   "with3dModel": false,
+   "endOfPromotedAsExclusive": 0,
+   "opticalFiberStatus": "deploye",
+   "nothingBehindForm": false,
+   "highlightMailContact": false,
+   "displayInsuranceEstimation": true,
+   "phoneDisplays": []
+  },
+  {
+   "blurInfo": {
+    "type": "disk",
+    "radius": 50,
+    "bbox": [
+     2.24764862274827,
+     48.83636404568586,
+     2.2490134084841658,
+     48.83726236362086
+    ],
+    "position": {
+     "lat": 48.83681320465336,
+     "lon": 2.248331015616218
+    },
+    "centroid": {
+     "lat": 48.83681320465336,
+     "lon": 2.248331015616218
+    }
+   },
+   "city": "Boulogne-Billancourt",
+   "postalCode": "92100",
+   "id": "apimo-87438826",
+   "adType": "buy",
+   "propertyType": "house",
+   "reference": "87438826",
+   "description": "Boulogne - Rue Thiers - Maison de Famille\n- EXCLUSIVITE-\n\nIdéalement situé au calme absolu et à l'abris des regards, dans une impasse privée recherchée, charmante maison familiale de 144m2 (173m2 au total) comprenant :\n\nAu rez-de-chaussée : Une entrée dessert une salle à manger traversante avec cuisine ouverte, prolongée par une superbe véranda. Un salon traversant avec cheminée s’ouvre directement sur une agréable terrasse au calme.\n\nAu 1er étage : Une suite parentale comprenant une grande chambre traversante avec salle d’eau et dressings. Deux belles chambres avec rangements, une salle de bains et des WC séparés complètent cet étage.\n\nAu 2ème étage :  une grande chambre traversante sous combles agrémentée de nombreux rangements.\n\nAu sous-sol : une buanderie ainsi qu’une grande pièce pouvant être aménagée en bureau, salle de jeux ou family room.\n\nUn emplacement de parking devant la maison complète l'ensemble.\n\nPrix de 1.550.000 Euros F.A.I.\nHonoraires inclus de 3.33% TTC à la charge de l’acquéreur.\n\nClasse énergie D, Classe climat D.\nMontant moyen estimé des dépenses annuelles d’énergie pour un usage standard, établi à partir des prix de l’énergie au 1er janvier 2021 : 1670 à 2310 euros.",
+   "publicationDate": "2026-10-04T09:38:04.785Z",
+   "modificationDate": "2026-10-04T09:38:04.785Z",
+   "newProperty": false,
+   "accountType": "agency",
+   "isBienIciExclusive": false,
+   "isExclusiveSaleMandate": true,
+   "roomsQuantity": 6,
+   "bedroomsQuantity": 4,
+   "feesChargedTo": "purchaser",
+   "workToDo": false,
+   "photos": [
+    {
+     "url_photo": "https://media.apimo.pro/cache/696b4175c197e605fea572eaaab599b6_94adc72b9d_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_696b4175c197e605fea572eaaab599b6_94adc72b9d_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_696b4175c197e605fea572eaaab599b6_94adc72b9d_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/040191ad7d17128a4c5f1f25487a7475_0fc5b87bf1_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_040191ad7d17128a4c5f1f25487a7475_0fc5b87bf1_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_040191ad7d17128a4c5f1f25487a7475_0fc5b87bf1_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/ce7141569b49b874681eed7909a78383_16e7902341_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_ce7141569b49b874681eed7909a78383_16e7902341_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_ce7141569b49b874681eed7909a78383_16e7902341_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/b97dd13f5f08bb4719cf48e4d568d6a0_1bfa445b29_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_b97dd13f5f08bb4719cf48e4d568d6a0_1bfa445b29_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_b97dd13f5f08bb4719cf48e4d568d6a0_1bfa445b29_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/3e0b87dccdaa9afb8e674d85debcf43d_7d0a819609_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_3e0b87dccdaa9afb8e674d85debcf43d_7d0a819609_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_3e0b87dccdaa9afb8e674d85debcf43d_7d0a819609_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/d811d3478fdf576eadf3eda43f5edb69_fe65c3bbd1_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_d811d3478fdf576eadf3eda43f5edb69_fe65c3bbd1_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_d811d3478fdf576eadf3eda43f5edb69_fe65c3bbd1_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/764b8a50bce04ea7510ce17c9ad781fb_f3d703ca87_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_764b8a50bce04ea7510ce17c9ad781fb_f3d703ca87_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_764b8a50bce04ea7510ce17c9ad781fb_f3d703ca87_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/9ce509afa21872fabd18e362cc7f5027_fe331168c1_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_9ce509afa21872fabd18e362cc7f5027_fe331168c1_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_9ce509afa21872fabd18e362cc7f5027_fe331168c1_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/f33b8bfb0510312fc2400ddc6f1b9c18_ccac9a7da7_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_f33b8bfb0510312fc2400ddc6f1b9c18_ccac9a7da7_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_f33b8bfb0510312fc2400ddc6f1b9c18_ccac9a7da7_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/5058851862a628556770c221a2d776f5_b716f28864_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_5058851862a628556770c221a2d776f5_b716f28864_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_5058851862a628556770c221a2d776f5_b716f28864_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/a3c0fd9147ef7a44e03f6c2ae54b6655_0d213f05f2_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_a3c0fd9147ef7a44e03f6c2ae54b6655_0d213f05f2_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_a3c0fd9147ef7a44e03f6c2ae54b6655_0d213f05f2_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/7f9f3f31101e3c74adbc2beb88f9c409_114430783f_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_7f9f3f31101e3c74adbc2beb88f9c409_114430783f_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_7f9f3f31101e3c74adbc2beb88f9c409_114430783f_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/544d5ec0bc5be372bdfc0d922ac6920e_bc21491d34_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_544d5ec0bc5be372bdfc0d922ac6920e_bc21491d34_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_544d5ec0bc5be372bdfc0d922ac6920e_bc21491d34_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/4ca75a186b22a8cb313860cc5aeb3480_3e736cc51c_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_4ca75a186b22a8cb313860cc5aeb3480_3e736cc51c_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_4ca75a186b22a8cb313860cc5aeb3480_3e736cc51c_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/935c16167ae22c3de42c9c6a450f7632_4d62965566_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_935c16167ae22c3de42c9c6a450f7632_4d62965566_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_935c16167ae22c3de42c9c6a450f7632_4d62965566_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/ee7e53d6719ac39fe853ad2c360482a2_e80e0937a0_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_ee7e53d6719ac39fe853ad2c360482a2_e80e0937a0_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_ee7e53d6719ac39fe853ad2c360482a2_e80e0937a0_1920-original.jpg"
+    },
+    {
+     "url_photo": "https://media.apimo.pro/cache/f5b2bfbcfad1f7b71f8c930bfa17e6f6_373f0dd109_1920-original.jpg",
+     "photo": "apimo-87438826_media.apimo.pro_cache_f5b2bfbcfad1f7b71f8c930bfa17e6f6_373f0dd109_1920-original.jpg",
+     "url": "https://file.bienici.com/photo/apimo-87438826_media.apimo.pro_cache_f5b2bfbcfad1f7b71f8c930bfa17e6f6_373f0dd109_1920-original.jpg"
+    }
+   ],
+   "terracesQuantity": 1,
+   "parkingPlacesQuantity": 1,
+   "energyValue": 196,
+   "energyPerformanceDiagnosticDate": "2026-10-02",
+   "energyClassification": "D",
+   "greenhouseGazValue": 42,
+   "greenhouseGazClassification": "D",
+   "minEnergyConsumption": 1670,
+   "maxEnergyConsumption": 2310,
+   "energySimulationReferenceDate": "2021-01-01",
+   "surfaceArea": 144,
+   "floorQuantity": 4,
+   "price": 1550000,
+   "priceWithoutFees": 1500000,
+   "agencyFeePercentage": 3.3333333333333335,
+   "useJuly2021EnergyPerformanceDiagnostic": true,
+   "adCreatedByPro": true,
+   "heating": "Gaz Individuel",
+   "district": {
+    "id_polygone": 100435,
+    "id_type": 1,
+    "name": "Boulogne-Billancourt - Vaillant - Marcel Sembat",
+    "libelle": "Vaillant - Marcel Sembat",
+    "cp": "92100",
+    "code_insee": "92012",
+    "id": 100435,
+    "insee_code": "92012",
+    "postal_code": "92100",
+    "type_id": 1
+   },
+   "status": {
+    "onTheMarket": true,
+    "closedByUser": false,
+    "autoImported": true,
+    "isLeading": false,
+    "highlighted": false,
+    "is3dHighlighted": false
+   },
+   "departmentCode": "92",
+   "addressKnown": true,
+   "displayDistrictName": true,
+   "pricePerSquareMeter": 10416.666666666666,
+   "postalCodeForSearchFilters": "92100",
+   "descriptionTextLength": 1207,
+   "title": "",
+   "userRelativeData": {
+    "importAccountId": "5913331e150de0009ce38406",
+    "accountIds": [
+     "apimo-19878"
+    ],
+    "searchAccountIds": [
+     "apimo-19878",
+     "contract-type-agency-package",
+     "extension-boost",
+     "5913331e150de0009ce38406"
+    ],
+    "isAdmin": false,
+    "isAdModifier": false,
+    "canSetAsFeatured": false,
+    "canSeeExactPosition": false,
+    "canSeeAddress": false,
+    "canSeeStats": false,
+    "canOpenAdDetail": true,
+    "canSeeRealDates": false,
+    "canSeePublicationCertificateHtml": false,
+    "canSeePublicationCertificatePdf": false
+   },
+   "priceHasDecreased": false,
+   "transactionType": "buy",
+   "adTypeFR": "vente",
+   "with3dModel": false,
+   "endOfPromotedAsExclusive": 0,
+   "opticalFiberStatus": "deploye",
+   "chargingStations": {
+    "providers": []
+   },
+   "nothingBehindForm": false,
+   "highlightMailContact": false,
+   "customerId": "APPARTEMENTS-MAISONS-BOULOGNE",
+   "displayInsuranceEstimation": true,
+   "phoneDisplays": []
+  },
+  {
+   "blurInfo": {
+    "type": "disk",
+    "radius": 125,
+    "bbox": [
+     -1.6007634898669612,
+     48.8365662582287,
+     -1.5973513972675948,
+     48.838812063007154
+    ],
+    "position": {
+     "lat": 48.83768916061793,
+     "lon": -1.599057443567278
+    },
+    "centroid": {
+     "lat": 48.83768916061793,
+     "lon": -1.599057443567278
+    }
+   },
+   "city": "Granville",
+   "postalCode": "50400",
+   "hasGeorisquesMention": true,
+   "id": "ag440414-552575975",
+   "adType": "businessTakeOver",
+   "propertyType": "shop",
+   "reference": "455069B-BUSINESS",
+   "description": "Emplacement N°1 - Hypercentre de Granville (50400)\nSaisissez l'opportunité de vous installer au coeur de la \"Monaco du Nord\" !\n\nSitué dans une des rues la plus commerçante et passante de l'hyper-centre de Granville, Quentin TINGAUD, au <span class=\"importDescriptionDecorator\" data-type=\"phone\"><span class=\"importDescriptionDecorator\" data-type=\"phone\">0000000001</span></span> vous propose ce fonds de commerce de prêt à porter bénéficiant d'une visibilité exceptionnelle et d'un flux piéton constant tout au long de l'année, démultiplié durant la saison estivale.\n\nEmplacement stratégique : Environnement commercial dynamique, entouré d'enseignes nationales et de boutiques indépendantes de qualité.\n\nVisibilité maximale : Belle vitrine linéaire offrant une excellente exposition.\n\nPrêt à l'emploi : Local en excellent état, aucun travaux majeurs à prévoir.\n\nActivité actuelle : Prêt-à-porter.\n\nBail : Commercial 3/6/9 en cours, renouvelé en 2022, loyer très bas pour le secteur.\nPossibilité de changer d'activité aux même charges et conditions.\n\nUn emplacement premium dans une ville balnéaire très prisée et dynamique. Idéal pour une première installation ou pour l'implantation d'une nouvelle enseigne. Clés en main.\n\nDossier complet, photos supplémentaires et chiffres disponibles après premier contact téléphonique.\n\nCession du fonds de commerce à 45.000 euros, honoraires vendeur.\nPour visiter et vous accompagner dans votre projet, contactez Quentin TINGAUD, au <span class=\"importDescriptionDecorator\" data-type=\"phone\"><span class=\"importDescriptionDecorator\" data-type=\"phone\">0000000001</span></span> ou, par courriel à <span class=\"importDescriptionDecorator\" data-type=\"email\">contact@exemple.fr.</span>\nSelon l'article L.561.5 du Code Monétaire et Financier, pour l'organisation de la visite, la présentation d'une pièce d'identité vous sera demandée.\nCette présente annonce a été rédigée sous la responsabilité éditoriale de Quentin TINGAUD agissant sous le statut d'agent commercial auprès de SAS PROPRIETES PRIVEES, au capital de 44 920 euros, ZAC LE CHÊNE FERRÉ - 44 ALLÉE DES CINQ CONTINENTS 44120 VERTOU; SIRET 487 624 777 00040, RCS Nantes. Carte Professionnelle Transactions sur immeubles et fonds de commerce (T) et Gestion immobilière (G) n°CPI 4401 2016 000 010 388 délivrée par la CCI Nantes - Saint Nazaire. Compte séquestre n°30932508467 BPA SAINT-SEBASTIEN-SUR-LOIRE (44230). Garantie GALIAN-SMABTP - 89 rue de la Boétie, 75008 Paris - n°28137 J pour 2 000 000 euros pour T et 120 000 euros pour G. Assurance responsabilité civile professionnelle par GALIAN-SMABTP n° de police 28137.J\n\nMandat réf : 455069. - Le professionnel  sécurise votre projet immobilier.\n\nLes informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques : www.georisques.gouv.fr.\n\n Eric PITOY (EI) Agent Commercial - Numéro RSAC :  - .",
+   "title": "EXCLUSIVITE GRANVILLE - PRET A PORTER, MODE, ACCESSOIRES",
+   "publicationDate": "2026-10-04T05:06:55.296Z",
+   "modificationDate": "2026-10-04T05:06:55.296Z",
+   "newProperty": false,
+   "accountType": "mandatary",
+   "isBienIciExclusive": false,
+   "agencyFeeUrl": "https://media.immo-facile.com/segments/immo/catalog/images/manufacturers_bareme/264848.pdf",
+   "surfaceArea": 50,
+   "isDisabledPeopleFriendly": false,
+   "isExclusiveSaleMandate": true,
+   "feesChargedTo": "seller",
+   "priceWithoutFees": 45000,
+   "photos": [
+    {
+     "url_photo": "https://photos.ubiflow.net/440414/552575975/photos/1.jpg?INSOON_EB_5512801818_20261004061700",
+     "photo": "ag440414-552575975_photos.ubiflow.net_440414_552575975_photos_1.jpg_INSOON_EB_5512801818_20261004061700",
+     "url": "https://file.bienici.com/photo/ag440414-552575975_photos.ubiflow.net_440414_552575975_photos_1.jpg_INSOON_EB_5512801818_20261004061700"
+    },
+    {
+     "url_photo": "https://photos.ubiflow.net/440414/552575975/photos/2.jpg?INSOON_EB_5512801818_20261004061700",
+     "photo": "ag440414-552575975_photos.ubiflow.net_440414_552575975_photos_2.jpg_INSOON_EB_5512801818_20261004061700",
+     "url": "https://file.bienici.com/photo/ag440414-552575975_photos.ubiflow.net_440414_552575975_photos_2.jpg_INSOON_EB_5512801818_20261004061700"
+    },
+    {
+     "url_photo": "https://photos.ubiflow.net/440414/552575975/photos/3.jpg?INSOON_EB_5512801818_20261004061700",
+     "photo": "ag440414-552575975_photos.ubiflow.net_440414_552575975_photos_3.jpg_INSOON_EB_5512801818_20261004061700",
+     "url": "https://file.bienici.com/photo/ag440414-552575975_photos.ubiflow.net_440414_552575975_photos_3.jpg_INSOON_EB_5512801818_20261004061700"
+    }
+   ],
+   "price": 45000,
+   "energyClassification": "NS",
+   "greenhouseGazClassification": "NS",
+   "adCreatedByPro": true,
+   "district": {
+    "id_polygone": 102730,
+    "id_type": 1,
+    "name": "Granville - Centre-ville",
+    "libelle": "Centre-ville",
+    "cp": "50400",
+    "code_insee": "50218",
+    "id": 102730,
+    "insee_code": "50218",
+    "postal_code": "50400",
+    "type_id": 1
+   },
+   "status": {
+    "onTheMarket": true,
+    "closedByUser": false,
+    "autoImported": true,
+    "isLeading": false,
+    "highlighted": false,
+    "is3dHighlighted": false
+   },
+   "departmentCode": "50",
+   "addressKnown": true,
+   "displayDistrictName": true,
+   "pricePerSquareMeter": 900,
+   "postalCodeForSearchFilters": "50400",
+   "descriptionTextLength": 2561,
+   "userRelativeData": {
+    "importAccountId": "558bbfd06fbf04e50075bbce",
+    "accountIds": [
+     "ubiflow-easybusiness-ag440414-B-BUSINESS"
+    ],
+    "searchAccountIds": [
+     "ubiflow-easybusiness-ag440414-B-BUSINESS",
+     "ubiflow-easybusiness-ag440414",
+     "5fc7a999975a6c00b68d5f01",
+     "contract-type-mandatary",
+     "558bbfd06fbf04e50075bbce"
+    ],
+    "isAdmin": false,
+    "isAdModifier": false,
+    "canSetAsFeatured": false,
+    "canSeeExactPosition": false,
+    "canSeeAddress": false,
+    "canSeeStats": false,
+    "canOpenAdDetail": true,
+    "canSeeRealDates": false,
+    "canSeePublicationCertificateHtml": false,
+    "canSeePublicationCertificatePdf": false
+   },
+   "priceHasDecreased": false,
+   "transactionType": "buy",
+   "adTypeFR": "vente fond de commerce",
+   "with3dModel": false,
+   "endOfPromotedAsExclusive": 0,
+   "opticalFiberStatus": "deploye",
+   "chargingStations": {
+    "providers": []
+   },
+   "nothingBehindForm": false,
+   "highlightMailContact": false,
+   "displayInsuranceEstimation": true,
+   "phoneDisplays": []
+  },
+  {
+   "blurInfo": {
+    "type": "disk",
+    "radius": 50,
+    "bbox": [
+     4.898798521541236,
+     45.69020986201878,
+     4.900084517736264,
+     45.6911081798226
+    ],
+    "position": {
+     "lat": 45.69065902092069,
+     "lon": 4.89944151963875
+    },
+    "centroid": {
+     "lat": 45.69065902092069,
+     "lon": 4.89944151963875
+    }
+   },
+   "city": "Vénissieux",
+   "postalCode": "69200",
+   "id": "ag440414-552575969",
+   "adType": "buy",
+   "propertyType": "premises",
+   "reference": "466750B-BUSINESS",
+   "description": "Anne Marie GARRIGUES au <span class=\"importDescriptionDecorator\" data-type=\"phone\"><span class=\"importDescriptionDecorator\" data-type=\"phone\">0000000001</span></span>, vous propose cet Ensemble immobilier d'activités sous le régime de la monopropriété, édifié sur un terrain clos, sécurisé et paysagé d'une superficie de 3 588 m².\n\nAnnée de construction 2017 (Norme RT 2012).\nL'ensemble comprend deux bâtiments d'activités en structure et bardage, totalisant 6 cellules/lots autonomes\net 20 places de stationnement extérieures privatives :\n\n- Bâtiment A (Surface globale d'environ 575 m²) : Divisé en 3 cellules d'activités (Lots A1, A2, A3).\n- Bâtiment B (Surface globale d'environ 571 m²) : Divisé en 3 cellules d'activités (Lots B4, B5, B6).\n\nChaque cellule dispose d'une entrée privative et indépendante comprenant :\nPartie Activité / Dépôt :\nAccès de plain-pied par porte sectionnelle (Largeur : 3,50 m × Hauteur : 3,80 m).\nHauteur libre sous poutre : d'environ 4,48 m à 5,88 m.\nÉclairage naturel zénithal par skydomes.\nCompteur électrique individuel (Tarif Bleu).\nPartie Bureaux :\nEspace bureau aménagé d'environ 45 m², équipé d'un système de climatisation réversible (CVC chaud/froid) et\nprises RJ45.\nSanitaire privatif intégré.\nSite entièrement clos et sécurisé par portail automatique et vidéo-interphonie pour l'accès piéton\n\n- Portes sectionnelles de 3.8 de hauteur, bureau autour de 45 m² environ climatisé, avec sanitaire\nprivatif. Equipé de prises RJ 45. Le tout sur un terrain paysagé, clos et sécurisé\nSERVICES ET PRESTATIONS\n Locaux évolutifs :\n- possibilité d'ajouter une cloison amovible dans la surface des bureaux + modification\nemplacement des prises + RJ45 possible - Point d'eau/dépôt possible\n- Parc sécurisé (portail) + Entrée piétonne sécurisée par vidéophone\n- Entrée indépendante par lot\n- Espace paysagé central\n- Sanitaires privatifs\n- Places de parkings extérieures : 20\n- Abri vélos\n- Accès camions de plain-pied\n- Porte sectionnelle : 3.50 m large x 3.80 m hauteur\n- Haut. Libre mini. /Maxi sous poutre : environ 4.48 m et 5.88 m\n- Eclairage zénithal par skydomes dans zone dépôt\n- Bureaux climatisés CVC/Réversible : chaud/froid\n- Electricité : Tarif bleu par lot\n- Superficie dépôt : environ 243 m2\n- Superficie bureau : Environ 46 m2\n- 4 Places de parking\n DPE C / GES A\n\nACCÈS ET DESSERTE\n A 15 kms de Lyon\n Gare de Lyon Part-Dieu à 21 min\n Aéroport de Lyon Saint Exupéry à 19 min\n Autoroute A7, A16 et A43 a 5 min\n Boulevard Périphérique Laurent Bonnevay et Rocade Sud\n Bus Ligne 87 Arrêt « Timbaud » à 250 m\n Bus Ligne 54 Arrêt « Route de Corbas » à 900 m\n\nPour visiter et vous accompagner dans votre projet, contactez GARRIGUES Anne Marie, au <span class=\"importDescriptionDecorator\" data-type=\"phone\"><span class=\"importDescriptionDecorator\" data-type=\"phone\">0000000001</span></span> ou par courriel à <span class=\"importDescriptionDecorator\" data-type=\"email\">contact@exemple.fr.</span>\n\nSelon l'article L.561.5 du Code Monétaire et Financier, pour l'organisation de la visite, la présentation d'une pièce d'identité vous sera demandée.\nCette présente annonce a été rédigée sous la responsabilité éditoriale de GARRIGUES Anne Marie, agissant sous le statut d'agent commercial immatriculé au RSAC lyon 800346140 auprès de SAS PROPRIETES PRIVEES, au capital de 44 920 euros, ZAC Le Chêne Ferré - 44 Allée des Cinq Continents 44120 VERTOU ; SIRET 487 624 777 00040, RCS Nantes. Carte Professionnelle Transactions sur immeubles et fonds de commerce (T) et Gestion immobilière (G) n°CPI 4401 2016 000 010 388 délivrée par la CCI Nantes - Saint Nazaire. Compte séquestre n°30932508467 BPA SAINT-SEBASTIEN-SUR-LOIRE (44230). Garantie GALIAN-SMABTP - 89 rue de la Boétie, 75008 Paris pour 2 000 000 euros pour T et 120 000 euros pour G. Assurance responsabilité civile professionnelle par GALIAN-SMABTP n° de police RCP_01_28137J.\nMandat réf : 466750 - Le professionnel garantit et sécurise votre projet immobilier.\n\nAnne Marie GARRIGUES (EI) Agent Commercial - Numéro RSAC : lyon 800346140 - .\nLes informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques : www.georisques.gouv.fr\n\n Eric PITOY (EI) Agent Commercial - Numéro RSAC :  - .",
+   "title": "Zone Industrielle de Vénissieux-Corbas - Local d'activité 1164 m2",
+   "publicationDate": "2026-10-04T05:06:55.296Z",
+   "modificationDate": "2026-10-04T05:06:55.296Z",
+   "newProperty": false,
+   "accountType": "mandatary",
+   "isBienIciExclusive": false,
+   "agencyFeeUrl": "https://media.immo-facile.com/segments/immo/catalog/images/manufacturers_bareme/264848.pdf",
+   "surfaceArea": 1164,
+   "hasElevator": false,
+   "isDisabledPeopleFriendly": false,
+   "isExclusiveSaleMandate": true,
+   "feesChargedTo": "seller",
+   "priceWithoutFees": 1999920,
+   "photos": [
+    {
+     "url_photo": "https://photos.ubiflow.net/440414/552575969/photos/1.jpg?INSOON_EB_5512801818_20261004061657",
+     "photo": "ag440414-552575969_photos.ubiflow.net_440414_552575969_photos_1.jpg_INSOON_EB_5512801818_20261004061657",
+     "url": "https://file.bienici.com/photo/ag440414-552575969_photos.ubiflow.net_440414_552575969_photos_1.jpg_INSOON_EB_5512801818_20261004061657"
+    },
+    {
+     "url_photo": "https://photos.ubiflow.net/440414/552575969/photos/2.jpg?INSOON_EB_5512801818_20261004061657",
+     "photo": "ag440414-552575969_photos.ubiflow.net_440414_552575969_photos_2.jpg_INSOON_EB_5512801818_20261004061657",
+     "url": "https://file.bienici.com/photo/ag440414-552575969_photos.ubiflow.net_440414_552575969_photos_2.jpg_INSOON_EB_5512801818_20261004061657"
+    },
+    {
+     "url_photo": "https://photos.ubiflow.net/440414/552575969/photos/3.jpg?INSOON_EB_5512801818_20261004061657",
+     "photo": "ag440414-552575969_photos.ubiflow.net_440414_552575969_photos_3.jpg_INSOON_EB_5512801818_20261004061657",
+     "url": "https://file.bienici.com/photo/ag440414-552575969_photos.ubiflow.net_440414_552575969_photos_3.jpg_INSOON_EB_5512801818_20261004061657"
+    },
+    {
+     "url_photo": "https://photos.ubiflow.net/440414/552575969/photos/4.jpg?INSOON_EB_5512801818_20261004061657",
+     "photo": "ag440414-552575969_photos.ubiflow.net_440414_552575969_photos_4.jpg_INSOON_EB_5512801818_20261004061657",
+     "url": "https://file.bienici.com/photo/ag440414-552575969_photos.ubiflow.net_440414_552575969_photos_4.jpg_INSOON_EB_5512801818_20261004061657"
+    }
+   ],
+   "price": 1999920,
+   "energyClassification": "NS",
+   "greenhouseGazClassification": "NS",
+   "adCreatedByPro": true,
+   "district": {
+    "id_polygone": 100182,
+    "id_type": 1,
+    "name": "Vénissieux - Pasteur",
+    "libelle": "Pasteur",
+    "cp": "69200",
+    "code_insee": "69259",
+    "id": 100182,
+    "insee_code": "69259",
+    "postal_code": "69200",
+    "type_id": 1
+   },
+   "status": {
+    "onTheMarket": true,
+    "closedByUser": false,
+    "autoImported": true,
+    "isLeading": false,
+    "highlighted": false,
+    "is3dHighlighted": false
+   },
+   "departmentCode": "69",
+   "addressKnown": true,
+   "displayDistrictName": true,
+   "pricePerSquareMeter": 1718.1443298969073,
+   "postalCodeForSearchFilters": "69200",
+   "descriptionTextLength": 3902,
+   "userRelativeData": {
+    "importAccountId": "558bbfd06fbf04e50075bbce",
+    "accountIds": [
+     "ubiflow-easybusiness-ag440414-B-BUSINESS"
+    ],
+    "searchAccountIds": [
+     "ubiflow-easybusiness-ag440414-B-BUSINESS",
+     "ubiflow-easybusiness-ag440414",
+     "5fc7a999975a6c00b68d5f01",
+     "contract-type-mandatary",
+     "558bbfd06fbf04e50075bbce"
+    ],
+    "isAdmin": false,
+    "isAdModifier": false,
+    "canSetAsFeatured": false,
+    "canSeeExactPosition": false,
+    "canSeeAddress": false,
+    "canSeeStats": false,
+    "canOpenAdDetail": true,
+    "canSeeRealDates": false,
+    "canSeePublicationCertificateHtml": false,
+    "canSeePublicationCertificatePdf": false
+   },
+   "priceHasDecreased": false,
+   "transactionType": "buy",
+   "adTypeFR": "vente",
+   "with3dModel": false,
+   "endOfPromotedAsExclusive": 0,
+   "opticalFiberStatus": "deploye",
+   "chargingStations": {
+    "providers": []
+   },
+   "nothingBehindForm": false,
+   "highlightMailContact": false,
+   "displayInsuranceEstimation": true,
+   "phoneDisplays": []
+  }
+ ]
+}

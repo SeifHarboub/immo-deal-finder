@@ -5,14 +5,15 @@ from __future__ import annotations
 import duckdb
 
 
-FINGERPRINT = "hash(a.type_bien,a.nb_pieces,a.surface_bati,a.code_postal,a.ville)"
+FINGERPRINT = "hash(a.type_bien,a.nb_pieces,a.surface_bati,a.code_postal,a.ville,f.segment)"
 
 
 def refresh_rent_estimates(con: duckdb.DuckDBPyConnection, source: str | None = None) -> int:
     source_clause = "AND a.source=?" if source else ""
     params = [source] if source else []
     con.execute(f"""
-        DELETE FROM annonce_loyer_reference ref USING annonces_stg a
+        DELETE FROM annonce_loyer_reference ref
+        USING annonces_stg a LEFT JOIN annonce_finance f USING (source, external_id)
         WHERE ref.source=a.source AND ref.external_id=a.external_id
           {source_clause} AND ref.fingerprint <> {FINGERPRINT}
     """, params)
@@ -20,9 +21,14 @@ def refresh_rent_estimates(con: duckdb.DuckDBPyConnection, source: str | None = 
     con.execute(f"""
         INSERT INTO annonce_loyer_reference
         WITH pending AS MATERIALIZED (
-            SELECT a.*, {FINGERPRINT} AS rent_fingerprint
+            SELECT a.*, {FINGERPRINT} AS rent_fingerprint,
+                   -- Un immeuble de rapport se loue appartement par appartement.
+                   CASE WHEN f.segment='immeuble' THEN 'appartement' ELSE a.type_bien END
+                       AS type_loyer
             FROM annonces_stg a
-            WHERE a.categorie='vente' AND a.type_bien IN ('appartement','maison')
+            LEFT JOIN annonce_finance f USING (source, external_id)
+            WHERE a.categorie='vente'
+              AND (a.type_bien IN ('appartement','maison') OR f.segment='immeuble')
               AND a.surface_bati>0 AND a.code_postal IS NOT NULL
               {source_clause}
               AND NOT EXISTS (
@@ -36,7 +42,7 @@ def refresh_rent_estimates(con: duckdb.DuckDBPyConnection, source: str | None = 
                l.niveau_estimation,l.nb_observations,l.r2,l.millesime,now()
         FROM pending a LEFT JOIN LATERAL (
             SELECT r.* FROM loyer_reference_commune r
-            WHERE r.type_bien=a.type_bien
+            WHERE r.type_bien=a.type_loyer
               AND r.typologie=CASE
                   WHEN a.type_bien='appartement' AND a.nb_pieces BETWEEN 1 AND 2 THEN '1_2_pieces'
                   WHEN a.type_bien='appartement' AND a.nb_pieces>=3 THEN '3_pieces_plus'
@@ -57,7 +63,9 @@ def refresh_rent_estimates(con: duckdb.DuckDBPyConnection, source: str | None = 
         WITH pending AS MATERIALIZED (
             SELECT a.*, {FINGERPRINT} AS rent_fingerprint
             FROM annonces_stg a
-            WHERE a.categorie='vente' AND a.type_bien='local_commercial'
+            LEFT JOIN annonce_finance f USING (source, external_id)
+            WHERE a.categorie='vente' AND a.type_bien IN ('local_commercial','bureau')
+              AND coalesce(f.segment,'murs')='murs'
               AND a.surface_bati>0 AND a.code_postal IS NOT NULL
               {source_clause}
               AND NOT EXISTS (
@@ -79,10 +87,11 @@ def refresh_rent_estimates(con: duckdb.DuckDBPyConnection, source: str | None = 
             FROM (
                 SELECT r.loyer/r.surface_bati AS ratio
                 FROM annonces_stg r
-                WHERE r.categorie='location' AND r.type_bien='local_commercial'
+                WHERE r.categorie='location' AND r.type_bien=a.type_bien
                   AND r.loyer>0 AND r.surface_bati>0
                   AND r.loyer/r.surface_bati BETWEEN 2 AND 200
-                  AND (r.details_json ILIKE '%Location pure%' OR r.source='geolocaux')
+                  AND (r.details_json ILIKE '%Location pure%' OR r.source IN ('geolocaux','bureauxlocaux'))
+                  AND r.last_seen_at >= now() - INTERVAL 18 MONTH
                   AND r.surface_bati BETWEEN a.surface_bati*.40 AND a.surface_bati*2.50
                   AND (r.code_postal=a.code_postal
                        OR lower(strip_accents(r.ville))=lower(strip_accents(a.ville)))

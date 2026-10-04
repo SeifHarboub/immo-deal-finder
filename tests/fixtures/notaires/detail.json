@@ -1,0 +1,1663 @@
+{
+ "id": 2027195,
+ "status": "LIGNE",
+ "typeTransaction": "VENTE",
+ "vente": {
+  "dateCreation": "2026-07-03T08:31:52Z",
+  "dateMaj": "2026-10-04T09:49:35Z",
+  "dateActivation": "2026-07-03T09:08:27Z",
+  "statut": "LIGNE",
+  "dateStatut": "2026-07-03T09:08:27Z",
+  "reference": "CHAILLOUE",
+  "exclusivite": "NON",
+  "facturation": "61004",
+  "origineNegociation": "INCONNU",
+  "partenaire": 0,
+  "redactionCompromis": "INCONNU",
+  "typeTransaction": "VENTE",
+  "crpcen": "61004",
+  "publiable": "OUI",
+  "multimedias": [
+   {
+    "id": 49085760,
+    "checksum": "15d898c1",
+    "nomDocument": "IMG_1378.jpeg",
+    "numDocument": 0,
+    "photoPrincipale": "OUI",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/15d898c1_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/15d898c1_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/15d898c1_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/15d898c1_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/15d898c1_QXGA.jpg"
+   },
+   {
+    "id": 49085828,
+    "checksum": "da9f773f",
+    "nomDocument": "vue du ciel.jpg",
+    "numDocument": 1,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.2616,
+    "format": "QQVGA,QVGA,VGA,SVGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/da9f773f_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/da9f773f_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/da9f773f_VGA.jpg"
+    },
+    "svga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/da9f773f_SVGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/da9f773f_SVGA.jpg"
+   },
+   {
+    "id": 49086134,
+    "checksum": "ffc67a45",
+    "nomDocument": "croquis.jpg",
+    "numDocument": 2,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.8297,
+    "format": "QQVGA,QVGA,VGA,XGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/ffc67a45_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/ffc67a45_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/ffc67a45_VGA.jpg"
+    },
+    "xga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/ffc67a45_XGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/ffc67a45_XGA.jpg"
+   },
+   {
+    "id": 49086102,
+    "checksum": "463c6e4a",
+    "nomDocument": "IMG_2494.jpeg",
+    "numDocument": 3,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/463c6e4a_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/463c6e4a_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/463c6e4a_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/463c6e4a_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/463c6e4a_QXGA.jpg"
+   },
+   {
+    "id": 49085971,
+    "checksum": "8d90b210",
+    "nomDocument": "IMG_2469.jpeg",
+    "numDocument": 4,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8d90b210_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8d90b210_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8d90b210_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8d90b210_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8d90b210_QXGA.jpg"
+   },
+   {
+    "id": 49085830,
+    "checksum": "33708452",
+    "nomDocument": "IMG_2426.jpeg",
+    "numDocument": 5,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/33708452_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/33708452_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/33708452_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/33708452_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/33708452_QXGA.jpg"
+   },
+   {
+    "id": 49086072,
+    "checksum": "1170368f",
+    "nomDocument": "IMG_2487.jpeg",
+    "numDocument": 6,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1170368f_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1170368f_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1170368f_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1170368f_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1170368f_QXGA.jpg"
+   },
+   {
+    "id": 49085889,
+    "checksum": "91fe3df6",
+    "nomDocument": "IMG_2444.jpeg",
+    "numDocument": 7,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/91fe3df6_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/91fe3df6_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/91fe3df6_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/91fe3df6_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/91fe3df6_QXGA.jpg"
+   },
+   {
+    "id": 49085841,
+    "checksum": "af21ad83",
+    "nomDocument": "IMG_2428.jpeg",
+    "numDocument": 8,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/af21ad83_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/af21ad83_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/af21ad83_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/af21ad83_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/af21ad83_QXGA.jpg"
+   },
+   {
+    "id": 49085848,
+    "checksum": "680ae75c",
+    "nomDocument": "IMG_2429.jpeg",
+    "numDocument": 9,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/680ae75c_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/680ae75c_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/680ae75c_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/680ae75c_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/680ae75c_QXGA.jpg"
+   },
+   {
+    "id": 49085855,
+    "checksum": "881b3326",
+    "nomDocument": "IMG_2430.jpeg",
+    "numDocument": 10,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/881b3326_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/881b3326_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/881b3326_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/881b3326_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/881b3326_QXGA.jpg"
+   },
+   {
+    "id": 49085861,
+    "checksum": "46892429",
+    "nomDocument": "IMG_2431.jpeg",
+    "numDocument": 11,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/46892429_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/46892429_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/46892429_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/46892429_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/46892429_QXGA.jpg"
+   },
+   {
+    "id": 49085862,
+    "checksum": "50237fc4",
+    "nomDocument": "IMG_2432.jpeg",
+    "numDocument": 12,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/50237fc4_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/50237fc4_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/50237fc4_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/50237fc4_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/50237fc4_QXGA.jpg"
+   },
+   {
+    "id": 49085863,
+    "checksum": "4a80e41f",
+    "nomDocument": "IMG_2433.jpeg",
+    "numDocument": 13,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4a80e41f_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4a80e41f_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4a80e41f_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4a80e41f_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4a80e41f_QXGA.jpg"
+   },
+   {
+    "id": 49085865,
+    "checksum": "90a493f8",
+    "nomDocument": "IMG_2435.jpeg",
+    "numDocument": 14,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90a493f8_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90a493f8_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90a493f8_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90a493f8_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90a493f8_QXGA.jpg"
+   },
+   {
+    "id": 49085866,
+    "checksum": "98035aa7",
+    "nomDocument": "IMG_2436.jpeg",
+    "numDocument": 15,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/98035aa7_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/98035aa7_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/98035aa7_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/98035aa7_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/98035aa7_QXGA.jpg"
+   },
+   {
+    "id": 49085867,
+    "checksum": "b228e054",
+    "nomDocument": "IMG_2437.jpeg",
+    "numDocument": 16,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b228e054_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b228e054_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b228e054_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b228e054_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b228e054_QXGA.jpg"
+   },
+   {
+    "id": 49085868,
+    "checksum": "9b8b8183",
+    "nomDocument": "IMG_2438.jpeg",
+    "numDocument": 17,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9b8b8183_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9b8b8183_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9b8b8183_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9b8b8183_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9b8b8183_QXGA.jpg"
+   },
+   {
+    "id": 49085869,
+    "checksum": "79aae2f9",
+    "nomDocument": "IMG_2439.jpeg",
+    "numDocument": 18,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/79aae2f9_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/79aae2f9_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/79aae2f9_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/79aae2f9_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/79aae2f9_QXGA.jpg"
+   },
+   {
+    "id": 49085870,
+    "checksum": "293a28ae",
+    "nomDocument": "IMG_2440.jpeg",
+    "numDocument": 19,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/293a28ae_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/293a28ae_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/293a28ae_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/293a28ae_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/293a28ae_QXGA.jpg"
+   },
+   {
+    "id": 49085871,
+    "checksum": "21e61dcf",
+    "nomDocument": "IMG_2441.jpeg",
+    "numDocument": 20,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/21e61dcf_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/21e61dcf_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/21e61dcf_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/21e61dcf_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/21e61dcf_QXGA.jpg"
+   },
+   {
+    "id": 49085874,
+    "checksum": "915e2959",
+    "nomDocument": "IMG_2442.jpeg",
+    "numDocument": 21,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/915e2959_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/915e2959_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/915e2959_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/915e2959_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/915e2959_QXGA.jpg"
+   },
+   {
+    "id": 49085882,
+    "checksum": "e4269c39",
+    "nomDocument": "IMG_2443.jpeg",
+    "numDocument": 22,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4269c39_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4269c39_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4269c39_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4269c39_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4269c39_QXGA.jpg"
+   },
+   {
+    "id": 49085897,
+    "checksum": "23e9a811",
+    "nomDocument": "IMG_2445.jpeg",
+    "numDocument": 23,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/23e9a811_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/23e9a811_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/23e9a811_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/23e9a811_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/23e9a811_QXGA.jpg"
+   },
+   {
+    "id": 49085905,
+    "checksum": "faa33b2b",
+    "nomDocument": "IMG_2446.jpeg",
+    "numDocument": 24,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/faa33b2b_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/faa33b2b_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/faa33b2b_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/faa33b2b_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/faa33b2b_QXGA.jpg"
+   },
+   {
+    "id": 49085906,
+    "checksum": "8950b3ea",
+    "nomDocument": "IMG_2447.jpeg",
+    "numDocument": 25,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8950b3ea_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8950b3ea_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8950b3ea_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8950b3ea_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8950b3ea_QXGA.jpg"
+   },
+   {
+    "id": 49085907,
+    "checksum": "c8802508",
+    "nomDocument": "IMG_2448.jpeg",
+    "numDocument": 26,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/c8802508_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/c8802508_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/c8802508_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/c8802508_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/c8802508_QXGA.jpg"
+   },
+   {
+    "id": 49085908,
+    "checksum": "27852b2c",
+    "nomDocument": "IMG_2449.jpeg",
+    "numDocument": 27,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/27852b2c_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/27852b2c_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/27852b2c_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/27852b2c_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/27852b2c_QXGA.jpg"
+   },
+   {
+    "id": 49085909,
+    "checksum": "9c7c43c5",
+    "nomDocument": "IMG_2450.jpeg",
+    "numDocument": 28,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9c7c43c5_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9c7c43c5_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9c7c43c5_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9c7c43c5_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9c7c43c5_QXGA.jpg"
+   },
+   {
+    "id": 49085910,
+    "checksum": "19cad4ba",
+    "nomDocument": "IMG_2451.jpeg",
+    "numDocument": 29,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/19cad4ba_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/19cad4ba_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/19cad4ba_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/19cad4ba_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/19cad4ba_QXGA.jpg"
+   },
+   {
+    "id": 49085911,
+    "checksum": "90e193ac",
+    "nomDocument": "IMG_2452.jpeg",
+    "numDocument": 30,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90e193ac_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90e193ac_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90e193ac_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90e193ac_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/90e193ac_QXGA.jpg"
+   },
+   {
+    "id": 49085913,
+    "checksum": "506d7a46",
+    "nomDocument": "IMG_2454.jpeg",
+    "numDocument": 31,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/506d7a46_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/506d7a46_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/506d7a46_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/506d7a46_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/506d7a46_QXGA.jpg"
+   },
+   {
+    "id": 49085917,
+    "checksum": "d4653d9a",
+    "nomDocument": "IMG_2455.jpeg",
+    "numDocument": 32,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/d4653d9a_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/d4653d9a_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/d4653d9a_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/d4653d9a_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/d4653d9a_QXGA.jpg"
+   },
+   {
+    "id": 49085922,
+    "checksum": "7f5bba38",
+    "nomDocument": "IMG_2456.jpeg",
+    "numDocument": 33,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7f5bba38_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7f5bba38_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7f5bba38_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7f5bba38_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7f5bba38_QXGA.jpg"
+   },
+   {
+    "id": 49085929,
+    "checksum": "52cbcbf9",
+    "nomDocument": "IMG_2457.jpeg",
+    "numDocument": 34,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/52cbcbf9_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/52cbcbf9_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/52cbcbf9_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/52cbcbf9_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/52cbcbf9_QXGA.jpg"
+   },
+   {
+    "id": 49085933,
+    "checksum": "4fc27467",
+    "nomDocument": "IMG_2458.jpeg",
+    "numDocument": 35,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4fc27467_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4fc27467_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4fc27467_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4fc27467_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/4fc27467_QXGA.jpg"
+   },
+   {
+    "id": 49085936,
+    "checksum": "60a29610",
+    "nomDocument": "IMG_2459.jpeg",
+    "numDocument": 36,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/60a29610_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/60a29610_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/60a29610_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/60a29610_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/60a29610_QXGA.jpg"
+   },
+   {
+    "id": 49085943,
+    "checksum": "34f4e08c",
+    "nomDocument": "IMG_2460.jpeg",
+    "numDocument": 37,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/34f4e08c_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/34f4e08c_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/34f4e08c_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/34f4e08c_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/34f4e08c_QXGA.jpg"
+   },
+   {
+    "id": 49085947,
+    "checksum": "e4c0e84f",
+    "nomDocument": "IMG_2461.jpeg",
+    "numDocument": 38,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4c0e84f_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4c0e84f_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4c0e84f_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4c0e84f_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e4c0e84f_QXGA.jpg"
+   },
+   {
+    "id": 49085951,
+    "checksum": "8c39f85c",
+    "nomDocument": "IMG_2462.jpeg",
+    "numDocument": 39,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8c39f85c_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8c39f85c_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8c39f85c_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8c39f85c_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/8c39f85c_QXGA.jpg"
+   },
+   {
+    "id": 49085958,
+    "checksum": "24e1c6c4",
+    "nomDocument": "IMG_2463.jpeg",
+    "numDocument": 40,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/24e1c6c4_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/24e1c6c4_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/24e1c6c4_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/24e1c6c4_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/24e1c6c4_QXGA.jpg"
+   },
+   {
+    "id": 49085962,
+    "checksum": "84af543c",
+    "nomDocument": "IMG_2464.jpeg",
+    "numDocument": 41,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/84af543c_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/84af543c_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/84af543c_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/84af543c_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/84af543c_QXGA.jpg"
+   },
+   {
+    "id": 49085963,
+    "checksum": "25d1d96a",
+    "nomDocument": "IMG_2465.jpeg",
+    "numDocument": 42,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/25d1d96a_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/25d1d96a_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/25d1d96a_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/25d1d96a_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/25d1d96a_QXGA.jpg"
+   },
+   {
+    "id": 49085966,
+    "checksum": "9d642f0f",
+    "nomDocument": "IMG_2466.jpeg",
+    "numDocument": 43,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9d642f0f_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9d642f0f_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9d642f0f_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9d642f0f_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/9d642f0f_QXGA.jpg"
+   },
+   {
+    "id": 49085967,
+    "checksum": "a9247f03",
+    "nomDocument": "IMG_2467.jpeg",
+    "numDocument": 44,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a9247f03_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a9247f03_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a9247f03_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a9247f03_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a9247f03_QXGA.jpg"
+   },
+   {
+    "id": 49085976,
+    "checksum": "1a3702ad",
+    "nomDocument": "IMG_2470.jpeg",
+    "numDocument": 45,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1a3702ad_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1a3702ad_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1a3702ad_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1a3702ad_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/1a3702ad_QXGA.jpg"
+   },
+   {
+    "id": 49085984,
+    "checksum": "bccbca2f",
+    "nomDocument": "IMG_2471.jpeg",
+    "numDocument": 46,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/bccbca2f_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/bccbca2f_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/bccbca2f_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/bccbca2f_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/bccbca2f_QXGA.jpg"
+   },
+   {
+    "id": 49085990,
+    "checksum": "59940d98",
+    "nomDocument": "IMG_2472.jpeg",
+    "numDocument": 47,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/59940d98_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/59940d98_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/59940d98_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/59940d98_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/59940d98_QXGA.jpg"
+   },
+   {
+    "id": 49085999,
+    "checksum": "3312f0c1",
+    "nomDocument": "IMG_2473.jpeg",
+    "numDocument": 48,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/3312f0c1_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/3312f0c1_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/3312f0c1_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/3312f0c1_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/3312f0c1_QXGA.jpg"
+   },
+   {
+    "id": 49086006,
+    "checksum": "a31b72cc",
+    "nomDocument": "IMG_2474.jpeg",
+    "numDocument": 49,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a31b72cc_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a31b72cc_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a31b72cc_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a31b72cc_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a31b72cc_QXGA.jpg"
+   },
+   {
+    "id": 49086010,
+    "checksum": "5a14ec2d",
+    "nomDocument": "IMG_2475.jpeg",
+    "numDocument": 50,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5a14ec2d_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5a14ec2d_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5a14ec2d_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5a14ec2d_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5a14ec2d_QXGA.jpg"
+   },
+   {
+    "id": 49086013,
+    "checksum": "5d4a75d1",
+    "nomDocument": "IMG_2476.jpeg",
+    "numDocument": 51,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5d4a75d1_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5d4a75d1_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5d4a75d1_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5d4a75d1_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/5d4a75d1_QXGA.jpg"
+   },
+   {
+    "id": 49086015,
+    "checksum": "36b0dfe5",
+    "nomDocument": "IMG_2477.jpeg",
+    "numDocument": 52,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/36b0dfe5_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/36b0dfe5_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/36b0dfe5_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/36b0dfe5_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/36b0dfe5_QXGA.jpg"
+   },
+   {
+    "id": 49086023,
+    "checksum": "b9c79e5d",
+    "nomDocument": "IMG_2478.jpeg",
+    "numDocument": 53,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b9c79e5d_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b9c79e5d_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b9c79e5d_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b9c79e5d_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/b9c79e5d_QXGA.jpg"
+   },
+   {
+    "id": 49086066,
+    "checksum": "464a5e7d",
+    "nomDocument": "IMG_2486.jpeg",
+    "numDocument": 54,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/464a5e7d_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/464a5e7d_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/464a5e7d_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/464a5e7d_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/464a5e7d_QXGA.jpg"
+   },
+   {
+    "id": 49086075,
+    "checksum": "7b6efc11",
+    "nomDocument": "IMG_2488.jpeg",
+    "numDocument": 55,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7b6efc11_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7b6efc11_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7b6efc11_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7b6efc11_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/7b6efc11_QXGA.jpg"
+   },
+   {
+    "id": 49086079,
+    "checksum": "e718fc37",
+    "nomDocument": "IMG_2489.jpeg",
+    "numDocument": 56,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e718fc37_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e718fc37_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e718fc37_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e718fc37_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/e718fc37_QXGA.jpg"
+   },
+   {
+    "id": 49086081,
+    "checksum": "270f2ce",
+    "nomDocument": "IMG_2490.jpeg",
+    "numDocument": 57,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/270f2ce_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/270f2ce_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/270f2ce_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/270f2ce_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/270f2ce_QXGA.jpg"
+   },
+   {
+    "id": 49086085,
+    "checksum": "cf30a1d4",
+    "nomDocument": "IMG_2491.jpeg",
+    "numDocument": 58,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/cf30a1d4_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/cf30a1d4_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/cf30a1d4_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/cf30a1d4_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/cf30a1d4_QXGA.jpg"
+   },
+   {
+    "id": 49086093,
+    "checksum": "a1acd77e",
+    "nomDocument": "IMG_2493.jpeg",
+    "numDocument": 59,
+    "photoPrincipale": "NON",
+    "type": "image/jpeg",
+    "extension": "jpg",
+    "directory": "/0/61004/2027195",
+    "ratio": 1.3333,
+    "format": "QQVGA,QVGA,VGA,QXGA",
+    "qqvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a1acd77e_QQVGA.jpg"
+    },
+    "qvga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a1acd77e_QVGA.jpg"
+    },
+    "vga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a1acd77e_VGA.jpg"
+    },
+    "qxga": {
+     "url": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a1acd77e_QXGA.jpg"
+    },
+    "urlHighestResolution": "https://media.immobilier.notaires.fr/inotr/media/0/61004/2027195/a1acd77e_QXGA.jpg"
+   }
+  ],
+  "descriptions": [
+   {
+    "id": 1808798,
+    "langue": "fr",
+    "descCourte": "A CHAILLOUE - Une maison à rénover",
+    "descLongue": "A CHAILLOUE - 720 rue du Bourg Joly\nUne maison en mauvais état à rénover comprenant :\n- au rez-de-chaussée : pièce principale avec cheminée, autre pièce. Caves à la suite. Autre pièce.\nGrenier au-dessus.\nEau, électricité. Tout à l'égout.\nTerrain autour.\nAbsence de système de chauffage.\nTF 2025 : 125 €\n\nLe prix est de 20.000 € \nHonoraires de négociation à ajouter : 2.400,00 €\nFrais d'acquisition en sus estimés à 3.400 €.\n\nInfo sur les risques disponibles sur le site Géorisques : www.georisques.gouv.fr\nPour davantage de photos , vous pouvez consulter le site de l'Etude :\nhttps://guilbert-alencon.notaires.fr ou rechercher \"guilbert+nicolas+alencon\"",
+    "descPapier": "A CHAILLOUE - 720 rue du Bourg Joly\nUne maison en mauvais état à rénover.\nrdc : pièce principale, autre pièce. Caves à la suite. Autre pièce.\nGrenier au-dessus.\nEau, électricité. Tout à l'égout.\nTerrain autour.\nAbsence de système de chauffage.\n\nPrix : 20.000 € \nHono négo : 2.400 €\n\nInfo sur les risques : www.georisques.gouv.fr\nPour davantage de photos : https://guilbert-alencon.notaires.fr"
+   },
+   {
+    "id": 1808799,
+    "langue": "en",
+    "descCourte": "",
+    "descLongue": "",
+    "descPapier": ""
+   }
+  ],
+  "visite": {
+   "id": 1460936,
+   "typeVisite": "RDV",
+   "visiteFixe": "[{\"opened\":false}]",
+   "visiteContact": "0000000001",
+   "visiteNomContact": "Nicol"
+  },
+  "redevableEmoluments": "ACQUEREUR",
+  "prix": 20000,
+  "emoluments": 2400,
+  "viager": {
+   "viager": "NON",
+   "viagerPeriodiciteRente": "INCONNU",
+   "viagerIndexationRente": "INCONNU",
+   "viagerNbTetes": 1,
+   "viagerSexe1": "HOMME",
+   "viagerSexe2": "HOMME",
+   "viagerOccupation": "OUI"
+  },
+  "bienVendu": "NON",
+  "bienRetire": "NON",
+  "ventePrivee": "NON",
+  "prixVenteCommunique": "INCONNU"
+ },
+ "bien": {
+  "id": 2255854,
+  "typeBien": "MAI",
+  "maison": {
+   "id": 2255854,
+   "hexaviaLocalite": "26237",
+   "localiteNom": "CHAILLOUE",
+   "inseeCommune": "61081",
+   "communeNom": "Chailloué",
+   "charniere": "de ",
+   "charniere2": "à ",
+   "codePostal": "61500",
+   "inseeDepartement": "61",
+   "departementNom": "Orne",
+   "inseeRegion": "28",
+   "regionNom": "Normandie",
+   "adresse4": "37 39 avenue Quakenbrück",
+   "typeBien": "MAI",
+   "affichagePublic": "NON",
+   "bordMer": "INCONNU",
+   "pleineCampagne": "INCONNU",
+   "belleVue": "INCONNU",
+   "procheMontagne": "INCONNU",
+   "vuePanoramique": "INCONNU",
+   "procheGolf": "INCONNU",
+   "piedsDansEau": "INCONNU",
+   "ancienNeuf": "ANCIEN",
+   "sousType": "VILLE",
+   "prestige": "NON",
+   "etat": "RENOVER",
+   "epoqueConstruction": "C",
+   "surfaceHabitable": 60.0,
+   "surfaceTerrain": 710,
+   "livraison": "INCONNU",
+   "nbPieces": 3,
+   "situationLocative": "LIBRE",
+   "exposition": "INCONNU",
+   "stationnement": "INCONNU",
+   "cuisine": "INCONNU",
+   "chauffage": "INDIVIDUEL",
+   "energie": "INCONNU",
+   "balcon": "INCONNU",
+   "terrasse": "INCONNU",
+   "cave": "INCONNU",
+   "piscine": "INCONNU",
+   "accesHandicapes": "INCONNU",
+   "basseConsommation": "INCONNU",
+   "consommationClasse": "Z",
+   "emissionGesClasse": "Z",
+   "taxeFonciere": 125,
+   "checkBus": "NON",
+   "checkMetro": "NON",
+   "checkAeroport": "NON",
+   "checkTram": "NON",
+   "checkGare": "NON",
+   "checkEcole": "NON",
+   "ecole": "INCONNU",
+   "checkVueMer": "NON",
+   "vueMer": "INCONNU",
+   "checkCommerce": "NON",
+   "commerce": "INCONNU",
+   "checkPistes": "NON",
+   "pistes": "INCONNU",
+   "boxFerme": "INCONNU",
+   "cheminee": "INCONNU",
+   "parquet": "INCONNU",
+   "moulures": "INCONNU",
+   "sansVisAVis": "INCONNU",
+   "dependances": "INCONNU",
+   "jardin": "INCONNU",
+   "courtTennis": "INCONNU",
+   "climatisation": "INCONNU",
+   "salleReception": "INCONNU",
+   "chambreService": "INCONNU",
+   "contemporain": "INCONNU",
+   "architecte": "INCONNU",
+   "maisonAmis": "INCONNU",
+   "maisonGardien": "INCONNU",
+   "dependancesAgricoles": "INCONNU",
+   "monumentHistorique": "INCONNU",
+   "domaineChasse": "INCONNU",
+   "parcPaysager": "INCONNU",
+   "ecurie": "INCONNU",
+   "spa": "INCONNU",
+   "typeCuisine": "AMERICAINE",
+   "residenceFermee": "INCONNU",
+   "adresse": "37 39 avenue Quakenbrück"
+  }
+ },
+ "contact": {
+  "id": 1457108,
+  "nom": "Nicolas GUILBERT",
+  "adresse3": "",
+  "adresse4": "37 39 avenue Quakenbrück",
+  "codePostal": "61000",
+  "ville": "ALENCON",
+  "telephone": "0000000001",
+  "mail": "contact@exemple.fr"
+ },
+ "crpcen": "61004",
+ "idOffice": 2814
+}
