@@ -410,17 +410,8 @@ def materialize(con) -> int:
     """Recalcule `deal_analysis`, lue directement par l'interface."""
     from immo.lifecycle import ensure_tables
     ensure_tables(con)
-    con.execute("""
-        CREATE TABLE IF NOT EXISTS annonce_finance (
-            source VARCHAR, external_id VARCHAR, fingerprint UBIGINT,
-            loyer_annuel_declare DOUBLE, rendement_declare DOUBLE,
-            chiffre_affaires DOUBLE, ebe DOUBLE, resultat DOUBLE,
-            taxe_fonciere DOUBLE, charges_copro_annuelles DOUBLE,
-            travaux_annonces DOUBLE, nb_lots INTEGER, bien_loue BOOLEAN,
-            immeuble_rapport BOOLEAN, droit_au_bail BOOLEAN, segment VARCHAR,
-            PRIMARY KEY (source, external_id)
-        )
-    """)
+    from immo.finance import ensure_table
+    ensure_table(con)
     con.execute("CREATE OR REPLACE TABLE deal_analysis_next AS " + deals_sql() + " SELECT * FROM deals_final")
     # Remplacement en une transaction : l'interface ne voit jamais de table vide.
     con.execute("BEGIN")

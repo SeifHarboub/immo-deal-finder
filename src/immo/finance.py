@@ -330,7 +330,7 @@ def segment(type_bien: str | None, text: str, finance: "Finance") -> str:
 FINGERPRINT = f"hash({PARSER_VERSION}, a.prix, a.type_bien, a.titre, a.description, a.details_json)"
 
 
-def refresh_finance(con: duckdb.DuckDBPyConnection, source: str | None = None) -> int:
+def ensure_table(con: duckdb.DuckDBPyConnection) -> None:
     con.execute("""
         CREATE TABLE IF NOT EXISTS annonce_finance (
             source VARCHAR, external_id VARCHAR, fingerprint UBIGINT,
@@ -342,6 +342,10 @@ def refresh_finance(con: duckdb.DuckDBPyConnection, source: str | None = None) -
             PRIMARY KEY (source, external_id)
         )
     """)
+
+
+def refresh_finance(con: duckdb.DuckDBPyConnection, source: str | None = None) -> int:
+    ensure_table(con)
     scope = "AND a.source=?" if source else ""
     params = [source] if source else []
     rows = con.execute(f"""

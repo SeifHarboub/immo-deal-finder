@@ -8,9 +8,9 @@ from immo.connectors.base import register
 
 
 TYPES = {
-    "house": "maison", "apartment": "appartement", "building": "immeuble",
+    "house": "maison", "apartment": "appartement", "flat": "appartement", "building": "immeuble",
     "land": "terrain", "business": "fonds_commerce", "commercial": "local_commercial",
-    "premises": "local_commercial", "office": "bureau",
+    "premises": "local_commercial", "store": "local_commercial", "office": "bureau",
 }
 FLAGS = {
     "attic": "Grenier", "cellar": "Cave", "swimingpool": "Piscine", "balcony": "Balcon",

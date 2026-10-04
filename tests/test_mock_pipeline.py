@@ -49,20 +49,30 @@ def main() -> None:
     ]
     assert _write_bronze("leboncoin", records) == 3
     with connect() as con:
-        con.execute("DELETE FROM prix_reference")
-        con.executemany("INSERT INTO prix_reference VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
-            ("93000", "Appartement", 15, 3200, 4000, 4600, None, None),
-            ("93000", "Maison", 12, 2800, 3500, 4100, None, None),
-        ])
+        # Douze ventes comparables par type : la confiance devient « indicative ».
+        con.execute("""
+            INSERT INTO ventes_dvf (
+                id_mutation, date_mutation, code_departement, code_commune, code_postal,
+                commune, type_local, surface_bati, valeur_fonciere, prix_m2,
+                nombre_pieces, surface_terrain
+            )
+            SELECT 'apt-' || range, current_date - INTERVAL 200 DAY, '93', '93008', '93000',
+                   'Bobigny', 'Appartement', 58 + range % 5, (58 + range % 5) * 4000, 4000, 3, NULL
+            FROM range(12)
+            UNION ALL
+            SELECT 'house-' || range, current_date - INTERVAL 200 DAY, '93', '93008', '93000',
+                   'Bobigny', 'Maison', 88 + range % 5, (88 + range % 5) * 3500, 3500, 4, 180
+            FROM range(12)
+        """)
     normalize("leboncoin")
     score()
     rows = deals(10)
-    by_title = {row[1]: row for row in rows}
+    by_title = {row[3]: row for row in rows}
     assert by_title["Appartement Bobigny"][0] == "excellente"
-    assert by_title["Appartement Bobigny"][4] == -25.0
-    assert by_title["Appartement Bobigny"][5] == 192000
+    assert by_title["Appartement Bobigny"][1] == "decote"
+    assert by_title["Appartement Bobigny"][6] == -25.0
     assert by_title["Maison Bobigny"][0] == "bonne"
-    assert by_title["Maison Bobigny"][4] == -20.6
+    assert by_title["Maison Bobigny"][6] == -20.6
     assert "Appartement au marché" not in by_title
     changed = {**records[0], "price": 174000, "subject": "Appartement Bobigny actualisé"}
     assert _write_bronze("leboncoin", [changed]) == 1

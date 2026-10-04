@@ -31,19 +31,20 @@ def main() -> None:
                 code_commune,code_postal,commune,type_local,surface_bati,
                 valeur_fonciere,prix_m2,nombre_pieces
             )
-            SELECT 'test-' || range::VARCHAR, DATE '2025-01-01',
+            SELECT 'test-' || range::VARCHAR, current_date - INTERVAL 200 DAY,
                    '93','93008','93000','Bobigny','Appartement',
-                   58 + range, (58 + range) * 4000, 4000, 3
-            FROM range(5)
+                   58 + range % 5, (58 + range % 5) * 4000, 4000, 3
+            FROM range(10)
         """)
         refresh_comparables(con)
     result = deals(
         q=None, source=[], type_bien=[], postal_code=None, price_min=None,
         price_max=None, surface_min=None, level=[], scored_only=False,
-        sort="deal", limit=24, offset=0,
+        strategie=[], segment=[], sort="deal", limit=24, offset=0,
     )
     item = result["items"][0]
     assert item["niveau_affaire"] == "excellente"
+    assert item["strategie"] == "decote" and item["segment"] == "residentiel"
     assert item["plafond_excellente"] == 180000
     assert item["plafond_bonne"] == 204000
     assert result["summary"]["scored"] == 1

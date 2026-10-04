@@ -56,10 +56,18 @@ class EraConnector(AgencyJsonLdConnector):
         kind = _plain(data.get("type_bien") or (data.get("typeBien") or {}).get("libelle"))
         if data.get("critere_neuf") or "programme" in kind or "neuf" in kind:
             return
-        type_hint = TYPES.get(kind)
-        if not type_hint and ("parking" in kind or "garage" in kind):
+        if "parking" in kind or "garage" in kind or kind == "box":
             return
-        type_hint = type_hint or "autre"
+        # Libellés libres ERA : « Immeuble de rapport », « Corps de ferme », « Villa »…
+        type_hint = TYPES.get(kind) or next((
+            value for key, value in (
+                ("immeuble", "immeuble"), ("appartement", "appartement"), ("studio", "appartement"),
+                ("duplex", "appartement"), ("loft", "appartement"), ("maison", "maison"),
+                ("villa", "maison"), ("ferme", "maison"), ("longere", "maison"), ("propriete", "maison"),
+                ("chalet", "maison"), ("terrain", "terrain"), ("fonds", "fonds_commerce"),
+                ("local", "local_commercial"), ("commerce", "local_commercial"), ("bureau", "bureau"),
+            ) if key in kind
+        ), "autre")
         description = data.get("descriptif") or ""
         description = unescape(re.sub(r"<br\s*/?>", "\n", description, flags=re.I))
         description = re.sub(r"<[^>]+>", " ", description).strip() or None

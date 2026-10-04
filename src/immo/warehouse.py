@@ -125,6 +125,10 @@ def _prepare(con: duckdb.DuckDBPyConnection, db_path: str) -> None:
         "ALTER TABLE ventes_dvf ADD COLUMN IF NOT EXISTS latitude DOUBLE",
     ):
         con.execute(statement)
+    from immo.finance import ensure_table as ensure_finance_table
+    from immo.lifecycle import ensure_tables as ensure_lifecycle_tables
+    ensure_finance_table(con)
+    ensure_lifecycle_tables(con)
     # Le gros référentiel national vit dans un fichier séparé. Sa reconstruction
     # reste ainsi atomique et ne bloque pas l'interface pendant des heures.
     dvf_path = Path(os.getenv("DVF_DB", "data/dvf.duckdb")).expanduser().resolve()
