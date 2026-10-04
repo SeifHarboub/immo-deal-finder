@@ -179,11 +179,26 @@ def notify_new_deals(since: datetime) -> int:
     """Notification macOS pour les nouvelles affaires apparues pendant la synchronisation."""
     minimum = float(os.getenv("NOTIFY_MIN_SCORE", "75"))
     with connect() as con:
-        rows = con.execute("""
+        from immo.searches import NOUVELLE, pending_alerts
+        alerts = pending_alerts(con)
+        if alerts:
+            # Des recherches sauvegardées existent : elles remplacent l'alerte globale.
+            for alert in alerts:
+                rows = alert["annonces"]
+                nouvelles = sum(1 for row in rows if row[7])
+                baisses = len(rows) - nouvelles
+                parts = [f"{nouvelles} nouvelle{'s' if nouvelles > 1 else ''}"] if nouvelles else []
+                if baisses:
+                    parts.append(f"{baisses} baisse{'s' if baisses > 1 else ''} de prix")
+                best = rows[0]
+                price = f"{int(best[4] or 0):,}".replace(",", " ")
+                _notify(alert["nom"], " · ".join(parts), f"{best[3] or '?'}, {price} € (score {int(best[5] or 0)})")
+            return sum(len(alert["annonces"]) for alert in alerts)
+        rows = con.execute(f"""
             SELECT strategie, ville, prix, round(score_global)
             FROM deal_analysis
             WHERE active IS NOT false AND rang_doublon = 1
-              AND score_global >= ? AND first_seen_at >= ?
+              AND score_global >= ? AND {NOUVELLE.format(since="?")}
             ORDER BY score_global DESC
         """, [minimum, since]).fetchall()
     if not rows:
@@ -193,11 +208,16 @@ def notify_new_deals(since: datetime) -> int:
     price = f"{int(best[2] or 0):,}".replace(",", " ")
     message = f"Meilleure : {labels.get(best[0], best[0])} à {best[1] or '?'}, {price} € (score {int(best[3])})"
     title = f"{len(rows)} nouvelle{'s' if len(rows) > 1 else ''} affaire{'s' if len(rows) > 1 else ''}"
-    print(f"{title}. {message}", flush=True)
-    if sys.platform == "darwin" and os.getenv("NOTIFY_MACOS", "true").lower() in {"1", "true", "yes"}:
-        script = f'display notification {json.dumps(message)} with title "Immo Radar" subtitle {json.dumps(title)}'
-        subprocess.run(["osascript", "-e", script], capture_output=True, timeout=10)
+    _notify("Immo Radar", title, message)
     return len(rows)
+
+
+def _notify(title: str, subtitle: str, message: str) -> None:
+    print(f"{title} — {subtitle}. {message}", flush=True)
+    if sys.platform == "darwin" and os.getenv("NOTIFY_MACOS", "true").lower() in {"1", "true", "yes"}:
+        script = (f"display notification {json.dumps(message)} with title {json.dumps(title)} "
+                  f"subtitle {json.dumps(subtitle)}")
+        subprocess.run(["osascript", "-e", script], capture_output=True, timeout=10)
 
 
 def plist_path() -> Path:

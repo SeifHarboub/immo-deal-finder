@@ -141,3 +141,16 @@ dialog { width:min(1040px,calc(100% - 30px)); max-height:92vh; padding:0; border
 .duplicate-list li { margin:4px 0; }
 @media (max-width:1050px) { .metrics { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width:700px) { .metrics { grid-template-columns: repeat(2, 1fr); } .strategy-tabs { margin:0 0 20px; } }
+
+/* Recherches sauvegardées */
+.saved-searches { margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:12px; background:#fbfcfa; }
+.saved-heading h3 { margin:0; font-size:14px; color:var(--forest); }
+.saved-heading small { color:var(--muted); font-size:11px; }
+.saved-item { display:flex; align-items:stretch; gap:6px; margin-top:8px; }
+.saved-apply { flex:1; display:flex; flex-direction:column; align-items:flex-start; padding:8px 10px; border:1px solid var(--line); border-radius:10px; background:var(--surface); cursor:pointer; text-align:left; }
+.saved-apply:hover { border-color:var(--green); }
+.saved-apply small { color:var(--muted); font-size:11px; }
+.saved-apply em { color:var(--green); font-style:normal; font-weight:700; }
+.saved-delete { width:30px; border:1px solid var(--line); border-radius:10px; background:var(--surface); color:var(--muted); cursor:pointer; }
+.saved-delete:hover { color:var(--red); border-color:var(--red); }
+.save-search { padding:9px 14px; border:1px solid var(--forest); border-radius:10px; background:var(--forest); color:white; font-weight:700; font-size:13px; cursor:pointer; }

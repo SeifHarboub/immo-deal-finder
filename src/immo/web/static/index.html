@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Classement local des opportunités immobilières comparées aux ventes DVF.">
   <title>Immo Radar — Les vraies affaires</title>
-  <link rel="stylesheet" href="/static/styles.css?v=20261004-1">
+  <link rel="stylesheet" href="/static/styles.css?v=20261004-2">
 </head>
 <body>
   <a class="skip-link" href="#results">Aller aux résultats</a>
@@ -50,6 +50,10 @@
           <div><p class="eyebrow">Affiner</p><h2 id="filters-title">Filtres</h2></div>
           <button class="text-button" id="reset-filters" type="button">Réinitialiser</button>
         </div>
+        <section class="saved-searches" aria-labelledby="saved-title">
+          <div class="saved-heading"><h3 id="saved-title">Mes recherches</h3><small>Alertes à chaque synchronisation</small></div>
+          <div id="saved-list"><p class="filter-note">Réglez les filtres puis « Enregistrer et m’alerter ».</p></div>
+        </section>
         <form id="filter-form">
           <input type="hidden" name="segment" id="segment-value">
           <input type="hidden" name="auctions" id="auctions-value">
@@ -151,7 +155,7 @@
       <section class="results" id="results" aria-labelledby="results-title" tabindex="-1">
         <div class="results-bar">
           <div><p class="eyebrow">Opportunités</p><h2 id="results-title">Classement des annonces</h2></div>
-          <div class="result-controls"><button class="filter-toggle" id="filter-toggle" type="button" aria-controls="filters-panel" aria-expanded="true"><i aria-hidden="true">☰</i><b id="filter-toggle-label">Masquer les filtres</b> <span id="filter-count">0</span></button><label class="sort"><span>Trier par</span><select id="sort-select" aria-label="Trier les annonces">
+          <div class="result-controls"><button class="save-search" id="save-search" type="button">Enregistrer et m’alerter</button><button class="filter-toggle" id="filter-toggle" type="button" aria-controls="filters-panel" aria-expanded="true"><i aria-hidden="true">☰</i><b id="filter-toggle-label">Masquer les filtres</b> <span id="filter-count">0</span></button><label class="sort"><span>Trier par</span><select id="sort-select" aria-label="Trier les annonces">
             <option value="deal">Meilleur score</option><option value="yield">Rendement net</option><option value="cashflow">Cash-flow</option><option value="discount">Plus forte décote</option><option value="drop">Plus forte baisse</option><option value="recent">Plus récente</option><option value="auction_date">Date d’enchère</option>
             <option value="price_asc">Prix croissant</option><option value="price_desc">Prix décroissant</option>
             <option value="surface">Plus grande surface</option>
@@ -171,6 +175,6 @@
   </dialog>
 
   <template id="loading-template"><article class="deal-card loading" aria-hidden="true"><div></div><div></div><div></div></article></template>
-  <script src="/static/app.js?v=20261004-1" defer></script>
+  <script src="/static/app.js?v=20261004-2" defer></script>
 </body>
 </html>

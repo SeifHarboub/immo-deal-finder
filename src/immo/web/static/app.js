@@ -396,7 +396,8 @@ function renderActiveFilters() {
   const entries = [];
   const fieldLabels = {
     q: 'Mot-clé', postal_code: 'Code postal', price_min: 'Prix min.', price_max: 'Prix max.',
-    surface_min: 'Habitable min.', surface_max: 'Habitable max.', land_min: 'Terrain min.', land_max: 'Terrain max.'
+    surface_min: 'Habitable min.', surface_max: 'Habitable max.', land_min: 'Terrain min.', land_max: 'Terrain max.',
+    yield_min: 'Rendement net min.', new_days: 'Publiée depuis'
   };
   for (const [key, value] of new FormData(form).entries()) {
     if (!value || ['scored_only','segment','auctions'].includes(key)) continue;
@@ -409,7 +410,10 @@ function renderActiveFilters() {
       continue;
     }
     if (fieldLabels[key]) {
-      const formatted = key.startsWith('price_') ? euro(Number(value)) : `${value}${key.includes('surface') || key.startsWith('land_') ? ' m²' : ''}`;
+      const formatted = key.startsWith('price_') ? euro(Number(value))
+        : key === 'yield_min' ? `${value} %`
+        : key === 'new_days' ? `${value} jour${value > 1 ? 's' : ''}`
+        : `${value}${key.includes('surface') || key.startsWith('land_') ? ' m²' : ''}`;
       entries.push(`${fieldLabels[key]} : ${formatted}`);
       continue;
     }
@@ -705,3 +709,93 @@ setInterval(() => {
     loadDeals(false);
   }
 }, 60_000);
+
+
+// Recherches sauvegardées : les filtres courants deviennent une alerte.
+function currentFilters() {
+  const query = params();
+  query.delete('limit'); query.delete('offset');
+  return query.toString();
+}
+
+function applyFilters(queryString) {
+  const query = new URLSearchParams(queryString);
+  form.reset();
+  departmentValue.value = ''; departmentSearch.value = '';
+  departmentSearch.closest('.combo-control').classList.remove('has-value');
+  departmentCombo.querySelector('.combo-clear').hidden = true;
+  clearCity(false);
+  for (const [key, value] of query.entries()) {
+    if (key === 'sort') { document.querySelector('#sort-select').value = value; continue; }
+    if (key === 'department') {
+      const match = departments.find(([code]) => code === value);
+      if (match) {
+        departmentValue.value = match[0]; departmentSearch.value = `${match[0]} · ${match[1]}`;
+        departmentSearch.closest('.combo-control').classList.add('has-value');
+        departmentCombo.querySelector('.combo-clear').hidden = false;
+      }
+      continue;
+    }
+    if (key === 'city') {
+      cityValue.value = value; citySearch.value = value;
+      citySearch.closest('.combo-control').classList.add('has-value');
+      cityCombo.querySelector('.combo-clear').hidden = false;
+      continue;
+    }
+    const fields = [...form.querySelectorAll(`[name="${CSS.escape(key)}"]`)];
+    const box = fields.find(field => field.type === 'checkbox' && field.value === value);
+    if (box) box.checked = true;
+    else if (fields[0] && fields[0].type !== 'checkbox') fields[0].value = value;
+  }
+  const preset = Object.entries(presets).find(([, item]) =>
+    item.segment === (query.get('segment') || '') && item.auctions === (query.get('auctions') || ''));
+  document.querySelectorAll('.strategy-tabs [data-preset]').forEach(tab =>
+    tab.setAttribute('aria-selected', String(Boolean(preset) && tab.dataset.preset === preset[0])));
+  loadDeals(false);
+}
+
+async function loadSavedSearches() {
+  const list = document.querySelector('#saved-list');
+  try {
+    const response = await apiFetch('/api/recherches');
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.detail);
+    list.innerHTML = data.items.length ? data.items.map(item => `
+      <div class="saved-item" data-id="${esc(item.id)}" data-filters="${esc(item.filtres)}">
+        <button type="button" class="saved-apply"><strong>${esc(item.nom)}</strong>
+          <small>${number.format(item.total)} annonce${item.total > 1 ? 's' : ''}${item.recentes ? ` · <em>${number.format(item.recentes)} nouvelle${item.recentes > 1 ? 's' : ''} ou baissée${item.recentes > 1 ? 's' : ''} (48 h)</em>` : ''}</small>
+        </button>
+        <button type="button" class="saved-delete" aria-label="Supprimer la recherche ${esc(item.nom)}">×</button>
+      </div>`).join('') : '<p class="filter-note">Réglez les filtres puis « Enregistrer et m’alerter ».</p>';
+  } catch (error) {
+    list.innerHTML = `<p class="filter-note">Recherches indisponibles : ${esc(error.message)}</p>`;
+  }
+}
+
+document.querySelector('#saved-list').addEventListener('click', async event => {
+  const item = event.target.closest('.saved-item');
+  if (!item) return;
+  if (event.target.closest('.saved-delete')) {
+    if (!confirm('Supprimer cette recherche et son alerte ?')) return;
+    await apiFetch(`/api/recherches/${encodeURIComponent(item.dataset.id)}`, { method: 'DELETE' });
+    loadSavedSearches();
+  } else if (event.target.closest('.saved-apply')) {
+    applyFilters(item.dataset.filters);
+  }
+});
+
+document.querySelector('#save-search').addEventListener('click', async () => {
+  const chips = [...document.querySelectorAll('#active-filters .filter-chip')].map(chip => chip.textContent);
+  const tab = document.querySelector('.strategy-tabs [aria-selected="true"] b')?.textContent;
+  const suggestion = [tab && tab !== 'Toutes' ? tab : null, ...chips].filter(Boolean).join(' · ').slice(0, 80) || 'Ma recherche';
+  const nom = prompt('Nom de la recherche (une notification signalera ses nouvelles annonces et baisses de prix) :', suggestion);
+  if (!nom) return;
+  const response = await apiFetch('/api/recherches', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nom, filtres: currentFilters(), alerte: true })
+  });
+  if (!response.ok) { alert('Enregistrement impossible.'); return; }
+  loadSavedSearches();
+});
+
+loadSavedSearches();

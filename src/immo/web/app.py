@@ -2,11 +2,12 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from immo.filters import where as _where
 from immo.warehouse import connect
 
 
@@ -38,71 +39,6 @@ def _deals_cte(con) -> str:
 
 def _json(value: Any) -> Any:
     return jsonable_encoder(value, custom_encoder={datetime: lambda x: x.isoformat(), date: lambda x: x.isoformat()})
-
-
-def _where(
-    q: str | None, sources: list[str], types: list[str], department: str | None,
-    city: str | None, postal_code: str | None,
-    price_min: float | None, price_max: float | None,
-    surface_min: float | None, surface_max: float | None,
-    land_min: float | None, land_max: float | None,
-    levels: list[str], scored_only: bool,
-    strategies: list[str] | None = None, segments: list[str] | None = None,
-    yield_min: float | None = None, cashflow_positive: bool = False,
-    price_drop: bool = False, auctions: str | None = None,
-    new_days: int | None = None, real_rent: bool = False,
-    include_inactive: bool = False, include_duplicates: bool = False,
-) -> tuple[str, list[Any]]:
-    clauses = ["1=1"]
-    params: list[Any] = []
-    if not include_inactive:
-        clauses.append("active IS NOT false")
-    if not include_duplicates:
-        clauses.append("rang_doublon = 1")
-    if q:
-        clauses.append("(titre ILIKE ? OR description ILIKE ? OR ville ILIKE ?)")
-        params.extend([f"%{q}%"] * 3)
-    for column, values in (("source", sources), ("type_bien", types),
-                           ("niveau_affaire", levels), ("strategie", strategies or []),
-                           ("segment", segments or [])):
-        if values:
-            clauses.append(f"{column} IN (" + ",".join("?" for _ in values) + ")")
-            params.extend(values)
-    if department:
-        prefix = "20" if department.upper() in {"2A", "2B"} else department.zfill(2)
-        clauses.append("code_postal LIKE ?")
-        params.append(f"{prefix}%")
-    if city:
-        clauses.append("lower(strip_accents(trim(ville))) = lower(strip_accents(trim(?)))")
-        params.append(city)
-    if postal_code:
-        clauses.append("code_postal LIKE ?")
-        params.append(f"{postal_code}%")
-    for expression, operator, value in (
-        ("COALESCE(prix, loyer)", ">=", price_min), ("COALESCE(prix, loyer)", "<=", price_max),
-        ("surface_bati", ">=", surface_min), ("surface_bati", "<=", surface_max),
-        ("surface_terrain", ">=", land_min), ("surface_terrain", "<=", land_max),
-        ("rendement_net", ">=", yield_min),
-    ):
-        if value is not None:
-            clauses.append(f"{expression} {operator} ?")
-            params.append(value)
-    if scored_only:
-        clauses.append("score_global IS NOT NULL")
-    if cashflow_positive:
-        clauses.append("cashflow_mensuel >= 0")
-    if price_drop:
-        clauses.append("baisse_prix_pct >= 1")
-    if real_rent:
-        clauses.append("loyer_reel")
-    if auctions == "only":
-        clauses.append("vente_encheres")
-    elif auctions == "exclude":
-        clauses.append("NOT vente_encheres")
-    if new_days is not None:
-        clauses.append("jours_en_ligne <= ?")
-        params.append(new_days)
-    return " AND ".join(clauses), params
 
 
 @app.get("/api/health")
@@ -271,6 +207,38 @@ def price_history(source: str, external_id: str) -> dict[str, Any]:
         return _json({"items": [{"date": r[0], "prix": r[1], "loyer": r[2]} for r in rows]})
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"Lecture impossible : {exc}") from exc
+
+
+@app.get("/api/recherches")
+def saved_searches() -> dict[str, Any]:
+    from immo.searches import list_with_counts
+    try:
+        with connect() as con:
+            return _json({"items": list_with_counts(con)})
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Lecture impossible : {exc}") from exc
+
+
+@app.post("/api/recherches")
+def create_saved_search(payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
+    from immo.searches import save
+    nom = str(payload.get("nom") or "").strip()
+    filtres = str(payload.get("filtres") or "")
+    if not nom:
+        raise HTTPException(status_code=422, detail="Nom de recherche obligatoire")
+    try:
+        with connect() as con:
+            return {"id": save(con, nom, filtres, bool(payload.get("alerte", True)))}
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=f"Filtres invalides : {exc}") from exc
+
+
+@app.delete("/api/recherches/{search_id}")
+def delete_saved_search(search_id: str) -> dict[str, bool]:
+    from immo.searches import delete
+    with connect() as con:
+        delete(con, search_id)
+    return {"ok": True}
 
 
 @app.get("/api/hypotheses")
