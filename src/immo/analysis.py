@@ -235,6 +235,12 @@ WITH prix_signaux AS (
            CASE WHEN segment IN ('residentiel','immeuble','murs') AND loyer_annuel_declare > 0
                      AND bien_loue_declare THEN loyer_annuel_declare / 12
                 -- Parties communes, escaliers et lots non louables d'un immeuble.
+                -- Une estimation ANIL n'a de sens que pour un bien d'habitation
+                -- ordinaire : hors de ces bornes, seul un loyer publié compte.
+                WHEN segment IN ('residentiel','immeuble')
+                     AND (prix / NULLIF(surface_bati, 0) < 300
+                          OR surface_bati > CASE segment WHEN 'immeuble' THEN 1500 ELSE 400 END)
+                     THEN NULL
                 WHEN segment='immeuble' THEN loyer_mensuel_bas * .85
                 ELSE loyer_mensuel_bas END AS loyer_mensuel_retenu,
            segment IN ('residentiel','immeuble','murs') AND loyer_annuel_declare > 0

@@ -28,8 +28,8 @@ const sourceLabels = {
 const presets = {
   all: { segment: '', auctions: '', sort: 'deal' },
   decote: { segment: 'residentiel', auctions: 'exclude', sort: 'discount' },
-  locatif: { segment: 'residentiel', auctions: 'exclude', sort: 'yield' },
-  immeuble: { segment: 'immeuble', auctions: '', sort: 'yield' },
+  locatif: { segment: 'residentiel', auctions: 'exclude', sort: 'deal' },
+  immeuble: { segment: 'immeuble', auctions: '', sort: 'deal' },
   murs: { segment: 'murs', auctions: '', sort: 'deal' },
   fonds: { segment: 'fonds', auctions: '', sort: 'deal' },
   encheres: { segment: '', auctions: 'only', sort: 'auction_date' }
