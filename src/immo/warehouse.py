@@ -19,12 +19,15 @@ def connect() -> Iterator[duckdb.DuckDBPyConnection]:
         db_path = os.environ["IMMO_DB"]
         if db_path != ":memory:":
             Path(db_path).expanduser().parent.mkdir(parents=True, exist_ok=True)
-        for attempt in range(20):
+        # Une normalisation ou le recalcul de l'analyse peut garder la base
+        # plusieurs dizaines de secondes : attendre jusqu'à 90 s avant d'échouer.
+        attempts = int(os.getenv("IMMO_DB_LOCK_ATTEMPTS", "360"))
+        for attempt in range(attempts):
             try:
                 con = duckdb.connect(db_path)
                 break
             except duckdb.IOException as exc:
-                if "Conflicting lock" not in str(exc) or attempt == 19:
+                if "Conflicting lock" not in str(exc) or attempt == attempts - 1:
                     raise
                 time.sleep(0.25)
         assert con is not None
