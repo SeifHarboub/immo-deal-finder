@@ -37,7 +37,7 @@ def amount(value: str | None) -> float | None:
     """« 7 500 k€ » -> 7 500 000 ; « 350 000 € » -> 350 000 ; NC -> None."""
     if not value:
         return None
-    match = re.search(r"(\d[\d\s.,]*)\s*(k|m)?\s*€", value.replace("\xa0", " "), re.I)
+    match = re.search(r"(\d[\d\s.,]*\d|\d)\s*(k|m)?\s*(?:€|euros?\b)", value.replace("\xa0", " "), re.I)
     if not match:
         return None
     raw = re.sub(r"\s", "", match.group(1))
@@ -158,6 +158,13 @@ def parse_detail(html: str, url: str) -> dict | None:
     partner = re.search(r'data-partner="([^"]+)"', html)
     if partner:
         details["Partenaire"] = partner.group(1)
+    if premises and price is None and body:
+        # Prix « NC » dans la fiche mais souvent écrit dans le texte du partenaire.
+        written = re.search(r"prix(?: de (?:cession|vente))?(?: des murs)?\s*:?\s*([^\n]{0,40})", body, re.I)
+        value = amount(written.group(1)) if written else None
+        if value and value >= 10_000:
+            price = value
+            details["Prix lu dans la description"] = "oui"
     if premises:
         kind = transaction.lower()
         type_bien = ("bureau" if "bureau" in kind else "terrain" if "terrain" in kind
@@ -169,7 +176,7 @@ def parse_detail(html: str, url: str) -> dict | None:
     else:
         type_bien = "fonds_commerce"
         external_id = business.group(1)
-    details = {key: value for key, value in details.items() if value not in (None, "")}
+    details = {key: value for key, value in details.items() if value not in (None, "", "NC")}
     return {
         "id": external_id, "name": name, "price": price, "surface": surface,
         "land_surface": None, "rooms": None, "zipcode": None, "city": None,

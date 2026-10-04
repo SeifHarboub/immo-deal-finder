@@ -29,7 +29,7 @@ def test_local_en_vente() -> None:
     item = next(BpifranceConnector().parse_page((FIXTURES / "premises-sale.html").read_text(encoding="utf-8"), url))
     details = json.loads(item["details_json"])
     assert item["type_hint"] == "vente local_commercial" and item["surface"] == 130
-    assert item["price"] is None and details["Département"] == "78"
+    assert details["Département"] == "78"
     finance = extract(item["name"], item["body"], item["details_json"], 530_000, "local_commercial")
     assert finance.loyer_annuel_declare == 48_000
 
@@ -43,3 +43,10 @@ def test_filtres_et_montants() -> None:
     assert amount("CA : 1,2 M€") == 1_200_000
     assert amount("350 000 €") == 350_000
     assert amount("NC") is None
+
+
+def test_prix_du_local_lu_dans_le_texte() -> None:
+    url = f"{BASE}/locaux/annonce-locaux/vente-de-murs-de-boutique-yvelines-78-01b0f729b7c9afba1bbdeffb11a6ec7f"
+    item = next(BpifranceConnector().parse_page((FIXTURES / "premises-sale.html").read_text(encoding="utf-8"), url))
+    assert item["price"] == 530_000
+    assert amount("530.000 euros honoraires") == 530_000

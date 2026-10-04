@@ -72,7 +72,7 @@ class ArthurLoydConnector(AgencyJsonLdConnector):
 
 def parse_detail(html: str, url: str, node: dict) -> dict | None:
     canon = re.search(r'<link rel="canonical" href="([^"]+)"', html)
-    if canon and _URL.match(canon.group(1)):
+    if canon and _URL.match(canon.group(1)) and not _URL.match(url):
         url = canon.group(1)
     match = _URL.match(url)
     title = re.search(r'<h1 class="offer-header__title">(.*?)</h1>', html, re.S)
@@ -107,6 +107,10 @@ def parse_detail(html: str, url: str, node: dict) -> dict | None:
         values = [_num(value) for value in re.findall(r"[\d\s.,]+", _text(surface_text.group(1))) if _num(value)]
         surface = max(values) if values else None
         details["Surface affichée"] = _text(surface_text.group(1))
+    if price and surface and price < 10_000 and price < surface * 50:
+        # « 120 € HD » sur 36 000 m² : prix unitaire, pas un prix total.
+        details["Prix au m²"] = price
+        price = None
     description = re.search(r'<div id="description">\s*<p>(.*?)</p>', html, re.S)
     services = re.search(r'<div id="prestations">\s*<ul>(.*?)</ul>', html, re.S)
     if services:

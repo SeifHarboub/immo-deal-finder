@@ -58,6 +58,7 @@ class MursCommerciauxConnector(AgencyJsonLdConnector):
         for _ in range(max_pages):
             result = self._fetch_detail(LIST.format(offset=offset))
             if result is None:
+                self._sitemap_failed = True  # liste incomplète : inventaire non fiable
                 empty += 1
                 if empty >= 2:
                     break
@@ -102,7 +103,9 @@ def parse_detail(html: str, page_url: str) -> dict | None:
     postal = re.search(r"\b(\d{5})\b", f"{labels.get('Ville', '')} {location_text}")
     city = re.sub(r"\s*\(.*$|\s*-\s*\d{5}.*$", "", labels.get("Ville") or location_text).strip() or None
     description = re.search(r'<h2 class="section-title">Description</h2>\s*<div class="section-text">(.*?)</div>', html, re.S)
-    details: dict = {"Statut": badge_text.split(" SITU")[0].strip().capitalize() or None}
+    dept = re.search(r"\((\d{2}|2[AB]|97\d)\)", _text(title.group(1)))
+    details: dict = {"Statut": badge_text.split(" SITU")[0].strip().capitalize() or None,
+                     "Département": postal.group(1)[:2] if postal else dept.group(1) if dept else None}
     rent_text = labels.get("Loyer")
     if rent_text and _num(rent_text):
         rent = _num(rent_text)

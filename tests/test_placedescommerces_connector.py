@@ -51,3 +51,12 @@ def test_balayage_progressif(tmp_path, monkeypatch) -> None:
     state.write_text(json.dumps({"next_page": 2474, "last_page": 2474}))
     list(connector._sitemap_urls(connector.sitemap_url))
     assert json.loads(state.read_text())["next_page"] == 1  # fin du catalogue : on reboucle
+
+
+def test_classification_des_locaux() -> None:
+    from immo.connectors.placedescommerces import classify
+    assert classify("Bar / Tabac", "Bar", "fonds de commerce", 1) == ("vente", "fonds_commerce")
+    assert classify("Local commercial", "Local 90 m2", "Cession de bail pour un local", 41_000) == ("vente", "fonds_commerce")
+    assert classify("Local commercial", "Local 53 m2", "A louer un local commercial", None) == ("location", "local_commercial")
+    assert classify("Bureaux / Locaux professionnels", "Bureaux", "A vendre un plateau de bureaux", 1) == ("vente", "bureau")
+    assert classify("Bureaux / Locaux professionnels", "Bureaux", "A louer bureaux", None)[0] is None

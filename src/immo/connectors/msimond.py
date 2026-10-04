@@ -149,6 +149,10 @@ def parse_detail(html: str, url: str) -> dict | None:
                 walls = walls or price
     if walls:
         details["Prix des murs"] = walls
+        if price and details.get("Prix murs inclus") and price > walls:
+            details["Prix du fonds"] = price - walls
+        elif price and price != walls:
+            details["Prix du fonds"] = price
     nature = lines[0] if lines and ":" not in lines[0] else ""
     surface = None
     for line in lines:
@@ -178,7 +182,7 @@ def parse_detail(html: str, url: str) -> dict | None:
     dept = re.search(r"\((\d{2}|2[AB]|97\d)\)\s*$", city_text)
     if dept and "Département" not in details:
         details["Département"] = dept.group(1)
-    city = city_text.split("(")[0].strip() if postal else None
+    city = city_text.split("(")[0].strip().title() if postal else None
     nature_lower = f"{nature} {offer_ref}".lower()
     if rubric == "immobilier-entreprise" or nature_lower.strip().startswith("murs"):
         heading = f"{title.group(1)} {offer_ref}".lower()

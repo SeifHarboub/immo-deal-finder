@@ -25,7 +25,7 @@ _REACT = re.compile(r'<script[^>]*id="react-context"[^>]*>(.*?)</script>', re.S)
 # Locations sans intérêt (bureaux, entrepôts) repérables dès le slug : inutile
 # de les télécharger puisque seules les locations de commerces sont gardées.
 _SKIP_RENTAL_SLUG = re.compile(
-    r"(?=.*(?:louer|location))(?=.*(?:bureau|entrepot|activite|logisti|stockage|coworking|atelier))"
+    r"(?=.*(?:louer|location))(?=.*(?:bureau|entrepot|activite|logisti|stockage|coworking|atelier|immobilier-professionnel|laboratoire))"
     r"(?!.*(?:commerc|boutique|magasin|restaurant|murs|vente|vendre))"
 )
 TYPES = {
@@ -93,6 +93,7 @@ class BureauxLocauxConnector(AgencyJsonLdConnector):
         """Index -> sitemaps `listings-N` uniquement, annonces triées par lastmod décroissant."""
         index = self._xml(url)
         if not index:
+            self._sitemap_failed = True  # inventaire incomplet : rien n'est retiré
             return
         try:
             root = ElementTree.fromstring(index)
@@ -105,6 +106,7 @@ class BureauxLocauxConnector(AgencyJsonLdConnector):
                 continue
             content = self._xml(child)
             if not content:
+                self._sitemap_failed = True
                 continue
             try:
                 tree = ElementTree.fromstring(content)

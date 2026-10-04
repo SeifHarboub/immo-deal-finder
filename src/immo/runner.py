@@ -206,9 +206,9 @@ def normalize(source: str) -> None:
             ) d
             WHERE a.source=? AND a.code_postal IS NULL AND a.ville IS NOT NULL
               AND d.commune_cle = lower(strip_accents(trim(a.ville)))
-              AND d.dep = coalesce(
-                  nullif(json_extract_string(try_cast(a.details_json AS JSON), '$."Département"'), ''),
-                  d.dep)
+              AND d.dep = coalesce(nullif(left(regexp_extract(
+                  coalesce(json_extract_string(try_cast(a.details_json AS JSON), '$."Département"'), ''),
+                  '\\b(\\d{2}|2A|2B)\\d?\\b', 1), 2), ''), d.dep)
         """, [source])
         from immo.lifecycle import record_prices, refresh_activity
         refresh_activity(con, source)

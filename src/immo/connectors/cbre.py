@@ -61,8 +61,9 @@ class CbreConnector(AgencyJsonLdConnector):
 
 
 def map_offer(node: dict, html: str, page_url: str) -> dict | None:
-    url = (node.get("url") or page_url).split("?", 1)[0]
-    match = _URL.search(url) or _URL.search(page_url)
+    # L'URL visitée (celle du sitemap) sert d'identité d'inventaire.
+    url = page_url.split("?", 1)[0] if _URL.search(page_url) else (node.get("url") or page_url).split("?", 1)[0]
+    match = _URL.search(url)
     if not match:
         return None
     kind, postal, numeric_id = match.groups()
@@ -90,6 +91,12 @@ def map_offer(node: dict, html: str, page_url: str) -> dict | None:
     divisible = re.search(r"\|(Non divisible|Divisibilité min\.[^|]+)\|", flat)
     if divisible:
         details["Divisibilité"] = divisible.group(1)
+    unit = details.get("Prix au m²")
+    if price is None and unit and surface and divisible and divisible.group(1) == "Non divisible" \
+            and not re.search(r"partir", displayed_price or "", re.I):
+        # Lot unique : le prix total se déduit exactement du prix au m² affiché.
+        price = round(unit * surface)
+        details["Prix calculé"] = "prix au m² × surface"
     body_match = re.search(r"\|Description\|Annonce mise à jour le [^|]+\|(.*?)\|(?:Aménagements|Surfaces|Localisation)\|", flat)
     body = body_match.group(1).replace("|", "\n").strip() if body_match else node.get("description")
     category = (product.get("category") or "").lower()

@@ -98,6 +98,9 @@ class PlaceDesCommercesConnector(AgencyJsonLdConnector):
         return links, max(pages) if pages else None
 
     def _sitemap_urls(self, url: str, seen=None) -> Iterator[str]:
+        # Balayage partiel par construction : jamais un inventaire complet, les
+        # annonces disparues sont donc retirées par ancienneté (LISTING_STALE_DAYS).
+        self._sitemap_failed = True
         emitted: set[str] = set()
         recent_pages = int(os.getenv("PLACEDESCOMMERCES_RECENT_PAGES", "10"))
         for page in range(1, recent_pages + 1):
@@ -167,6 +170,27 @@ def _financials(html: str) -> dict:
     return out
 
 
+def classify(sector: str | None, name: str, body: str | None, price: float | None) -> tuple[str | None, str]:
+    """(catégorie, type_bien). Le site publie surtout des fonds, mais aussi des
+    cessions de bail, des locations de locaux et des ventes de murs/bureaux."""
+    sector_l = (sector or "").lower()
+    text = f"{name} {body or ''}".lower()
+    renting = bool(re.search(r"\b(?:à|a) louer\b|location (?:d.un|du|de ce)", text))
+    lease = bool(re.search(r"cession de (?:droit au )?bail|droit au bail|pas.de.porte", text))
+    if sector_l.startswith("bureaux"):
+        if renting and not re.search(r"\b(?:à|a) vendre\b", text):
+            return None, "bureau"  # location de bureaux : hors périmètre
+        return "vente", "bureau"
+    if sector_l.startswith("local commercial") and " / " not in sector_l or re.search(r"\bmurs\b", sector_l):
+        if lease:
+            return "vente", "fonds_commerce"
+        if renting and not price:
+            return "location", "local_commercial"
+        if re.search(r"\bmurs\b|(?:à|a) vendre un local|vente (?:d.un|du) local", text):
+            return "vente", "local_commercial"
+    return "vente", "fonds_commerce"
+
+
 def parse_detail(html: str, page_url: str) -> dict | None:
     html = re.sub(r"<!--.*?-->", "", html, flags=re.S)
     canon = re.search(r'<link rel="canonical" href="([^"]+)"', html)
@@ -226,8 +250,16 @@ def parse_detail(html: str, page_url: str) -> dict | None:
         details["Conditions du loyer"] = rent.group(2).strip() or None
     details.update(_financials(block))
     details = {key: value for key, value in details.items() if value not in (None, "")}
-    lower = f"{sector_text or ''} {name}".lower()
-    type_bien = "local_commercial" if re.search(r"\bmurs\b", lower) and "fonds" not in lower else "fonds_commerce"
+    categorie, type_bien = classify(sector_text, name, body, price)
+    if categorie is None:
+        return None
+    if categorie == "location":
+        price = details.get("Loyer mensuel du bail")  # loyer mensuel demandé par le bailleur
+    elif type_bien != "fonds_commerce" and details.get("Loyer du bail annuel") and re.search(
+        r"\blou[ée]s?\b|locataire|bail en cours|occup[ée]", (body or "").lower()
+    ):
+        # Murs vendus loués : le loyer est alors un revenu pour l'acquéreur.
+        details["Loyer annuel"] = details.pop("Loyer du bail annuel")
     photos = list(dict.fromkeys(re.findall(r"https://photos\.placedescommerces\.com/photos_annonces/\d+/\d+\.jpg", block)))
     count = re.search(r'font-size: 22px;">(\d+)</div>', block)
     surface = details.get("Surface totale") or details.get("Surface commerciale")
@@ -235,7 +267,7 @@ def parse_detail(html: str, page_url: str) -> dict | None:
         "id": ident.group(1), "name": name, "price": price, "surface": surface,
         "land_surface": None, "rooms": None,
         "zipcode": postal.group(1) if postal else None, "city": city.strip() if city else None,
-        "lat": None, "lng": None, "type_hint": f"vente {type_bien}", "url": url,
+        "lat": None, "lng": None, "type_hint": f"{categorie} {type_bien}", "url": url,
         "body": body, "seller_name": None,
         "image_count": int(count.group(1)) if count else len(photos), "published_at": published,
         "details_json": json.dumps(details, ensure_ascii=False),
