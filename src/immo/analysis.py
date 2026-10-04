@@ -139,6 +139,17 @@ WITH prix_signaux AS (
     WHERE prix_adjuge > 0 AND prix > 0 AND mode_vente LIKE 'enchere%'
       AND prix_adjuge / prix BETWEEN .3 AND 15
     GROUP BY type_bien HAVING count(*) >= 20
+), fonds_ref AS (
+    -- Multiples observés sur les cessions réellement publiées : un fonds se juge
+    -- contre son secteur (un salon de coiffure se vend ~1,9 fois l'EBE, un
+    -- hôtel-restaurant ~4,8 fois), pas contre un barème unique.
+    SELECT coalesce(json_extract_string(try_cast(a.details_json AS JSON), '$."Secteur"'), '*') AS secteur,
+           median(a.prix / f.ebe) AS multiple_ebe_secteur,
+           median(a.prix / f.chiffre_affaires) FILTER (WHERE f.chiffre_affaires > 0) AS multiple_ca_secteur,
+           count(*) AS cessions_secteur
+    FROM annonces_stg a JOIN annonce_finance f USING (source, external_id)
+    WHERE f.segment = 'fonds' AND f.ebe > 0 AND a.prix > 0 AND a.prix / f.ebe BETWEEN .5 AND 15
+    GROUP BY GROUPING SETS ((1), ())
 ), rent_model AS (
     SELECT a.*,
            coalesce(f.segment,
@@ -148,6 +159,15 @@ WITH prix_signaux AS (
                      WHEN a.type_bien='immeuble' THEN 'immeuble'
                      WHEN a.type_bien='terrain' THEN 'terrain' ELSE 'autre' END) AS segment,
            f.loyer_annuel_declare, f.rendement_declare, f.chiffre_affaires, f.ebe,
+           coalesce(fs.multiple_ebe_secteur, fg.multiple_ebe_secteur, 2.7) AS multiple_ebe_reference,
+           -- « Murs et fonds » : seul le prix du fonds se compare à l'EBE.
+           CASE WHEN TRY_CAST(json_extract_string(try_cast(a.details_json AS JSON), '$."Prix du fonds"') AS DOUBLE) > 0
+                     THEN TRY_CAST(json_extract_string(try_cast(a.details_json AS JSON), '$."Prix du fonds"') AS DOUBLE)
+                WHEN lower(coalesce(json_extract_string(try_cast(a.details_json AS JSON), '$."Nature"'), '')) LIKE '%murs%'
+                     OR regexp_matches({TEXT}, 'murs et (?:le )?fonds|fonds et (?:les )?murs|murs inclus') THEN NULL
+                ELSE a.prix END AS prix_fonds,
+           coalesce(fs.multiple_ca_secteur, fg.multiple_ca_secteur, .7) AS multiple_ca_reference,
+           CASE WHEN fs.multiple_ebe_secteur IS NOT NULL THEN fs.secteur ELSE 'tous secteurs' END AS secteur_reference,
            f.resultat, f.taxe_fonciere, f.travaux_annonces, f.nb_lots,
            coalesce(f.bien_loue, false) AS bien_loue_declare,
            coalesce(f.droit_au_bail, false) AS droit_au_bail,
@@ -197,6 +217,10 @@ WITH prix_signaux AS (
     LEFT JOIN annonce_reference r ON r.source=a.source AND r.external_id=a.external_id
     LEFT JOIN annonce_loyer_reference rent ON rent.source=a.source AND rent.external_id=a.external_id
     LEFT JOIN prix_signaux ps ON ps.source=a.source AND ps.external_id=a.external_id
+    LEFT JOIN fonds_ref fs
+      ON fs.secteur = json_extract_string(try_cast(a.details_json AS JSON), '$."Secteur"')
+     AND fs.cessions_secteur >= 30 AND fs.secteur <> '*'
+    LEFT JOIN (SELECT * FROM fonds_ref WHERE secteur = '*' ) fg ON true
     WHERE a.categorie = 'vente' OR a.type_bien IN ('fonds_commerce', 'local_commercial', 'bureau')
 ), flagged AS (
     SELECT *,
@@ -297,7 +321,7 @@ WITH prix_signaux AS (
            100 * revenu_net_annuel / NULLIF(cout_total,0) AS rendement_net,
            revenu_net_annuel / 12 - mensualite_credit AS cashflow_mensuel,
            prix / NULLIF(chiffre_affaires,0) AS multiple_ca,
-           prix / NULLIF(ebe,0) AS multiple_ebe,
+           prix_fonds / NULLIF(ebe,0) AS multiple_ebe,
            coalesce(loyer_bail_annuel_structure,
                     CASE WHEN segment='fonds' THEN loyer_annuel_declare END)
                / NULLIF(chiffre_affaires,0) AS poids_loyer_ca,
@@ -378,16 +402,16 @@ WITH prix_signaux AS (
                      * CASE WHEN loyer_reel THEN 1.0
                             WHEN nb_observations_loyer >= 8 THEN .6 ELSE .45 END) END AS score_murs,
            CASE WHEN segment <> 'fonds' OR prix IS NULL OR prix <= 0 THEN NULL
-                -- Petits commerces : 2 à 4 fois l'EBE retraité est l'usage. Un
-                -- multiple sous 0,8 est presque toujours une erreur de saisie et
-                -- un EBE au-delà de 45 % du chiffre d'affaires reste à prouver.
-                WHEN ebe > 0 AND prix / ebe BETWEEN .8 AND 30
-                     THEN round({_clamp('(4.5 - prix / ebe) / (4.5 - 1.5) * 100')}
+                -- Multiple comparé à la médiane du secteur : excellent sous 0,46 fois
+                -- la médiane (5 % les moins chers), bon sous 0,61. Sous 0,8 l'EBE est presque toujours
+                -- mal saisi ; au-delà de 45 % du CA il reste à prouver.
+                WHEN ebe > 0 AND prix_fonds / ebe BETWEEN .8 AND 30
+                     THEN round({_clamp('(1 - (prix_fonds / ebe) / multiple_ebe_reference) / .72 * 100')}
                           * CASE WHEN poids_loyer_ca > .12 THEN .7 ELSE 1.0 END
                           * CASE WHEN ebe / NULLIF(chiffre_affaires, 0) > .45 THEN .6 ELSE 1.0 END)
                 -- Sans EBE, le chiffre d'affaires ne dit rien de la marge : au mieux « bonne ».
-                WHEN chiffre_affaires > 0
-                     THEN round({_clamp('(1.0 - prix / chiffre_affaires) / (1.0 - 0.25) * 60')}
+                WHEN chiffre_affaires > 0 AND prix_fonds > 0
+                     THEN round(least(60, {_clamp('(1 - (prix_fonds / chiffre_affaires) / multiple_ca_reference) / .72 * 100')})
                           * CASE WHEN poids_loyer_ca > .12 THEN .7 ELSE 1.0 END)
                 END AS score_fonds
     FROM deals

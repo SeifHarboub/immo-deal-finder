@@ -40,6 +40,7 @@ COLUMNS = [
     "nb_pieces", "dpe", "decote", "median_eur_m2", "nb_ventes", "confiance", "rendement_net",
     "rendement_brut_retenu", "cashflow_mensuel", "loyer_mensuel_retenu", "loyer_reel",
     "travaux_estimes", "cout_total", "chiffre_affaires", "ebe", "multiple_ebe",
+    "multiple_ebe_reference", "secteur_reference",
     "vente_encheres", "mode_vente", "date_vente", "prix_compare", "baisse_prix_pct",
     "jours_en_ligne", "nb_publications", "sources_doublon", "risques_evaluation", "url",
 ]

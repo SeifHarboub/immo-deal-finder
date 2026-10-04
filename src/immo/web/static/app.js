@@ -337,7 +337,7 @@ function investmentBlock(item) {
     ];
     const verdict = item.score_fonds == null
       ? '<p class="invest-note">Ni chiffre d’affaires ni EBE publiés : le fonds ne peut pas être évalué sans le bilan. Demandez les trois dernières liasses fiscales.</p>'
-      : `<p class="invest-note">Un petit commerce se négocie généralement entre 2 et 4 fois l’EBE retraité. Score fonds : <strong>${Math.round(item.score_fonds)}/100</strong>.</p>`;
+      : `<p class="invest-note">Multiple médian observé pour ce secteur (${esc(item.secteur_reference || 'tous secteurs')}) : <strong>${number.format(item.multiple_ebe_reference)} × l’EBE</strong>. Score fonds : <strong>${Math.round(item.score_fonds)}/100</strong>.</p>`;
     return `<section class="invest-block"><h4>Fonds de commerce</h4><div class="invest-grid">${rows.map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>${verdict}</section>`;
   }
   if (!['residentiel','immeuble','murs'].includes(segment) || item.rendement_net == null) return '';

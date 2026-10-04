@@ -295,6 +295,7 @@ function openDetail(d) {
       <div><small>Ventes comparées</small><strong>${d.nb_ventes ?? '—'}${d.confiance ? ` · confiance ${esc(d.confiance)}` : ''}</strong></div>
       <div><small>Loyer retenu</small><strong>${d.loyer_mensuel_retenu ? `${euro(d.loyer_mensuel_retenu)} / mois${d.loyer_reel ? ' (réel)' : ' (estimé)'}` : '—'}</strong></div>
       <div><small>Coût total avec frais</small><strong>${euro(d.cout_total)}</strong></div>
+      ${d.segment === 'fonds' && d.multiple_ebe_reference ? `<div><small>Multiple médian du secteur</small><strong>${number.format(d.multiple_ebe_reference)} × EBE · ${esc(d.secteur_reference || '')}</strong></div>` : ''}
     </div>${d.risques_evaluation ? `<div class="data-warning" style="margin-top:10px"><strong>Points à vérifier avant toute offre</strong><span>${esc(d.risques_evaluation)}</span></div>` : ''}</section>
     ${simulator}
     ${d.extrait ? `<section class="detail-section"><h3>Extrait de l’annonce</h3><p class="detail-description">${esc(d.extrait)}…</p></section>` : ''}
