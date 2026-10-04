@@ -1,13 +1,64 @@
 # immo-deal-finder
 
-Outil local et personnel qui collecte des annonces immobilières, les compare aux
-ventes réelles DVF du secteur et classe les décotes avec un prix à viser. Les données
-restent sur la machine dans DuckDB. Les bases des services vivent dans `data/runtime/`
-afin qu'une extension d'éditeur ne puisse pas bloquer les collecteurs. La collecte utilise un délai configurable (2 à 5 s
-entre pages, plafond configurable) et ne contourne ni captcha ni protection anti-bot.
+Outil local et personnel qui collecte les annonces de 27 plateformes, écarte les
+annonces retirées et les doublons entre sites, puis classe les vraies affaires selon
+la stratégie d'investissement qui s'applique. Les données restent sur la machine
+dans DuckDB (`data/runtime/`). La collecte respecte robots.txt, garde des délais
+entre requêtes et ne contourne ni captcha ni protection anti-bot.
 
-Le dictionnaire précis des tables et champs se trouve dans
+Le dictionnaire des tables et champs se trouve dans
 [`config/data-dictionary.md`](config/data-dictionary.md).
+
+## Stratégies évaluées
+
+Chaque annonce reçoit un score sur 100 pour chaque stratégie applicable ; le score
+global retient la meilleure, plus de petits bonus visibles (baisse de prix,
+nouveauté). Excellente ≥ 75, bonne ≥ 55.
+
+| Stratégie | Ce qui est mesuré |
+|---|---|
+| Sous le marché (résidentiel) | prix au m² comparé aux 15 ventes DVF les plus proches (type, surface, pièces, terrain, distance, récence), confiance selon le nombre et la dispersion des ventes |
+| Locatif (résidentiel) | rendement **net** et cash-flow après crédit : loyer réel publié si le bien est loué, sinon bas de la plage ANIL ; frais de notaire, travaux annoncés ou forfaitaires, mise aux normes DPE F/G, taxe foncière, copropriété non récupérable, vacance, entretien, assurance |
+| Immeubles de rapport | même calcul, loyers réels publiés ou ANIL appartement sur 85 % de la surface |
+| Murs commerciaux | rendement net du loyer publié (bien occupé) ou estimé à partir des locations professionnelles comparables |
+| Fonds de commerce | prix / EBE (2 à 4 fois l'EBE retraité est l'usage), prix / chiffre d'affaires, poids du loyer |
+| Enchères | décote du prix d'adjudication **probable** (mise à prix × médiane observée des adjudications par type, 2,06 pour un appartement, 1,46 pour une maison) |
+
+Les montants (loyer, rendement, CA, EBE, taxe foncière, charges, travaux) sont lus
+dans les champs structurés puis dans le texte (`src/immo/finance.py`). Un loyer ou un
+rendement « potentiel », « estimé », en colocation ou après travaux n'est jamais
+pris pour un loyer encaissé. Les résidences gérées (étudiantes, seniors, LMNP) sont
+exclues du classement locatif. Toutes les hypothèses se règlent dans `.env`
+(préfixe `INVEST_`, voir `.env.example`) et le détail de chaque annonce propose un
+simulateur de financement modifiable.
+
+## Sources
+
+| Famille | Sources actives |
+|---|---|
+| Portails et réseaux résidentiels | Bien'ici (API publique, ~950 000 annonces), iad, Orpi, Laforêt, Safti, Century 21, ERA, Foncia, Citya, Propriétés-Privées, EntreParticuliers |
+| Notaires | notaires.fr (API, Crawl-delay 10 s respecté), Immonot |
+| Immobilier professionnel et fonds | Bpifrance Transmission, BureauxLocaux, Michel Simond, Place des Commerces, Arthur Loyd, CBRE, MursCommerciaux, PointDeVente, GeoLocaux |
+| Enchères et cessions publiques | Licitor, Avoventes, Enchères Immobilières, Agorastore, 36h immo |
+
+Figaro Immobilier et Vench ont un connecteur mais restent hors de `SYNC_SOURCES` :
+Figaro présente actuellement un challenge Cloudflare, Vench réserve ses résultats aux
+abonnés et recoupe Licitor. PAP, SeLoger, Logic-Immo, Efficity et Superimmo bloquent
+toute collecte automatisée. L'audit est dans `config/source-audit.md`.
+
+**Leboncoin** reste désactivé : DataDome bloque le navigateur automatisé dès la
+première page (trois essais en juillet 2026). Aucun contournement n'est implémenté.
+
+## Disponibilité, prix et doublons
+
+- Les connecteurs par sitemap enregistrent à chaque passage l'inventaire complet des
+  URL publiées ; une annonce absente du dernier inventaire complet est retirée.
+  Les autres sources sont retirées après `LISTING_STALE_DAYS` sans observation.
+- Chaque changement de prix est historisé (`prix_historique`) : baisses affichées,
+  filtrables et triables.
+- Une annonce publiée sur plusieurs plateformes (même type, code postal, surface
+  arrondie, prix à moins de 3 %) n'apparaît qu'une fois ; le détail liste les autres
+  publications et leurs prix.
 
 ## Tableau de bord local
 
@@ -17,54 +68,28 @@ export PYTHONPATH=src
 python -m immo.cli web
 ```
 
-Ouvrir ensuite `http://127.0.0.1:8000`. Le tableau de bord affiche toutes les
-annonces, y compris celles sans référence, et propose recherche, source, type,
-secteur, budget, surface, qualité du deal et tri. Pour les maisons et
-appartements, il présente une fourchette : plafond d'excellente affaire à 75 %
-de la médiane DVF et plafond de bonne affaire à 85 %.
+Ouvrir `http://127.0.0.1:8000`. Onglets par stratégie, filtres d'investissement
+(rendement net minimal, cash-flow positif, loyer réel publié, baisse de prix,
+nouveautés, enchères), tri par score, rendement, cash-flow, décote ou baisse.
+`python -m immo.cli web-install` le garde actif à chaque ouverture de session macOS.
 
-Pour garder le tableau de bord disponible automatiquement après chaque ouverture
-de session macOS : `python -m immo.cli web-install`. Pour le désactiver :
-`python -m immo.cli web-uninstall`.
+## Fonctionnement automatique
 
-## Fonctionnement automatique recommandé
-
-Une synchronisation réalise, dans cet ordre :
-
-1. actualisation DVF si la précédente date de plus de 30 jours ;
-2. collecte réseau parallèle des sources définies dans `SYNC_SOURCES` ;
-3. écriture Bronze dédoublonnée par lots de 2 000 et suivi de progression ;
-4. une seule normalisation par source après la fin des téléchargements ;
-5. recalcul complet de `affaires` avec les prix DVF.
-
-Les sources automatiques actuelles sont iad France, Orpi, Laforêt, Immonot,
-PointDeVente et Geolocaux. iad, Orpi, Laforêt et Immonot apportent la priorité
-résidentielle ; PointDeVente et Geolocaux complètent avec l'immobilier
-professionnel. Superimmo est désactivé tant que ses pages renvoient des erreurs
-503 persistantes. L'audit
-d'accessibilité des principaux sites est conservé dans `config/source-audit.md`.
-Leboncoin est désactivé à cause de DataDome. Chaque passage traite au maximum
-`AGENCY_MAX_URLS_PER_RUN` nouvelles pages par source, ignore les
-URL vues récemment et les revisite après `AGENCY_REVISIT_DAYS` jours.
-Les téléchargements de fiches utilisent une file de préchargement bornée. La
-concurrence se règle globalement avec `AGENCY_FETCH_WORKERS`, puis par source
-avec `AGENCY_FETCH_WORKERS_<SOURCE>` ; `AGENCY_FETCH_WORKERS_CAP` constitue la
-borne de sécurité commune. Chaque fin de collecte affiche le nombre de
-candidates, requêtes, réponses exploitables et erreurs de parsing afin de
-valider le débit sans masquer une dégradation du site source.
-
-Pour activer cette chaîne toutes les six heures sur macOS :
+Une synchronisation : actualisation DVF et ANIL si nécessaire, collecte parallèle de
+`SYNC_SOURCES` (`SYNC_MAX_WORKERS` sources à la fois, chacune bornée en temps et en
+volume par cycle), normalisation, inventaire, historique des prix, extraction des
+montants, références DVF et loyers, puis recalcul de `deal_analysis`. Une
+notification macOS signale les nouvelles affaires au-dessus de `NOTIFY_MIN_SCORE`.
 
 ```bash
-python -m immo.cli schedule --every-hours 6
+python -m immo.cli schedule --every-hours 6   # une seule fois
+python -m immo.cli sync                       # passage immédiat
+python -m immo.cli deals --limit 20           # meilleures affaires en ligne
+python -m immo.cli compact                    # récupérer l'espace disque de DuckDB
 ```
 
-Cette commande n'est à exécuter qu'une fois. Ensuite macOS lance le travail seul,
-même après redémarrage de la session. Les journaux sont dans
-`data/scheduler.out.log` et `data/scheduler.err.log`. Un verrou empêche deux
-collectes de se chevaucher. Pour désactiver : `python -m immo.cli unschedule`.
-
-Une exécution complète immédiate reste disponible avec `python -m immo.cli sync`.
+Les journaux sont dans `data/scheduler.out.log` et `data/scheduler.err.log`. Un
+verrou empêche deux synchronisations simultanées.
 
 ## Installation
 
@@ -90,73 +115,9 @@ utiliser l'ancien référentiel pendant l'actualisation. L'Alsace-Moselle et
 Mayotte sont absentes de DVF conformément au périmètre de diffusion officiel.
 La progression est visible dans `data/dvf-progress.txt`.
 
-## Collecte Leboncoin à grande volumétrie
-
-Le mode normal ne demande aucune URL. Il génère automatiquement les recherches
-depuis `DVF_DEPARTEMENTS` dans `.env` :
-
-```bash
-python -m immo.cli collect-auto --max-pages 100
-```
-
-Plusieurs départements :
-
-```bash
-python -m immo.cli collect-auto --departements 75 92 93 94 --max-pages 100
-```
-
-Toute la France (exécution très longue à la cadence configurée) :
-
-```bash
-python -m immo.cli collect-auto --departements all --max-pages 100
-```
-
-Pour les départements avec trop de résultats, le partitionnement par prix est
-également généré automatiquement :
-
-```bash
-python -m immo.cli collect-auto \
-  --departements 75 92 93 94 \
-  --tranches-prix '0-200000,200001-400000,400001-700000,700001-1000000,1000001-max' \
-  --max-pages 100
-```
-
-Cette commande collecte, normalise et lance aussi le scoring lorsque le
-référentiel DVF a déjà été chargé. Les URL restent disponibles uniquement pour
-des recherches avancées personnalisées.
-
-Une recherche nationale unique est plafonnée par Leboncoin. Pour une couverture
-large, créez un fichier d'URL partitionnées : une URL par département ou zone,
-puis divisez encore par tranche de prix lorsque le nombre de résultats est trop
-élevé. Un exemple se trouve dans `config/leboncoin-searches.example.txt`.
-
-```bash
-python -m immo.cli collect \
-  --source leboncoin \
-  --url-file config/leboncoin-searches.txt \
-  --max-pages 100
-```
-
-La collecte :
-
-- réutilise un profil Chromium persistant dans `.playwright-profile` ;
-- permet de résoudre manuellement le captcha initial ;
-- intercepte les réponses de recherche sans contourner DataDome ;
-- pagine jusqu'à `--max-pages` ou jusqu'à la dernière page ;
-- écrit les annonces dans DuckDB par lots configurables (`BRONZE_BATCH_SIZE`) ;
-- journalise succès, échecs, URL et volumétrie dans `collection_runs` ;
-- supporte une relance sûre : la normalisation met à jour une annonce existante
-  au lieu de la dupliquer.
-
-`LEBONCOIN_HEADLESS=false` est volontairement la valeur par défaut. Une cadence
-de 6 à 14 secondes est conservée entre les pages. “Toutes les annonces” ne peut
-pas être garanti par le scraper, car le catalogue visible et les plafonds de
-résultats sont contrôlés par Leboncoin ; le partitionnement donne la meilleure
-couverture réaliste.
-
 ## Exécution complète
 
-Les cinq étapes, dans l'ordre :
+Étapes manuelles, dans l'ordre :
 
 ```bash
 python -m immo.cli reference
