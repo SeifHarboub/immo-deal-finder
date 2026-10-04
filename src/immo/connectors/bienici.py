@@ -263,7 +263,13 @@ def map_ad(ad: dict) -> dict:
         "details_json": json.dumps(details, ensure_ascii=False),
         "images_json": json.dumps(photos, ensure_ascii=False),
         "reference_annonce": ad.get("reference"),
-        "raw_payload": json.dumps(ad, ensure_ascii=False, default=str),
+        # Photos et description sont déjà conservées dans images_json et body :
+        # les dupliquer multipliait par six le poids de ~900 000 annonces.
+        "raw_payload": json.dumps(
+            {key: value for key, value in ad.items()
+             if key not in {"photos", "description", "userRelativeData", "virtualTours"}},
+            ensure_ascii=False, default=str,
+        ),
     }
 
 

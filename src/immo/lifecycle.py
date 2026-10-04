@@ -105,7 +105,11 @@ def refresh_activity(con: duckdb.DuckDBPyConnection, source: str) -> None:
             WHERE a.source=?
         """, [source, source, source])
     else:
-        stale_days = int(os.getenv("LISTING_STALE_DAYS", "21"))
+        # Les API complètes (Bien'ici, notaires) repassent sur tout le catalogue
+        # tous les deux ou trois jours : un délai court par source suffit.
+        stale_days = int(os.getenv(
+            f"LISTING_STALE_DAYS_{source.upper()}", os.getenv("LISTING_STALE_DAYS", "21")
+        ))
         con.execute(f"""
             UPDATE annonces_stg
             SET active = NOT {past_sale}
