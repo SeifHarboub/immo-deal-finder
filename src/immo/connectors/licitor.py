@@ -11,7 +11,7 @@ mise à prix et adjudication.
 from collections.abc import Iterator
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from datetime import datetime
-import html as htmllib
+from html.parser import HTMLParser
 import json
 import os
 from pathlib import Path
@@ -56,14 +56,44 @@ def slug(value) -> str:
     return re.sub(r"[^a-z0-9]+", "-", plain(value)).strip("-")
 
 
+class _TextParser(HTMLParser):
+    """Extraction de texte tolérante (attributs contenant '>' ou guillemets isolés)."""
+
+    BLOCKS = {"br", "p", "div", "li", "h1", "h2", "h3", "h4", "h5", "h6", "tr", "section", "article", "ul"}
+    SKIP = {"script", "style", "svg", "noscript", "template"}
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.parts: list[str] = []
+        self.skip = 0
+
+    def handle_starttag(self, tag, attrs) -> None:
+        if tag in self.SKIP:
+            self.skip += 1
+        elif tag in self.BLOCKS:
+            self.parts.append("\n")
+        else:
+            self.parts.append(" ")
+
+    def handle_endtag(self, tag) -> None:
+        if tag in self.SKIP:
+            self.skip = max(0, self.skip - 1)
+        elif tag in self.BLOCKS:
+            self.parts.append("\n")
+
+    def handle_data(self, data) -> None:
+        if not self.skip:
+            self.parts.append(data)
+
+
 def clean_text(fragment) -> str:
     """HTML → texte lisible (sauts de ligne conservés)."""
     if not fragment:
         return ""
-    text = re.sub(r"<(script|style|svg)\b.*?</\1>", " ", str(fragment), flags=re.S | re.I)
-    text = re.sub(r"<br\s*/?>|</p>|</div>|</li>|</h\d>", "\n", text, flags=re.I)
-    text = htmllib.unescape(re.sub(r"<(?:[^>\"']|\"[^\"]*\"|'[^']*')*>", " ", text))
-    lines = [re.sub(r"[ \t  ]+", " ", line).strip() for line in text.splitlines()]
+    parser = _TextParser()
+    parser.feed(str(fragment))
+    parser.close()
+    lines = [re.sub(r"[ \t\u00a0\u202f]+", " ", line).strip() for line in "".join(parser.parts).splitlines()]
     return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
 
 

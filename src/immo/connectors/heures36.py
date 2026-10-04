@@ -69,7 +69,7 @@ class Heures36Connector(EnchereConnector):
         start = parse_fr_date(_first(r"Début des offres\s+(\d{2}/\d{2}/\d{4}\s+\d{1,2}\s*h\s*\d{2})", flat))
         end = parse_fr_date(_first(r"Fin des offres\s+(\d{2}/\d{2}/\d{4}\s+\d{1,2}\s*h\s*\d{2})", flat))
         state = _first(r"(Vente à venir|Vente en cours|Vente terminée|Vendu|Offres terminées)", flat)
-        statut = "à venir"
+        statut = "en cours" if state == "Vente en cours" else "à venir"
         if state and re.search(r"termin|Vendu", state):
             statut = "adjugé" if "Vendu" in state else "non communiqué"
         land = parse_amount(_first(r"([\d\s]+)\s*m²\s*-\s*Surface (?:parcelle|terrain)", flat))

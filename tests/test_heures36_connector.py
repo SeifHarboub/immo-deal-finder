@@ -19,3 +19,11 @@ def test_vente_interactive() -> None:
     assert item["date_vente"] == "2026-12-05T00:00:00"
     assert details["Début des offres"] == "2026-10-05T19:15:00" and details["Statut"] == "à venir"
     assert details["Honoraires"] == "Honoraires à la charge du vendeur"
+
+
+def test_gabarit_propriete_exception_sans_date() -> None:
+    html = gzip.decompress((FIXTURE.parent / "detail_en_cours.html.gz").read_bytes()).decode("utf-8")
+    [item] = Heures36Connector().parse_page(
+        html, "https://www.36heures.immo/fr/annonce/01KP34DW1ZN80XQ1W2E71672SR/maison-alencon.html")
+    assert item["body"].startswith("Propriété d'Exception Alençon") and item["date_vente"] is None
+    assert json.loads(item["details_json"])["Statut"] == "en cours"

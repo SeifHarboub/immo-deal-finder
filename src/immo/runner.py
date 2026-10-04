@@ -25,6 +25,7 @@ COMMON_RAW_COLUMNS = {
     "published_at": "VARCHAR", "details_json": "VARCHAR",
     "images_json": "VARCHAR", "reference_annonce": "VARCHAR",
     "raw_payload": "VARCHAR", "_collected_at": "VARCHAR",
+    "mode_vente": "VARCHAR", "date_vente": "VARCHAR", "prix_adjuge": "VARCHAR",
 }
 
 LEBONCOIN_RAW_COLUMNS = {
@@ -193,6 +194,22 @@ def normalize(source: str) -> None:
                 ) > 1
             )
         """)
+        # Certaines sources ne publient que la commune et des coordonnées :
+        # le code postal le plus fréquent des ventes DVF de la commune comble le
+        # trou, ce qui rend possibles les références de prix et de loyer.
+        con.execute("""
+            UPDATE annonces_stg AS a SET code_postal = d.code_postal
+            FROM (
+                SELECT lower(strip_accents(commune)) AS commune_cle,
+                       left(code_postal, 2) AS dep, mode(code_postal) AS code_postal
+                FROM ventes_dvf WHERE commune IS NOT NULL GROUP BY ALL
+            ) d
+            WHERE a.source=? AND a.code_postal IS NULL AND a.ville IS NOT NULL
+              AND d.commune_cle = lower(strip_accents(trim(a.ville)))
+              AND d.dep = coalesce(
+                  nullif(json_extract_string(try_cast(a.details_json AS JSON), '$."Département"'), ''),
+                  d.dep)
+        """, [source])
         from immo.lifecycle import record_prices, refresh_activity
         refresh_activity(con, source)
         record_prices(con, source)

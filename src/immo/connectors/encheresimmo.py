@@ -55,7 +55,7 @@ def _resultat(text, montant=None) -> tuple[str, float | None]:
         return "adjugé", amount
     if re.search(r"carence|desert|non adjuge|invendu", source):
         return "carence", None
-    if re.search(r"retir|non requise|radi|annul|suspend", source):
+    if re.search(r"retir|non ?requise|radi|annul|suspend", source):
         return "retiré", None
     if "non communique" in source:
         return "non communiqué", None
@@ -103,8 +103,10 @@ class EncheresImmoConnector(EnchereConnector):
             or _first(r"MISE À PRIX\s*:\s*([\d\s.,  ]+)\s*€", text)
         mise = parse_amount(vente.get("prix")) or parse_amount(ld.get("price")) or parse_amount(mise_text)
         statut, adjuge = _resultat(
-            vente.get("resultatAdjudication") or _first(r"R[ée]sultat\s*:\s*\n?\s*([^\n]+)", text) or "",
+            vente.get("resultatAdjudication") or _first(r"R[ée]sultat(?:\s*:\s*|\s*\n\s*)([^\n]+)", text) or "",
             vente.get("prixAdjudication"))
+        if statut == "à venir" and vente.get("statut") == "resultat":
+            statut = "non communiqué"
         city = vente.get("ville") or ld.get("city") or clean_text(
             _first(r"Retour aux archives\s*\n+\s*([^\n]+)", text)) or None
         zipcode = vente.get("codePostal") or ld.get("zipcode") or _first(r"\((\d{5})\)", body)

@@ -24,6 +24,8 @@ def test_liste_ventes_passees_et_statuts() -> None:
     assert len(urls) == 25 and pages == 68
     assert all(url.startswith("https://avoventes.fr/enchere/") for url in urls)
     assert connector._listing_status["https://avoventes.fr/enchere/maison-a-vuillafans"] == "retiré"
+    assert connector._listing_dates["https://avoventes.fr/enchere/maison-a-vuillafans"] == "2026-10-02T10:00:00"
+    assert connector._listing_prices["https://avoventes.fr/enchere/logement-de-type-1-a-bordeaux"] == 20500
 
 
 def test_adjudication_et_surenchere() -> None:

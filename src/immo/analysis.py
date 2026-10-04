@@ -43,7 +43,7 @@ def assumptions() -> dict[str, float]:
         "travaux_renovation_m2": _env("INVEST_TRAVAUX_RENOVATION_M2", 600),
         "travaux_dpe_f_m2": _env("INVEST_TRAVAUX_DPE_F_M2", 200),
         "travaux_dpe_g_m2": _env("INVEST_TRAVAUX_DPE_G_M2", 350),
-        "ratio_adjudication": _env("INVEST_RATIO_ADJUDICATION", 1.5),
+        "ratio_adjudication": _env("INVEST_RATIO_ADJUDICATION", 1.65),
         "doublon_ecart_prix": _env("DEDUP_ECART_PRIX", 0.03),
     }
 
@@ -119,6 +119,14 @@ WITH prix_signaux AS (
         ) AS baisse
         FROM prix_historique WHERE prix > 0
     ) GROUP BY ALL
+), ratio_encheres AS (
+    -- Prix d'adjudication observé ÷ mise à prix, par type, sur les ventes
+    -- passées réellement collectées ; valeurs par défaut sous 20 résultats.
+    SELECT type_bien, median(prix_adjuge / prix) AS ratio, count(*) AS n
+    FROM annonces_stg
+    WHERE prix_adjuge > 0 AND prix > 0 AND mode_vente LIKE 'enchere%'
+      AND prix_adjuge / prix BETWEEN .3 AND 15
+    GROUP BY type_bien HAVING count(*) >= 20
 ), rent_model AS (
     SELECT a.*,
            coalesce(f.segment,
@@ -141,6 +149,9 @@ WITH prix_signaux AS (
            ps.prix_initial, ps.prix_max_observe, coalesce(ps.nb_baisses, 0) AS nb_baisses,
            ps.derniere_baisse,
            coalesce(a.mode_vente, 'gre_a_gre') AS mode_vente_effectif,
+           coalesce((SELECT ratio FROM ratio_encheres re WHERE re.type_bien=a.type_bien),
+                    CASE a.type_bien WHEN 'appartement' THEN 2.06 WHEN 'maison' THEN 1.46
+                         ELSE {h['ratio_adjudication']} END) AS ratio_adjudication,
            CASE WHEN a.type_bien='appartement' AND a.nb_pieces BETWEEN 1 AND 2 THEN 37.0
                 WHEN a.type_bien='appartement' AND a.nb_pieces>=3 THEN 72.0
                 WHEN a.type_bien='appartement' THEN 52.0
@@ -175,7 +186,7 @@ WITH prix_signaux AS (
 ), flagged AS (
     SELECT *,
            -- Une enchère se compare au prix probable d'adjudication, jamais à la mise à prix.
-           CASE WHEN vente_encheres AND prix_adjuge IS NULL THEN prix * {h['ratio_adjudication']}
+           CASE WHEN vente_encheres AND prix_adjuge IS NULL THEN prix * ratio_adjudication
                 ELSE coalesce(prix_adjuge, prix) END AS prix_compare,
            -- Un fonds ou un terrain s'analyse sans surface bâtie.
            (prix IS NULL OR prix <= 0
@@ -276,7 +287,7 @@ WITH prix_signaux AS (
                   THEN 'Décote supérieure à 45 % : prix, état ou nature de la vente à contrôler'
              ELSE NULL END AS motif_verification,
            concat_ws(' · ',
-             CASE WHEN vente_encheres THEN 'Vente aux enchères : prix final probable ≈ ' || {h['ratio_adjudication']} || ' × mise à prix' END,
+             CASE WHEN vente_encheres THEN 'Vente aux enchères : prix final probable ≈ ' || round(ratio_adjudication, 2) || ' × mise à prix (médiane des adjudications observées)' END,
              CASE WHEN bien_occupe AND segment='residentiel' THEN 'Bien vendu occupé' END,
              CASE WHEN residence_geree THEN 'Résidence gérée ou bail commercial' END,
              CASE WHEN surface_atypique THEN 'Surface Carrez différente de la surface annoncée' END,

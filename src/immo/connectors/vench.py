@@ -66,13 +66,15 @@ class VenchConnector(EnchereConnector):
             return
         parts = [part.strip() for part in title.split("•")]
         tribunal = _first(r"Ventes aux enchères publiques\s*-\s*(Tribunal[^\n]+)", text)
-        address = _first(r"\nAdresse\n(.*?)\nVoir la carte", text) or ""
+        address = _first(r"\nAdresse\s*\n(.*?)\n\s*Voir la carte", text) or ""
         address_lines = [line.strip() for line in address.splitlines() if line.strip()]
         postal = next((line for line in address_lines if re.fullmatch(r"\d{5}", line)), None)
         city = address_lines[-1] if address_lines and address_lines[-1] != postal else (parts[-1] if parts else None)
         date_vente = parse_fr_date(_first(r"DATE DE L'AUDIENCE\s*\n\s*([^\n]+)", text))
-        description = _first(r"\nDescription\n(.*?)\n(?:Occupation|Caractéristiques|Documents)\n", text) or ""
-        occupation_text = _first(r"\nOccupation\n([^\n]+)", text)
+        description = _first(r"\nDescription\s*\n(.*?)\n\s*(?:Occupation|Caractéristiques|Documents)\s*\n", text) or ""
+        if "vous devez être abonné" in description:
+            description = ""  # descriptif réservé aux abonnés : non contourné
+        occupation_text = _first(r"\nOccupation\s*\n\s*([^\n]+)", text)
         lawyer = " ".join((_first(r"Avocat poursuivant\s*\n(.*?)\n\s*Demande d'informations", text) or "").split())
         coords = re.search(r"var lat\s*=\s*(-?\d+\.\d+);\s*var lon\s*=\s*(-?\d+\.\d+);", html)
         adjuge = parse_amount(_first(r"Adjug[ée]\w*\s*(?:à|:)?\s*([\d\s.,]+)\s*€", text))

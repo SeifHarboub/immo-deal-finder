@@ -38,6 +38,8 @@ class AvoventesConnector(EnchereConnector):
     def __init__(self) -> None:
         super().__init__("avoventes", BASE + "/recherche/toutes")
         self._listing_status: dict[str, str] = {}
+        self._listing_dates: dict[str, str] = {}
+        self._listing_prices: dict[str, float] = {}
         self._status_lock = threading.Lock()
 
     def _extract(self, html: str) -> tuple[list[str], int | None]:
@@ -49,6 +51,7 @@ class AvoventesConnector(EnchereConnector):
                 continue
             urls.append(url)
             card = plain(clean_text(chunk[:5000].split('data-link="', 1)[0]))
+            sale_date = parse_fr_date(_first(r"date de la vente\s*:\s*([^\n]+)", card))
             ribbon = _first(r'ribbon-inner">([^<]+)<', chunk[:5000])
             status = None
             if ribbon:
@@ -57,9 +60,15 @@ class AvoventesConnector(EnchereConnector):
                     r"retir|non requise|annul|suspend", ribbon) else None
             elif re.search(r"adjuge\s*:", card):
                 status = "adjugé"
-            if status:
-                with self._status_lock:
+                amount = parse_amount(_first(r"adjuge\s*:\s*([\d .,]+)", card))
+                if amount:
+                    with self._status_lock:
+                        self._listing_prices[url] = amount
+            with self._status_lock:
+                if status:
                     self._listing_status[url] = status
+                if sale_date:
+                    self._listing_dates[url] = sale_date
         pages = [int(value) for value in re.findall(r"ventes-passees\?page=(\d+)", html)]
         return list(dict.fromkeys(urls)), max(pages) if pages else None
 
@@ -89,11 +98,15 @@ class AvoventesConnector(EnchereConnector):
             r'<span class=["\']badge badge-secondary["\'][^>]*>(.*?)</span>', html, re.S)]
         adjuge = parse_amount(_first(r"(?:Adjug[ée] à|Adjug[ée]\s*:|Adjudication\s*:)\s*([\d\s.,  ]+)"
                                      r"\s*(?:€|euros)", head_text))
+        adjuge = adjuge or self._listing_prices.get(page_url)
         statut = "adjugé" if adjuge else "à venir"
         if re.search(r"Adjudication\s*:\s*(?:ench[eè]res?\s+d[ée]sertes?|carence)", head_text, re.I):
             statut = "carence"
+        if re.search(r"Vente (?:non requise|retir[ée]e|annul[ée]e|suspendue)", head_text, re.I):
+            statut = "retiré"
         statut = self._listing_status.get(page_url, statut) if statut == "à venir" else statut
-        date_vente = parse_fr_date(_first(r"\bVente\s+(\d{1,2}\s+\w+\s+\d{4}(?:\s+à\s+\d{1,2}h\d{0,2})?)", head_text))
+        date_vente = parse_fr_date(_first(r"\bVente\s+(\d{1,2}\s+\w+\s+\d{4}(?:\s+à\s+\d{1,2}h\d{0,2})?)", head_text)) \
+            or self._listing_dates.get(page_url)
         stats = {plain(label): parse_amount(value) for value, label in re.findall(
             r'<span class="font-weight-bold h4 mb-0">([^<]+)</span>\s*<div class="small text-muted">([^<]+)</div>',
             html)}
@@ -115,7 +128,8 @@ class AvoventesConnector(EnchereConnector):
         kind = type_from_text(title)
         if kind == "autre" and badges:
             kind = type_from_text(badges[0])
-        surface = stats.get("m² superficie") or stats.get("m2 superficie") or parse_surface(title)
+        surface = stats.get("m² superficie") or stats.get("m2 superficie") or parse_surface(title) \
+            or (parse_surface(full_text) if kind in {"appartement", "maison"} else None)
         city = postal.group(2).strip() if postal else None
         details = {
             "Statut": statut, "Mise à prix": mise, "Tribunal": tribunal, "Avocat": cabinet,
