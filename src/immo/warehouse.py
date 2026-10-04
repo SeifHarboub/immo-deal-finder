@@ -110,6 +110,11 @@ def _prepare(con: duckdb.DuckDBPyConnection, db_path: str) -> None:
         "ALTER TABLE annonces_stg ADD COLUMN IF NOT EXISTS details_json VARCHAR",
         "ALTER TABLE annonces_stg ADD COLUMN IF NOT EXISTS images_json VARCHAR",
         "ALTER TABLE annonces_stg ADD COLUMN IF NOT EXISTS reference_annonce VARCHAR",
+        # Ventes particulières : 'gre_a_gre' (défaut), 'enchere_judiciaire',
+        # 'enchere_notariale', 'vente_interactive', 'cession_publique'.
+        "ALTER TABLE annonces_stg ADD COLUMN IF NOT EXISTS mode_vente VARCHAR",
+        "ALTER TABLE annonces_stg ADD COLUMN IF NOT EXISTS date_vente TIMESTAMP",
+        "ALTER TABLE annonces_stg ADD COLUMN IF NOT EXISTS prix_adjuge DOUBLE",
         "ALTER TABLE prix_reference ADD COLUMN IF NOT EXISTS premiere_vente DATE",
         "ALTER TABLE prix_reference ADD COLUMN IF NOT EXISTS derniere_vente DATE",
         "ALTER TABLE ventes_dvf ADD COLUMN IF NOT EXISTS code_departement VARCHAR",
