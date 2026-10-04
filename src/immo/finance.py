@@ -287,6 +287,8 @@ def segment(type_bien: str | None, text: str, finance: "Finance") -> str:
         return "fonds"
     if type_bien == "terrain":
         return "terrain"
+    if type_bien == "immeuble":
+        return "immeuble"
     if type_bien in {"local_commercial", "bureau", "autre"}:
         if _FONDS.search(text) or _FONDS_TITLE.search(text):
             # « Murs et fonds » : le fonds domine la valorisation et le
