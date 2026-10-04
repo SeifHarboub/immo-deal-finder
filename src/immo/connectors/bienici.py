@@ -172,6 +172,12 @@ def build_zone_cache(path: Path = ZONES_PATH) -> dict[str, list[str]]:
     return zones
 
 
+def _scalar(value):
+    """Les annonces multi-lots publient des fourchettes [min, max] : aucune valeur
+    unique n'est comparable, la fourchette reste dans les détails."""
+    return None if isinstance(value, (list, tuple, dict)) else value
+
+
 def map_ad(ad: dict) -> dict:
     """Convertit une annonce de l'API de recherche dans le schéma Bronze commun."""
     blur = ad.get("blurInfo") or {}
@@ -186,10 +192,10 @@ def map_ad(ad: dict) -> dict:
         "Code INSEE": district.get("insee_code") or district.get("code_insee"),
         "Quartier": district.get("libelle") or district.get("name"),
         "Nature de la vente": ad.get("adTypeFR"),
-        "Prix hors honoraires": ad.get("priceWithoutFees"),
+        "Prix hors honoraires": _scalar(ad.get("priceWithoutFees")),
         "Honoraires (%)": ad.get("agencyFeePercentage"),
         "Honoraires à la charge": ad.get("feesChargedTo"),
-        "Prix au m² annoncé": ad.get("pricePerSquareMeter"),
+        "Prix au m² annoncé": _scalar(ad.get("pricePerSquareMeter")),
         "Baisse de prix": "Oui" if ad.get("priceHasDecreased") else None,
         "Année de construction": ad.get("yearOfConstruction"),
         "Travaux nécessaires": "Oui" if ad.get("workToDo") else None,
@@ -234,12 +240,17 @@ def map_ad(ad: dict) -> dict:
     if blur.get("type") != "exact" and (radius is None or radius > 150):
         details["Précision cartographique"] = "approximative"
         details["Rayon de floutage (m)"] = radius
+    for key, label in (("price", "Fourchette de prix"), ("surfaceArea", "Fourchette de surface"),
+                       ("roomsQuantity", "Fourchette de pièces")):
+        if isinstance(ad.get(key), (list, tuple)):
+            details[label] = " – ".join(str(item) for item in ad[key])
+            details["Lots multiples"] = "oui"
     details = {key: value for key, value in details.items() if value not in (None, "", [], {})}
     published = parse_date(ad.get("publicationDate"))
     return {
-        "id": ad.get("id"), "name": ad.get("title"), "price": ad.get("price"),
-        "surface": ad.get("surfaceArea"), "land_surface": ad.get("landSurfaceArea"),
-        "rooms": ad.get("roomsQuantity"), "bedrooms": ad.get("bedroomsQuantity"),
+        "id": ad.get("id"), "name": ad.get("title"), "price": _scalar(ad.get("price")),
+        "surface": _scalar(ad.get("surfaceArea")), "land_surface": _scalar(ad.get("landSurfaceArea")),
+        "rooms": _scalar(ad.get("roomsQuantity")), "bedrooms": _scalar(ad.get("bedroomsQuantity")),
         "zipcode": ad.get("postalCode"), "city": ad.get("city"),
         "lat": position.get("lat"), "lng": position.get("lon"),
         "type_hint": f"{ad.get('propertyType') or ''}/{ad_type}",

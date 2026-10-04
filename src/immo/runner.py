@@ -8,6 +8,8 @@ import re
 import tempfile
 import uuid
 
+import duckdb
+
 from immo.connectors import discover_connectors, get_connector
 from immo.schema import Criteria
 from immo.warehouse import connect
@@ -88,7 +90,29 @@ def _write_bronze(
                                 f'ALTER TABLE raw_{source} ALTER COLUMN "{identifier}" '
                                 f'TYPE VARCHAR USING CAST("{identifier}" AS VARCHAR)'
                             )
-                con.execute(f"INSERT INTO raw_{source} BY NAME SELECT * FROM incoming_batch")
+                try:
+                    con.execute(f"INSERT INTO raw_{source} BY NAME SELECT * FROM incoming_batch")
+                except duckdb.ConversionException:
+                    # Une source change parfois le type d'un champ (nombre puis
+                    # liste). Les colonnes en conflit passent en texte dans Bronze
+                    # plutôt que de perdre tout le lot ; Silver relit avec TRY_CAST.
+                    incoming = dict(con.execute("SELECT column_name, column_type FROM (DESCRIBE incoming_batch)").fetchall())
+                    existing = dict(con.execute(f"SELECT column_name, column_type FROM (DESCRIBE raw_{source})").fetchall())
+                    for name, kind in incoming.items():
+                        if existing.get(name) not in (None, kind, "VARCHAR"):
+                            quoted = '"' + name.replace('"', '""') + '"'
+                            con.execute(
+                                f"ALTER TABLE raw_{source} ALTER COLUMN {quoted} "
+                                f"TYPE VARCHAR USING CAST({quoted} AS VARCHAR)"
+                            )
+                            existing[name] = "VARCHAR"
+                    projection = ", ".join(
+                        (f"CAST({quoted} AS VARCHAR) AS {quoted}"
+                         if existing.get(name) == "VARCHAR" and kind != "VARCHAR" else quoted)
+                        for name, kind in incoming.items()
+                        for quoted in ['"' + name.replace('"', '""') + '"']
+                    )
+                    con.execute(f"INSERT INTO raw_{source} BY NAME SELECT {projection} FROM incoming_batch")
                 if run_id:
                     con.execute(
                         "UPDATE collection_runs SET rows_collected=? WHERE run_id=?",
