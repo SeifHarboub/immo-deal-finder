@@ -164,10 +164,12 @@ def normalize(source: str) -> None:
                 DELETE FROM annonces_stg
                 WHERE source='immonot'
                   AND url NOT LIKE '%/annonce-immobiliere/%'
+                  AND url NOT LIKE '%/immobilier-notaire/detail/%'
             """)
             con.execute("""
                 DELETE FROM raw_immonot
                 WHERE url NOT LIKE '%/annonce-immobiliere/%'
+                  AND url NOT LIKE '%/immobilier-notaire/detail/%'
             """)
         # Politique produit globale : aucune location résidentielle ou foncière.
         # Les locations restent admises uniquement pour les fonds et locaux

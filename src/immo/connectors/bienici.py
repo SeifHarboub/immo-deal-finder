@@ -3,7 +3,8 @@
 Le robots.txt interdit les pages HTML ``/annonces-*`` : seules l'API
 ``realEstateAds.json`` et l'autocomplétion ``suggest.json`` sont utilisées.
 Une recherche est plafonnée à from+size <= 2500 : la couverture nationale
-passe donc par un découpage département puis tranches de prix.
+passe donc par un découpage par département puis une pagination par clé sur
+le prix (tri croissant, minPrice = dernier prix lu).
 """
 from collections.abc import Iterator
 from datetime import datetime, timedelta, timezone
@@ -286,36 +287,47 @@ class BienIciConnector(Connector):
     def _budget_left(self) -> bool:
         return not self.max_pages or self.pages < self.max_pages
 
-    def _slice(self, zone: list[str], low: int, high: int | None) -> Iterator[dict]:
-        """Une zone et une tranche de prix ; découpe tant que total >= 2500."""
-        price = {"minPrice": low, **({"maxPrice": high} if high is not None else {})}
-        base = self._filters(zoneIdsByTypes={"zoneIds": zone}, sortBy="price", sortOrder="asc", **price)
-        probe = self._search({**base, "size": 1, "from": 0, "page": 1})
-        total = int((probe or {}).get("total") or 0)
-        if total >= MAX_WINDOW and (high is None or high > low):
-            middle = (low + high) // 2 if high is not None else max(low * 2, low + 200_000)
-            yield from self._slice(zone, low, middle)
-            yield from self._slice(zone, middle + 1, high)
-            return
-        if total >= MAX_WINDOW:
-            print(f"Bien'ici : tranche {zone} {low}-{high} plafonnée à {MAX_WINDOW}/{total}.", flush=True)
-        size = self.page_size
-        start = 0
-        while start < min(total, MAX_WINDOW) and self._budget_left():
-            payload = self._search({**base, "size": min(size, MAX_WINDOW - start), "from": start,
-                                    "page": start // size + 1})
-            self.pages += 1
-            ads = (payload or {}).get("realEstateAds") or []
-            yield from ads
-            if not ads:
-                break
-            start += len(ads)
+    def _zone_scan(self, zone: list[str]) -> Iterator[dict]:
+        """Un département, trié par prix croissant, en tranches successives.
+
+        Pagination par clé : une fenêtre de 2 500 annonces est lue, puis la
+        recherche repart avec minPrice = dernier prix vu. Aucune requête de
+        comptage n'est nécessaire et chaque page est pleine ; les annonces au
+        prix frontière sont relues puis dédoublonnées par l'écriture Bronze.
+        """
+        low = 0
+        while self._budget_left():
+            base = self._filters(zoneIdsByTypes={"zoneIds": zone}, sortBy="price",
+                                 sortOrder="asc", minPrice=low)
+            start, last_price, total = 0, None, 0
+            while start < MAX_WINDOW and self._budget_left():
+                size = min(self.page_size, MAX_WINDOW - start)
+                payload = self._search({**base, "size": size, "from": start, "page": start // size + 1})
+                self.pages += 1
+                ads = (payload or {}).get("realEstateAds") or []
+                total = int((payload or {}).get("total") or 0)
+                yield from ads
+                if not ads:
+                    return
+                prices = [ad.get("price") for ad in ads if isinstance(ad.get("price"), (int, float))]
+                last_price = prices[-1] if prices else last_price
+                start += len(ads)
+                if start >= total:
+                    return
+            if last_price is None or not self._budget_left():
+                return
+            if int(last_price) <= low:
+                # Plus de 2 500 annonces au même prix : cas pathologique, on avance.
+                print(f"Bien'ici : zone {zone} plafonnée au prix {low} ({total} annonces).", flush=True)
+                low += 1
+            else:
+                low = int(last_price)
 
     def _full_scan(self) -> Iterator[dict]:
         for code, zone in self._zones().items():
             if not self._budget_left():
                 return
-            yield from self._slice(zone, 0, None)
+            yield from self._zone_scan(zone)
 
     def _incremental(self, since: datetime) -> Iterator[dict]:
         """Dernières modifications (nouvelles annonces et baisses de prix),

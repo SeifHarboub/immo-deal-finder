@@ -54,32 +54,27 @@ def test_map_ad_hides_epoch_dates_and_maps_shop() -> None:
     assert "Précision cartographique" not in json.loads(item["details_json"])
 
 
-def test_full_scan_splits_price_bands(monkeypatch, temp_db) -> None:
-    """Une tranche >= 2500 est coupée en deux jusqu'à passer sous le plafond."""
+def test_full_scan_keyset_pagination_on_price(monkeypatch, temp_db) -> None:
+    """Au-delà de 2 500 annonces, la recherche repart du dernier prix lu."""
     connector = BienIciConnector()
     monkeypatch.setattr(connector, "_zones", lambda: {"35": ["-7465"]})
     monkeypatch.setenv("BIENICI_MODE", "full")
-    calls = []
+    stock = [{"id": f"ad-{price}", "adType": "buy", "price": price} for price in range(6000)]
+    lows = []
 
     def fake_search(filters):
-        calls.append(filters)
-        low, high = filters["minPrice"], filters.get("maxPrice", 10**9)
-        total = 4000 if (low, high) == (0, 10**9) else 1000
-        if filters["size"] == 1:
-            return {"total": total, "realEstateAds": []}
-        start = filters["from"]
-        count = max(0, min(filters["size"], total - start))
-        return {"total": total, "realEstateAds": [
-            {"id": f"{low}-{start + index}", "adType": "buy", "price": low}
-            for index in range(count)
-        ]}
+        assert filters["sortBy"] == "price" and filters["from"] + filters["size"] <= 2500
+        matching = [ad for ad in stock if ad["price"] >= filters["minPrice"]]
+        if filters["from"] == 0:
+            lows.append(filters["minPrice"])
+        return {"total": len(matching),
+                "realEstateAds": matching[filters["from"]:filters["from"] + filters["size"]]}
 
     monkeypatch.setattr(connector, "_search", fake_search)
-    monkeypatch.setattr(bienici.PoliteClient, "_wait", lambda self: None)
     items = list(connector.fetch(Criteria()))
-    probes = [(f["minPrice"], f.get("maxPrice")) for f in calls if f["size"] == 1]
-    assert probes == [(0, None), (0, 200000), (200001, None)]
-    assert len(items) == 2000 and len({item["id"] for item in items}) == 2000
+    assert lows == [0, 2499, 4998]
+    assert len({item["id"] for item in items}) == 6000
+    assert connector.pages == 13
     assert bienici.read_state("bienici", "full_scan") is not None
 
 
