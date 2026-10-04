@@ -42,6 +42,7 @@ def parser() -> argparse.ArgumentParser:
     schedule.add_argument("--every-hours", type=int, default=6)
     commands.add_parser("unschedule", help="Désactiver la synchronisation périodique")
     commands.add_parser("schema-report", help="Auditer les champs réellement récupérés")
+    commands.add_parser("compact", help="Réécrire la base pour récupérer l'espace disque")
     web = commands.add_parser("web", help="Lancer le tableau de bord local")
     web.add_argument("--host", default="127.0.0.1")
     web.add_argument("--port", type=int, default=8000)
@@ -136,6 +137,10 @@ def main(argv: list[str] | None = None) -> int:
         from immo.automation import remove_schedule
         remove_schedule()
         print("Synchronisation automatique désactivée.")
+    elif args.command == "compact":
+        from immo.automation import compact_database
+        before, after = compact_database()
+        print(f"Base compactée : {before / 1e9:.2f} Go → {after / 1e9:.2f} Go.")
     elif args.command == "schema-report":
         from immo.runner import schema_report
         schema_report()

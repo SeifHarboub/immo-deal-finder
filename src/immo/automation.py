@@ -145,6 +145,36 @@ def sync_once() -> dict[str, int]:
         lock.close()
 
 
+def compact_database() -> tuple[int, int]:
+    """Réécrit la base : DuckDB ne rend jamais l'espace des lignes supprimées."""
+    lock_path = PROJECT_ROOT / "data" / "sync.lock"
+    lock = lock_path.open("w")
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        lock.close()
+        raise RuntimeError("Synchronisation en cours : compactage reporté.")
+    try:
+        import duckdb
+        source = Path(os.environ["IMMO_DB"]).expanduser().resolve()
+        target = source.with_name(source.stem + ".compact.duckdb")
+        target.unlink(missing_ok=True)
+        before = source.stat().st_size
+        con = duckdb.connect()
+        try:
+            con.execute(f"ATTACH '{str(source).replace(chr(39), chr(39) * 2)}' AS old_db (READ_ONLY)")
+            con.execute(f"ATTACH '{str(target).replace(chr(39), chr(39) * 2)}' AS new_db")
+            con.execute("COPY FROM DATABASE old_db TO new_db")
+        finally:
+            con.close()
+        # Remplacement atomique : le serveur web rouvre la nouvelle base à la requête suivante.
+        target.replace(source)
+        return before, source.stat().st_size
+    finally:
+        fcntl.flock(lock, fcntl.LOCK_UN)
+        lock.close()
+
+
 def notify_new_deals(since: datetime) -> int:
     """Notification macOS pour les nouvelles affaires apparues pendant la synchronisation."""
     minimum = float(os.getenv("NOTIFY_MIN_SCORE", "75"))
