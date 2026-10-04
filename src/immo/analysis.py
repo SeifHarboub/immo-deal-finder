@@ -63,7 +63,10 @@ OCCUPE = (
     "vendu loue|vendue louee|vendus loues|vendues louees|bien occupe|logement occupe|occupes par un|"
     "occupees par un|locataire en place|locataires en place|bail en cours"
 )
-RESIDENCE_GEREE = "residence hoteliere|residence senior|residence seniors|residence services|ehpad|loyer garanti|lmnp|residence etudiante geree"
+RESIDENCE_GEREE = (
+    "residence (?:hoteliere|seniors?|services?|etudiante|de tourisme|d.affaires|de vacances|geree)|"
+    "ehpad|loyer garanti|lmnp|lmp\\b|bail commercial (?:avec|aupres d)"
+)
 TRAVAUX = (
     "a renover|a finir de renover|travaux.{0,60}a prevoir|travaux restants|quelques travaux|"
     "necessitant.{0,30}travaux|renovation.{0,40}a prevoir|renovation complete|rehabilitation|"
@@ -309,7 +312,10 @@ WITH prix_signaux AS (
                AS score_decote,
            CASE WHEN segment NOT IN ('residentiel','immeuble') OR prix_trop_bas
                      OR rendement_net IS NULL OR residence_geree THEN NULL
+                -- Un rendement élevé obtenu en payant au-dessus du marché expose
+                -- à une moins-value à la revente : le score est réduit d'autant.
                 ELSE round({_clamp('(rendement_net - 3) / (8 - 3) * 100')}
+                     * CASE WHEN decote > 0 THEN greatest(.35, 1 - decote) ELSE 1.0 END
                      * CASE WHEN loyer_reel THEN 1.0
                             WHEN nb_observations_loyer >= 30 AND coalesce(r2_loyer, 1) >= .5 THEN .85
                             ELSE .65 END) END AS score_rendement,

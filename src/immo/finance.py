@@ -21,7 +21,7 @@ import unicodedata
 import duckdb
 
 
-PARSER_VERSION = 7
+PARSER_VERSION = 8
 
 _AMOUNT = r"(\d{1,3}(?:[  .]\d{3})+(?:,\d+)?|\d+(?:[.,]\d+)?)\s*(k|m|millions?|milliers?)?\s*(?:€|euros?|eur\b|(?<=\d)e\b)"
 _AMOUNT_RE = re.compile(_AMOUNT, re.I)
@@ -53,7 +53,7 @@ def parse_amount(number: str, unit: str | None) -> float | None:
     return value
 
 
-def _amounts_after(text: str, keyword: re.Pattern, window: int = 90):
+def _amounts_after(text: str, keyword: re.Pattern, window: int = 90, with_position: bool = False):
     """Montants situés juste après un mot-clé, avec le contexte qui suit."""
     for match in keyword.finditer(text):
         segment = text[match.end():match.end() + window]
@@ -67,7 +67,21 @@ def _amounts_after(text: str, keyword: re.Pattern, window: int = 90):
             continue
         value = parse_amount(amount.group(1), amount.group(2))
         if value:
-            yield value, segment[amount.end():amount.end() + 30], between
+            after = segment[amount.end():amount.end() + 30]
+            yield (value, after, between, match.start()) if with_position else (value, after, between)
+
+
+_HYPOTHETIQUE = re.compile(
+    r"potentiel|estim|possible|envisag|pourrait|projection|prevision|simulation|"
+    r"colocation|location saisonniere|airbnb|courte duree|apres travaux|objectif|jusqu.a"
+)
+
+
+def _sentence(text: str, start: int, end: int) -> str:
+    """Phrase qui contient un montant : un « potentiel » invalide toute la phrase."""
+    left = max(text.rfind(".", 0, start), text.rfind("\n", 0, start), text.rfind("!", 0, start))
+    right = min([i for i in (text.find(".", end), text.find("\n", end)) if i >= 0] or [len(text)])
+    return text[left + 1:right]
 
 
 def _rent(text: str, price: float | None) -> float | None:
@@ -77,9 +91,8 @@ def _rent(text: str, price: float | None) -> float | None:
         r"(?!\s+(?:potentiel|estime|envisage|possible|de marche))",
     )
     candidates: list[float] = []
-    for value, after, before in _amounts_after(text, keyword):
-        context = before + after
-        if re.search(r"potentiel|estim|possible|envisageable|pourrait|marche", context):
+    for value, after, before, position in _amounts_after(text, keyword, with_position=True):
+        if _HYPOTHETIQUE.search(_sentence(text, position, position + 1)) or "marche" in before:
             continue
         if _MONTHLY.search(before + " " + after) or re.search(r"mensuel", before):
             annual = value * 12
@@ -113,8 +126,7 @@ def _percent(text: str, keyword: str) -> float | None:
     )
     for match in pattern.finditer(text):
         value = float((match.group(1) or match.group(2)).replace(",", "."))
-        context = text[max(0, match.start() - 30):match.end() + 30]
-        if re.search(r"potentiel|possible|pourrait|apres travaux|objectif|envisag|estim|prevision|jusqu", context):
+        if _HYPOTHETIQUE.search(_sentence(text, match.start(), match.end())):
             continue
         if 1.5 <= value <= 25:
             return value
@@ -195,8 +207,6 @@ def extract(
         result.loyer_annuel_declare = _rent(text, prix)
 
     result.rendement_declare = _percent(text, r"rentabilite|rendement|renta\b")
-    if result.loyer_annuel_declare is None and result.rendement_declare and prix:
-        result.loyer_annuel_declare = prix * result.rendement_declare / 100
 
     result.chiffre_affaires = _first_amount(
         text, r"chiffre d.affaires?(?: annuel)?(?: ht)?(?: \d{4})?|\bc\.?a\.?(?: ht)?(?: \d{4})?\s*[:=]", 60,
@@ -236,7 +246,11 @@ def extract(
             text,
         )
         or "murs occupés" in flat_details
-    ) or result.loyer_annuel_declare is not None and type_bien != "fonds_commerce"
+        or re.search(r"occupé : oui", flat_details) is not None
+    )
+    # Un rendement publié ne vaut loyer encaissé que si le bien est réellement loué.
+    if result.bien_loue and result.loyer_annuel_declare is None and result.rendement_declare and prix:
+        result.loyer_annuel_declare = prix * result.rendement_declare / 100
     result.droit_au_bail = bool(re.search(r"droit au bail|cession de bail", text))
     for field_name, key in STRUCTURED_KEYS.items():
         value = _detail_number(details, key)

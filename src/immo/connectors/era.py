@@ -127,6 +127,7 @@ class EraConnector(AgencyJsonLdConnector):
             "dpe": dpe if dpe in tuple("ABCDEFG") else None,
             "ges": ges if ges in tuple("ABCDEFG") else None,
             "seller_name": seller, "published_at": data.get("date_publication"),
+            "seller_type": "pro",
             "details_json": json.dumps(details, ensure_ascii=False),
             "images_json": json.dumps(images, ensure_ascii=False),
             "image_count": len(images), "reference_annonce": data.get("reference") or reference,

@@ -20,6 +20,7 @@ USING (
            body AS description, TRY_CAST(rooms AS INTEGER) AS nb_pieces,
            TRY_CAST(bedrooms AS INTEGER) AS nb_chambres,
            CAST(dpe AS VARCHAR) AS dpe, CAST(ges AS VARCHAR) AS ges, seller_name,
+           CASE WHEN lower(CAST(seller_type AS VARCHAR))='private' THEN 'private' ELSE 'pro' END AS seller_type,
            TRY_CAST(image_count AS INTEGER) AS image_count,
            TRY_CAST(published_at AS TIMESTAMP) AS published_at,
            CAST(details_json AS VARCHAR) AS details_json,
@@ -38,13 +39,13 @@ WHEN MATCHED THEN UPDATE SET
     titre=incoming.titre,url=incoming.url,collected_at=incoming.collected_at,
     last_seen_at=incoming.collected_at,active=true,description=incoming.description,
     nb_pieces=incoming.nb_pieces,nb_chambres=incoming.nb_chambres,dpe=incoming.dpe,ges=incoming.ges,
-    seller_name=incoming.seller_name,image_count=incoming.image_count,
+    seller_type=incoming.seller_type,seller_name=incoming.seller_name,image_count=incoming.image_count,
     published_at=incoming.published_at,details_json=incoming.details_json,
     images_json=incoming.images_json,reference_annonce=incoming.reference_annonce
 WHEN NOT MATCHED THEN INSERT (
     source,external_id,categorie,type_bien,prix,loyer,surface_bati,surface_terrain,
     code_postal,ville,lat,lng,titre,url,collected_at,first_seen_at,last_seen_at,
-    active,description,nb_pieces,nb_chambres,dpe,ges,seller_name,image_count,
+    active,description,nb_pieces,nb_chambres,dpe,ges,seller_type,seller_name,image_count,
     published_at,details_json,images_json,reference_annonce
 ) VALUES (
     incoming.source,incoming.external_id,incoming.categorie,incoming.type_bien,
@@ -52,6 +53,6 @@ WHEN NOT MATCHED THEN INSERT (
     incoming.code_postal,incoming.ville,incoming.lat,incoming.lng,incoming.titre,
     incoming.url,incoming.collected_at,incoming.collected_at,incoming.collected_at,
     true,incoming.description,incoming.nb_pieces,incoming.nb_chambres,incoming.dpe,incoming.ges,
-    incoming.seller_name,incoming.image_count,incoming.published_at,
+    incoming.seller_type,incoming.seller_name,incoming.image_count,incoming.published_at,
     incoming.details_json,incoming.images_json,incoming.reference_annonce
 );

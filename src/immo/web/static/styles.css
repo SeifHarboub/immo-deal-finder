@@ -102,3 +102,42 @@ dialog { width:min(1040px,calc(100% - 30px)); max-height:92vh; padding:0; border
 @container (min-width:780px){.card-content{grid-template-columns:minmax(300px,.85fr) minmax(380px,1.15fr);gap:28px;align-items:stretch}.card-analysis{padding-left:28px;border-left:1px solid var(--line)}.deal-card h3{font-size:22px}.asking-price{font-size:32px}.no-reference,.discount-panel{margin-top:auto}}
 @media (max-width:760px){main{padding:0 12px 50px}.topbar{height:68px;padding:0 14px}.brand small{display:none}.status{font-size:0}.hero{min-height:auto;padding:42px 24px 62px;border-radius:0 0 24px 24px}.hero h1{font-size:39px}.metrics{margin:-25px 8px 28px}.metrics article{min-height:90px;padding:16px}.metrics strong{font-size:25px}.workspace,.workspace.filters-collapsed{display:flex;flex-direction:column}.filters,.workspace.filters-collapsed .filters{display:none;position:relative;top:auto;max-height:none;width:100%;margin-bottom:4px;order:2}.filters.is-open,.workspace.filters-collapsed .filters.is-open{display:block}.results{order:1;width:100%}.results-bar{position:static;align-items:start;flex-direction:column;margin:0 0 8px;padding:0;background:transparent;backdrop-filter:none}.result-controls{width:100%}.filter-toggle b{font-size:0}.filter-toggle b::after{content:'Filtres';font-size:12px}.filter-toggle i{display:none}.sort{flex:1;justify-content:space-between}.sort span{display:none}.sort select{width:100%;min-width:0}.dialog-grid{grid-template-columns:1fr 1fr}.dialog-body{padding:25px 19px}}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Stratégies, scores et investissement — octobre 2026 */
+.metrics { grid-template-columns: repeat(5, 1fr); }
+.metric-amber strong { color: var(--amber); }
+.metric-blue strong { color: var(--blue); }
+.invest-group { --accent:#174b38; --accent-soft:#eaf3ee; --accent-line:#c3d9cc; }
+.strategy-tabs { display:flex; gap:8px; margin:0 3% 26px; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin; }
+.strategy-tabs button { flex:1 0 auto; min-width:128px; display:flex; flex-direction:column; align-items:flex-start; gap:1px; padding:11px 15px; border:1px solid var(--line); border-radius:12px; background:var(--surface); cursor:pointer; text-align:left; }
+.strategy-tabs button b { font-size:13px; }
+.strategy-tabs button small { color:var(--muted); font-size:11px; }
+.strategy-tabs button[aria-selected="true"] { background:var(--forest); border-color:var(--forest); color:white; }
+.strategy-tabs button[aria-selected="true"] small { color:#c9e58d; }
+.score-badge { display:inline-flex; align-items:baseline; gap:6px; padding:4px 10px; border-radius:999px; background:#eef2ec; color:var(--ink); }
+.score-badge strong { font-size:16px; letter-spacing:-.02em; }
+.score-badge small { color:var(--muted); font-size:11px; }
+.score-badge.excellente { background:#dff1e6; } .score-badge.excellente strong { color:var(--green); }
+.score-badge.bonne { background:#eef6dc; } .score-badge.bonne strong { color:#658d21; }
+.signal-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.signal { padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; background:#eef2ec; color:var(--muted); }
+.signal.drop { background:#fff1d6; color:#8a5a00; }
+.signal.new { background:#e3eef6; color:var(--blue); }
+.signal.rent { background:#dff1e6; color:var(--green); }
+.signal.auction { background:#f3e8f7; color:#6b3f84; }
+.signal.gone { background:#f8e1e0; color:var(--red); }
+.invest-block { margin:0 0 12px; padding:14px; border:1px solid var(--line); border-radius:12px; background:#fbfcfa; }
+.invest-block.positive { border-color:#bcdcc8; background:#f3faf5; }
+.invest-block h4 { margin:0 0 10px; font-size:13px; color:var(--forest); }
+.invest-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px 14px; }
+.invest-grid small { display:block; color:var(--muted); font-size:11px; }
+.invest-grid strong { font-size:15px; }
+.invest-grid.positive strong { color:var(--green); }
+.invest-note { margin:10px 0 0; color:var(--muted); font-size:12px; }
+.auction-note { margin:0 0 12px; padding:12px 14px; border-radius:12px; background:#f6f0f8; color:#4b2d5c; font-size:13px; }
+.auction-note strong { display:block; }
+.simulator-inputs { margin-bottom:14px; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); }
+.duplicate-list { margin:0; padding-left:18px; }
+.duplicate-list li { margin:4px 0; }
+@media (max-width:1050px) { .metrics { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width:700px) { .metrics { grid-template-columns: repeat(2, 1fr); } .strategy-tabs { margin:0 0 20px; } }

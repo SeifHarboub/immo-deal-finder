@@ -149,7 +149,7 @@ def _financials(html: str) -> dict:
     out: dict = {}
     names = {"CA": "Chiffre d'affaires", "EBE": "EBE", "Res. net": "Résultat net",
              "Marge brute": "Marge brute", "Res. exploit.": "Résultat d'exploitation", "Nb pers.": "Effectif"}
-    for row in re.findall(r"<tr>(.*?)</tr>", table.group(1) + "</tr>", re.S):
+    for row in re.split(r"<tr[^>]*>", table.group(1)):
         cells = [_text(cell) for cell in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)]
         if len(cells) < 2 or cells[0] not in names:
             continue
@@ -188,9 +188,14 @@ def parse_detail(html: str, page_url: str) -> dict | None:
     price = _num(field("Prix"))
     reference = field(r"Réf\.")
     published = None
-    date = re.search(r"(?:Posté|Mise à jour) le \|(\d{1,2}) (\w+) (\d{4})", flat)
-    if date and date.group(2).lower() in _MONTHS:
-        published = datetime(int(date.group(3)), _MONTHS[date.group(2).lower()], int(date.group(1))).date().isoformat()
+    updated = None
+    for kind, day, month, year in re.findall(r"(Posté|Mise à jour) le \|(\d{1,2}) (\w+) (\d{4})", flat):
+        if month.lower() in _MONTHS:
+            value = datetime(int(year), _MONTHS[month.lower()], int(day)).date().isoformat()
+            if kind == "Posté":
+                published = value
+            else:
+                updated = value
     location = re.search(r"\|Localisation : \|([^|]+)(?:\|/ \|([^|]+))?(?:\|/ \|([^|]+))?", flat)
     region, dept, city = (location.groups() if location else (None, None, None))
     sector = re.search(r"\|Secteur :\s*\|(.+?)\|(?:\d+\|)?Description de l", flat)
@@ -209,6 +214,7 @@ def parse_detail(html: str, page_url: str) -> dict | None:
         "Places en salle": _num(field("Nombre de places en salle")),
         "Places en terrasse": _num(field("Nombre de places en terrasse")),
         "Logement de fonction": field("Logement de fonction présent"),
+        "Mise à jour": updated,
     }
     if re.search(r"licence IV", flat, re.I):
         details["Licence IV"] = "oui"

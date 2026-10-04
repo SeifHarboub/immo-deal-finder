@@ -145,14 +145,15 @@ class Century21Connector(AgencyJsonLdConnector):
         reference = re.search(r"Ref\s*:\s*([\w-]+)", html)
         reference = reference.group(1) if reference else None
         listing_id = re.search(r"/detail/(\d+)/", page_url)
-        images = []
-        # Les diapositives (`data-src`) portent la grande taille `_1_` ; `_8_` sert aux vignettes.
+        # Chaque photo existe en `_1_` (grande) et `_8_` (vignette) : une par UUID.
+        photos: dict[str, str] = {}
         for path in re.findall(r'data-src="(/imagesBien/s3/[^"]+\.jpe?g)"', html):
             if reference and f"_{reference}_" not in path:
                 continue
-            image = "https://www.century21.fr" + path
-            if image not in images:
-                images.append(image)
+            key = path.rsplit("_", 1)[-1]
+            if key not in photos or f"_{reference}_1_" in path:
+                photos[key] = "https://www.century21.fr" + path
+        images = list(photos.values())
         agency = re.search(r"Ce bien est proposé par l'agence\s*</[^>]+>\s*<[^>]+>([^<]+)<", html)
         if re.search(r"\bviager\b", f"{title} {description}", re.I):
             details["Viager"] = "oui"
@@ -167,6 +168,7 @@ class Century21Connector(AgencyJsonLdConnector):
             "zipcode": zipcode, "city": city.title() if city else None, "lat": None, "lng": None,
             "type_hint": type_hint, "url": page_url, "body": description, "dpe": dpe, "ges": ges,
             "seller_name": agency.group(1).strip() if agency else None, "published_at": None,
+            "seller_type": "pro",
             "details_json": json.dumps(details, ensure_ascii=False),
             "images_json": json.dumps(images, ensure_ascii=False),
             "image_count": len(images), "reference_annonce": reference,

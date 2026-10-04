@@ -177,6 +177,7 @@ class SaftiConnector(AgencyJsonLdConnector):
             "ges": data.get("gesNote") if data.get("gesNote") in tuple("ABCDEFG") else None,
             "seller_name": " ".join(filter(None, [agent.get("firstName"), agent.get("lastName")])) or None,
             "published_at": data.get("diffusionDate"),
+            "seller_type": "pro",
             "details_json": json.dumps(details, ensure_ascii=False),
             "images_json": json.dumps(images, ensure_ascii=False),
             "image_count": len(images), "reference_annonce": reference,

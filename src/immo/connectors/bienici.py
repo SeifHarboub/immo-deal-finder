@@ -260,7 +260,7 @@ class BienIciConnector(Connector):
 
     def __init__(self) -> None:
         self.client: PoliteClient | None = None
-        self.pages = 0
+        self.pages = self.missed = 0
         self.max_pages = 0
 
     def _filters(self, **extra) -> dict:
@@ -271,9 +271,12 @@ class BienIciConnector(Connector):
 
     def _search(self, filters: dict) -> dict | None:
         assert self.client is not None
-        return self.client.get_json(
+        payload = self.client.get_json(
             API_URL, {"filters": json.dumps(filters, separators=(",", ":"))}, allow_status={400},
         )
+        if payload is None:
+            self.missed += 1
+        return payload
 
     def _zones(self) -> dict[str, list[str]]:
         if ZONES_PATH.exists():
@@ -338,7 +341,7 @@ class BienIciConnector(Connector):
 
     def fetch(self, c: Criteria) -> Iterator[dict]:
         self.client = PoliteClient(self.source, 1, 1.5)
-        self.pages = 0
+        self.pages = self.missed = 0
         self.max_pages = c.max_pages or 0
         self.page_size = max(10, min(500, int(os.getenv("BIENICI_PAGE_SIZE", "500"))))
         self.incremental_size = max(10, min(500, int(os.getenv("BIENICI_INCREMENTAL_PAGE_SIZE", "100"))))
@@ -367,7 +370,7 @@ class BienIciConnector(Connector):
                 yield map_ad(ad)
         except CircuitOpen:
             circuit = True
-        complete = not circuit and not self.max_pages
+        complete = not circuit and not self.max_pages and not self.missed
         if complete:
             write_state(self.source, "watermark", started)
             if full:
@@ -375,7 +378,8 @@ class BienIciConnector(Connector):
         elapsed = (datetime.now(timezone.utc) - started).total_seconds()
         print(
             f"Diagnostic {self.source}: mode {mode}, {self.client.requests} requêtes, "
-            f"{self.pages} pages, {count} annonces, {self.client.failures} échecs, {elapsed:.1f}s"
+            f"{self.pages} pages, {count} annonces, {self.client.failures} échecs, "
+            f"{self.missed} réponses manquantes, {elapsed:.1f}s"
             f"{' (coupe-circuit ouvert)' if circuit else ''}"
             f"{'' if complete else ' (passage partiel, état non avancé)'}.",
             flush=True,

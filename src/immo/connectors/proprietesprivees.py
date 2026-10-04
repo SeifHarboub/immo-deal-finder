@@ -24,6 +24,17 @@ FLAGS = {
 }
 
 
+_JS_ESCAPE = re.compile(r"\\(u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2}|.)", re.S)
+_SIMPLE_ESCAPES = {"n": "\n", "t": "\t", "r": "\r", "b": "\b", "f": "\f", "v": "\v", "0": "\0"}
+
+
+def _unescape_js(match: re.Match) -> str:
+    token = match.group(1)
+    if token[0] in "ux" and len(token) > 1:
+        return chr(int(token[1:], 16))
+    return _SIMPLE_ESCAPES.get(token, token)
+
+
 class _JsReader:
     """Lecteur minimal de littéraux JavaScript (sortie `window.__NUXT__` de Nuxt 2)."""
 
@@ -65,8 +76,7 @@ class _JsReader:
             end += 2 if self.source[end] == "\\" else 1
         raw = self.source[self.index + 1:end]
         self.index = end + 1
-        return json.loads('"' + raw.replace('\\"' if quote == "'" else "\0", '"').replace("\\'", "'")
-                          .replace('"', '\\"').replace('\\\\"', '\\"') + '"') if raw else ""
+        return _JS_ESCAPE.sub(_unescape_js, raw)
 
     def _object(self) -> dict:
         self.index += 1
@@ -136,7 +146,7 @@ def nuxt_trade(html: str) -> dict | None:
     for name, raw in zip(params, _split_top_level(args, ",")):
         try:
             names[name] = _JsReader(raw.strip()).value()
-        except (ValueError, IndexError, json.JSONDecodeError):
+        except (ValueError, IndexError):
             names[name] = None
     variable = re.search(r'"/trades/[^"]+":\{[^{}]*data:([\w$]+)\}', body)
     if not variable:
@@ -153,7 +163,7 @@ def nuxt_trade(html: str) -> dict | None:
             continue
         try:
             trade[key] = _JsReader(raw, names).value()
-        except (ValueError, IndexError, json.JSONDecodeError):
+        except (ValueError, IndexError):
             continue
     return trade or None
 
@@ -183,7 +193,7 @@ class ProprietesPriveesConnector(AgencyJsonLdConnector):
         if trade.get("sold") or trade.get("removed"):
             return
         kind = str(trade.get("type") or "").lower()
-        if kind in {"parking", "garage"}:
+        if kind in {"parking", "garage"} or trade.get("category") == "new":
             return
         type_hint = TYPES.get(kind, "autre")
         location = trade.get("location") or {}
@@ -208,6 +218,13 @@ class ProprietesPriveesConnector(AgencyJsonLdConnector):
             ),
             "Nombre de lots": trade.get("coOwnershipLotsCount") or trade.get("lotsCount"),
             "Département": ((location.get("parent") or {}).get("label")),
+            "Année de construction": trade.get("constructionYear") or None,
+            "Exposition": trade.get("exposure"), "État intérieur": trade.get("internalState"),
+            "Chauffage": trade.get("heating"), "Énergie de chauffage": trade.get("heatingEnergy"),
+            "Mécanisme de chauffage": trade.get("heatingMecanism"), "Cuisine": trade.get("kitchen"),
+            "Nombre d'étages": trade.get("floorsCount") or None, "WC": trade.get("toiletsCount") or None,
+            "Places de parking": trade.get("parkingSpaceCount") or None,
+            "Type de stationnement": trade.get("parkingSpaceType"),
             "Conseiller": " ".join(filter(None, [mandatary.get("firstname"), mandatary.get("lastname")])),
             "Secteur du conseiller": mandatary.get("zone"),
         })
@@ -232,6 +249,7 @@ class ProprietesPriveesConnector(AgencyJsonLdConnector):
             "dpe": dpe if dpe in tuple("ABCDEFG") else None,
             "ges": ges if ges in tuple("ABCDEFG") else None,
             "seller_name": details.get("Conseiller"), "published_at": trade.get("publishedAt") or trade.get("createdAt"),
+            "seller_type": "pro",
             "details_json": json.dumps(details, ensure_ascii=False),
             "images_json": json.dumps(images, ensure_ascii=False),
             "image_count": len(images), "reference_annonce": reference,

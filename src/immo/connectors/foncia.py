@@ -118,6 +118,7 @@ class FonciaConnector(AgencyJsonLdConnector):
             "ges": ges_class if ges_class in tuple("ABCDEFG") else None,
             "seller_name": " ".join(filter(None, [negotiator.get("prenom"), negotiator.get("nom")])) or "Foncia",
             "published_at": data.get("datePublication"),
+            "seller_type": "pro",
             "details_json": json.dumps(details, ensure_ascii=False),
             "images_json": json.dumps(images, ensure_ascii=False),
             "image_count": len(images), "reference_annonce": reference,
@@ -152,7 +153,7 @@ class FonciaConnector(AgencyJsonLdConnector):
                 "lng": node.get("longitude"), "type_hint": type_hint, "url": page_url,
                 "body": node.get("description"),
                 "details_json": json.dumps({k: v for k, v in details.items() if v is not None}, ensure_ascii=False),
-                "images_json": "[]", "image_count": 0,
+                "seller_type": "pro", "images_json": "[]", "image_count": 0,
                 "reference_annonce": reference.group(1) if reference else None,
                 "raw_payload": json.dumps(node, ensure_ascii=False, default=str),
             }

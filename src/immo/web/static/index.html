@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Classement local des opportunités immobilières comparées aux ventes DVF.">
   <title>Immo Radar — Les vraies affaires</title>
-  <link rel="stylesheet" href="/static/styles.css?v=20260713-2355">
+  <link rel="stylesheet" href="/static/styles.css?v=20261004-1">
 </head>
 <body>
   <a class="skip-link" href="#results">Aller aux résultats</a>
@@ -21,17 +21,28 @@
     <section class="hero" aria-labelledby="page-title">
       <div>
         <p class="eyebrow">Analyse immobilière locale</p>
-        <h1 id="page-title">Repérez les biens vraiment <em>sous le marché.</em></h1>
-        <p class="hero-copy">Chaque annonce est comparée aux mutations DVF du même secteur. La fourchette indique le plafond à ne pas dépasser pour conclure une bonne ou une excellente affaire.</p>
+        <h1 id="page-title">Les vraies affaires, <em>toutes stratégies.</em></h1>
+        <p class="hero-copy">Achat sous le marché comparé aux ventes DVF, investissement locatif chiffré en net et en cash-flow, murs commerciaux, fonds de commerce et enchères. Les annonces retirées et les doublons entre plateformes sont écartés.</p>
       </div>
     </section>
 
     <section class="metrics" aria-label="Synthèse des résultats">
-      <article><span>Total filtré</span><strong id="metric-total">—</strong><small>annonces</small></article>
-      <article class="metric-green"><span>Excellentes fiables</span><strong id="metric-excellent">—</strong><small>≤ −25 % · confiance élevée</small></article>
-      <article class="metric-lime"><span>Bonnes fiables</span><strong id="metric-good">—</strong><small>≤ −15 % · confiance élevée</small></article>
-      <article class="metric-muted"><span>Sans référence comparable</span><strong id="metric-unscored">—</strong><small id="metric-coverage">affichées après le classement</small></article>
+      <article><span>Annonces en ligne</span><strong id="metric-total">—</strong><small id="metric-coverage">sans doublons</small></article>
+      <article class="metric-green"><span>Excellentes</span><strong id="metric-excellent">—</strong><small>score ≥ 75 / 100</small></article>
+      <article class="metric-lime"><span>Bonnes</span><strong id="metric-good">—</strong><small>score 55 à 75</small></article>
+      <article class="metric-amber"><span>Baisses de prix</span><strong id="metric-drops">—</strong><small>depuis la première observation</small></article>
+      <article class="metric-blue"><span>Nouveautés</span><strong id="metric-new">—</strong><small>publiées depuis 48 h</small></article>
     </section>
+
+    <nav class="strategy-tabs" aria-label="Stratégie d’investissement" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-preset="all"><b>Toutes</b><small>Meilleur score</small></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="decote"><b>Sous le marché</b><small>Décote DVF</small></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="locatif"><b>Locatif</b><small>Rendement net</small></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="immeuble"><b>Immeubles</b><small>De rapport</small></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="murs"><b>Murs commerciaux</b><small>Loyer et rendement</small></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="fonds"><b>Fonds de commerce</b><small>Multiples CA / EBE</small></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="encheres"><b>Enchères</b><small>Prix probable</small></button>
+    </nav>
 
     <div class="workspace" id="workspace">
       <aside class="filters" id="filters-panel" aria-labelledby="filters-title">
@@ -40,17 +51,34 @@
           <button class="text-button" id="reset-filters" type="button">Réinitialiser</button>
         </div>
         <form id="filter-form">
+          <input type="hidden" name="segment" id="segment-value">
+          <input type="hidden" name="auctions" id="auctions-value">
+          <details class="filter-group invest-group" open>
+            <summary><span>Investissement</span><small>Rendement, cash-flow et signaux</small></summary>
+            <div class="filter-group-body">
+              <div class="field-grid">
+                <label><span>Rendement net min.</span><div class="unit-input"><input name="yield_min" type="number" min="0" max="30" step="0.5" placeholder="Ex. 6"><i>%</i></div></label>
+                <label><span>Publiée depuis</span><select name="new_days"><option value="">Toutes</option><option value="2">48 heures</option><option value="7">7 jours</option><option value="30">30 jours</option></select></label>
+              </div>
+              <label class="toggle"><input type="checkbox" name="cashflow_positive" value="true"><span></span>Cash-flow positif après crédit</label>
+              <label class="toggle"><input type="checkbox" name="real_rent" value="true"><span></span>Loyer réel publié (bien loué)</label>
+              <label class="toggle"><input type="checkbox" name="price_drop" value="true"><span></span>Prix déjà baissé</label>
+              <label class="toggle"><input type="checkbox" name="include_duplicates" value="true"><span></span>Afficher les doublons entre sites</label>
+              <label class="toggle"><input type="checkbox" name="include_inactive" value="true"><span></span>Inclure les annonces retirées</label>
+              <p class="filter-note" id="assumptions-note">Hypothèses : chargement…</p>
+            </div>
+          </details>
           <details class="filter-group rank-group" open>
             <summary><span>Potentiel</span><small>Écart estimé avec le marché</small></summary>
             <fieldset>
-              <label class="check"><input type="checkbox" name="level" value="excellente"><span class="swatch excellent"></span><b>Très bonne</b><small>≥ 25 % sous le marché</small></label>
-              <label class="check"><input type="checkbox" name="level" value="bonne"><span class="swatch good"></span><b>Bonne</b><small>15 à 25 % sous le marché</small></label>
-              <label class="check"><input type="checkbox" name="level" value="correcte"><span class="swatch correct"></span><b>Sous marché</b><small>0 à 15 % d’avantage</small></label>
-              <label class="check"><input type="checkbox" name="level" value="hors_cible"><span class="swatch off"></span><b>Au-dessus</b><small>0 % ou plus cher</small></label>
-              <label class="check"><input type="checkbox" name="level" value="a_analyser"><span class="swatch unknown"></span><b>Non comparé</b><small>Écart encore inconnu</small></label>
-              <label class="check"><input type="checkbox" name="level" value="a_verifier"><span class="swatch warning"></span><b>À vérifier</b><small>Écart non fiable</small></label>
-              <label class="toggle"><input type="checkbox" name="scored_only" value="true"><span></span>Uniquement avec référence DVF</label>
-              <p class="filter-note">Les biens professionnels et terrains restent visibles, mais utilisent des références différentes du DVF résidentiel.</p>
+              <label class="check"><input type="checkbox" name="level" value="excellente"><span class="swatch excellent"></span><b>Excellente</b><small>Score ≥ 75</small></label>
+              <label class="check"><input type="checkbox" name="level" value="bonne"><span class="swatch good"></span><b>Bonne</b><small>Score 55 à 75</small></label>
+              <label class="check"><input type="checkbox" name="level" value="correcte"><span class="swatch correct"></span><b>Correcte</b><small>Score 30 à 55</small></label>
+              <label class="check"><input type="checkbox" name="level" value="hors_cible"><span class="swatch off"></span><b>Faible</b><small>Score sous 30</small></label>
+              <label class="check"><input type="checkbox" name="level" value="a_analyser"><span class="swatch unknown"></span><b>Non évaluée</b><small>Données insuffisantes</small></label>
+              <label class="check"><input type="checkbox" name="level" value="a_verifier"><span class="swatch warning"></span><b>À vérifier</b><small>Prix ou nature atypique</small></label>
+              <label class="toggle"><input type="checkbox" name="scored_only" value="true"><span></span>Uniquement les annonces évaluées</label>
+              <p class="filter-note">Le score retient la meilleure stratégie applicable : décote DVF, rendement net, rendement des murs ou multiple d’un fonds.</p>
             </fieldset>
           </details>
 
@@ -124,7 +152,7 @@
         <div class="results-bar">
           <div><p class="eyebrow">Opportunités</p><h2 id="results-title">Classement des annonces</h2></div>
           <div class="result-controls"><button class="filter-toggle" id="filter-toggle" type="button" aria-controls="filters-panel" aria-expanded="true"><i aria-hidden="true">☰</i><b id="filter-toggle-label">Masquer les filtres</b> <span id="filter-count">0</span></button><label class="sort"><span>Trier par</span><select id="sort-select" aria-label="Trier les annonces">
-            <option value="deal">Meilleure affaire</option><option value="recent">Plus récente</option>
+            <option value="deal">Meilleur score</option><option value="yield">Rendement net</option><option value="cashflow">Cash-flow</option><option value="discount">Plus forte décote</option><option value="drop">Plus forte baisse</option><option value="recent">Plus récente</option><option value="auction_date">Date d’enchère</option>
             <option value="price_asc">Prix croissant</option><option value="price_desc">Prix décroissant</option>
             <option value="surface">Plus grande surface</option>
           </select></label></div>
@@ -143,6 +171,6 @@
   </dialog>
 
   <template id="loading-template"><article class="deal-card loading" aria-hidden="true"><div></div><div></div><div></div></article></template>
-  <script src="/static/app.js?v=20260714-1240" defer></script>
+  <script src="/static/app.js?v=20261004-1" defer></script>
 </body>
 </html>

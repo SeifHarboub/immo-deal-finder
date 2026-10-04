@@ -204,33 +204,28 @@ def normalize(source: str) -> None:
 
 def score() -> None:
     with connect() as con:
-        con.execute((SQL_ROOT / "scoring" / "scoring.sql").read_text(encoding="utf-8"))
-        # The complete reliability model includes text/JSON risk signals. Doing
-        # that work twice on every HTTP request became too slow beyond 100k ads,
-        # so it is refreshed once at the end of each successful sync.
-        from immo.web.app import DEALS_CTE
-        con.execute("CREATE OR REPLACE TABLE deal_analysis AS " + DEALS_CTE + " SELECT * FROM deals")
+        from immo.analysis import materialize
+        count = materialize(con)
+    print(f"Analyse des opportunités recalculée : {count} annonces.", flush=True)
 
 
 def deals(limit: int = 20) -> list[tuple]:
     with connect() as con:
         exists = con.execute(
-            "SELECT count(*) FROM information_schema.tables WHERE table_name = 'affaires'"
+            "SELECT count(*) FROM information_schema.tables WHERE table_name = 'deal_analysis'"
         ).fetchone()[0]
-        if not exists:
-            rows = []
-        else:
-            rows = con.execute("""
-                SELECT niveau_affaire, titre, prix, surface_bati,
-                       round(decote * 100, 1), round(prix_a_viser), url
-                FROM affaires
-                WHERE niveau_affaire IN ('excellente', 'bonne')
-                ORDER BY decote ASC LIMIT ?
-            """, [limit]).fetchall()
+        rows = con.execute("""
+            SELECT niveau_affaire, strategie, round(score_global), titre, prix,
+                   surface_bati, round(decote * 100, 1), round(rendement_net, 1), url
+            FROM deal_analysis
+            WHERE active IS NOT false AND rang_doublon = 1
+              AND niveau_affaire IN ('excellente', 'bonne')
+            ORDER BY score_global DESC LIMIT ?
+        """, [limit]).fetchall() if exists else []
     if not rows:
         print("Aucune affaire.")
         return []
-    print("niveau | titre | prix | surface | décote % | prix à viser | url")
+    print("niveau | stratégie | score | titre | prix | surface | décote % | rendement net % | url")
     for row in rows:
         print(" | ".join("" if value is None else str(value) for value in row))
     return rows
@@ -241,7 +236,7 @@ def stats() -> None:
         tables = {row[0] for row in con.execute("SHOW TABLES").fetchall()}
         raw = con.execute("SELECT count(*) FROM raw_leboncoin").fetchone()[0] if "raw_leboncoin" in tables else 0
         silver = con.execute("SELECT count(*) FROM annonces_stg").fetchone()[0]
-        gold = con.execute("SELECT count(*) FROM affaires").fetchone()[0] if "affaires" in tables else 0
+        gold = con.execute("SELECT count(*) FROM deal_analysis").fetchone()[0] if "deal_analysis" in tables else 0
         refs = con.execute("SELECT count(*) FROM prix_reference").fetchone()[0]
         runs = con.execute("""
             SELECT status, rows_collected, started_at, search_url

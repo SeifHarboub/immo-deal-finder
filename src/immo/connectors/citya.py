@@ -134,6 +134,7 @@ class CityaConnector(AgencyJsonLdConnector):
             "dpe": dpe.group(1) if dpe else None, "ges": ges.group(1) if ges else None,
             "seller_name": re.split(r"\s\d", agency_text, 1)[0] or "Citya",
             "published_at": None,
+            "seller_type": "pro",
             "details_json": json.dumps(details, ensure_ascii=False),
             "images_json": json.dumps(images, ensure_ascii=False),
             "image_count": len(images), "reference_annonce": reference,

@@ -22,200 +22,6 @@ async def disable_local_frontend_cache(request, call_next):
     return response
 
 
-DEALS_CTE = """
-WITH rent_model AS (
-    SELECT a.*,
-           r.nb_ventes, r.q1_eur_m2, r.median_eur_m2, r.q3_eur_m2,
-           r.premiere_vente, r.derniere_vente,
-           r.surface_mediane_reference, r.score_comparabilite,
-           rent.loyer_m2_mois, rent.loyer_m2_bas, rent.loyer_m2_haut,
-           rent.niveau_estimation AS niveau_estimation_loyer,
-           rent.nb_observations AS nb_observations_loyer,
-           rent.r2 AS r2_loyer, rent.millesime AS millesime_loyer,
-           CASE WHEN a.type_bien='appartement' AND a.nb_pieces BETWEEN 1 AND 2 THEN 37.0
-                WHEN a.type_bien='appartement' AND a.nb_pieces>=3 THEN 72.0
-                WHEN a.type_bien='appartement' THEN 52.0
-                WHEN a.type_bien='maison' THEN 92.0
-                ELSE a.surface_bati END AS surface_loyer_reference,
-           CASE WHEN a.type_bien='appartement' THEN .75
-                WHEN a.type_bien='maison' THEN .80 ELSE 1.0 END AS elasticite_surface_loyer,
-           CASE WHEN a.categorie='vente'
-                THEN a.prix / NULLIF(a.surface_bati, 0) END AS prix_m2,
-           lower(coalesce(a.details_json,'')) LIKE '%approximative%'
-                AS localisation_approximative,
-           regexp_matches(lower(strip_accents(coalesce(a.titre,'') || ' ' || coalesce(a.description,''))),
-                'viager|bouquet|rente viag|nue.?propriete|vente a terme|adjudication|enchere|mise a prix|vente interactive|parts sociales|quote.?part')
-                AS transaction_atypique,
-           regexp_matches(lower(strip_accents(coalesce(a.titre,'') || ' ' || coalesce(a.description,''))),
-                'vendu loue|vendue louee|vendus loues|vendues louees|bien occupe|logement occupe|occupes par un|occupees par un|locataire en place|locataires en place|bail en cours|bail commercial|sous bail')
-                AS bien_occupe,
-           regexp_matches(lower(strip_accents(coalesce(a.titre,'') || ' ' || coalesce(a.description,''))),
-                'ancien garage|garage.?atelier|garages attenants|plateau brut|plateaux.{0,50}a rendre habitable|a rendre habitable|volume brut|local a transformer|transformation complete en espace habitable|a transformer en habitation|changement de destination|raccordement.{0,40}a prevoir|assainissement.{0,40}a prevoir')
-                AS bien_non_habitable,
-           regexp_matches(lower(strip_accents(coalesce(a.titre,'') || ' ' || coalesce(a.description,''))),
-                'residence hoteliere|residence senior|residence seniors|residence services|ehpad|loyer garanti|bail commercial|lmnp')
-                AS residence_geree,
-           regexp_matches(lower(strip_accents(coalesce(a.titre,'') || ' ' || coalesce(a.description,''))),
-                'compromis en cours|sous compromis|sous offre|offre acceptee|vente realisee|bien vendu')
-                AS non_disponible,
-           regexp_matches(lower(strip_accents(coalesce(a.description,''))),
-                'loi carrez.{0,80}loggia|loggia.{0,80}loi carrez|ancienne loggia')
-                AS surface_atypique,
-           regexp_matches(lower(strip_accents(coalesce(a.titre,'') || ' ' || coalesce(a.description,''))),
-                'a renover|a finir de renover|travaux.{0,60}a prevoir|travaux restants|quelques travaux|necessitant.{0,30}travaux|renovation.{0,40}a prevoir|renovation complete|rehabilitation|gros travaux|refection complete|remise au gout')
-                AS travaux_probables,
-           lower(coalesce(json_extract_string(try_cast(a.details_json AS JSON),
-                '$."Procédure de copropriété en cours"'), 'non'))='oui'
-                AS procedure_copropriete,
-           COALESCE(
-             TRY_CAST(json_extract_string(try_cast(a.details_json AS JSON),
-                  '$."Charges annuelles de copropriété"') AS DOUBLE),
-             12 * TRY_CAST(replace(regexp_extract(coalesce(a.details_json,''),
-                  'Charges mensuelles copro : ([0-9 ]+)', 1), ' ', '') AS DOUBLE)
-           )
-                AS charges_copropriete_annuelles,
-           CASE WHEN a.prix IS NULL OR a.prix <= 0 OR a.surface_bati IS NULL OR a.surface_bati <= 0
-                     OR (r.median_eur_m2 IS NOT NULL
-                         AND a.prix <= a.surface_bati * r.median_eur_m2 * 0.55)
-                     OR regexp_matches(lower(strip_accents(coalesce(a.titre,'') || ' ' || coalesce(a.description,''))),
-                        'ancien garage|garage.?atelier|garages attenants|plateau brut|plateaux.{0,50}a rendre habitable|a rendre habitable|volume brut|local a transformer|transformation complete en espace habitable|a transformer en habitation|changement de destination|raccordement.{0,40}a prevoir|assainissement.{0,40}a prevoir')
-                     OR regexp_matches(lower(strip_accents(coalesce(a.titre,'') || ' ' || coalesce(a.description,''))),
-                        'compromis en cours|sous compromis|sous offre|offre acceptee|vente realisee|bien vendu')
-                     OR regexp_matches(lower(strip_accents(coalesce(a.titre,'') || ' ' || coalesce(a.description,''))),
-                        'viager|bouquet|rente viag|nue.?propriete|vente a terme|adjudication|enchere|mise a prix|vente interactive|parts sociales|quote.?part')
-                THEN true ELSE false END AS prix_trop_bas
-    FROM annonces_stg a
-    LEFT JOIN annonce_reference r
-      ON r.source=a.source AND r.external_id=a.external_id
-    LEFT JOIN annonce_loyer_reference rent
-      ON rent.source=a.source AND rent.external_id=a.external_id
-    WHERE a.categorie = 'vente'
-       OR a.type_bien IN ('fonds_commerce', 'local_commercial')
-), base AS (
-    SELECT rent_model.*,
-           CASE WHEN type_bien='local_commercial'
-                THEN loyer_m2_mois * surface_bati
-                ELSE loyer_m2_mois * surface_loyer_reference
-                     * pow(greatest(.25, least(3.5, surface_bati/surface_loyer_reference)),
-                           elasticite_surface_loyer) END AS loyer_mensuel_estime,
-           CASE WHEN type_bien='local_commercial'
-                THEN loyer_m2_bas * surface_bati
-                ELSE loyer_m2_mois * surface_loyer_reference
-                     * pow(greatest(.25, least(3.5, surface_bati/surface_loyer_reference)),
-                           elasticite_surface_loyer)
-                     * exp(ln(NULLIF(loyer_m2_bas,0)/NULLIF(loyer_m2_mois,0))
-                           * .654) END AS loyer_mensuel_bas,
-           CASE WHEN type_bien='local_commercial'
-                THEN loyer_m2_haut * surface_bati
-                ELSE loyer_m2_mois * surface_loyer_reference
-                     * pow(greatest(.25, least(3.5, surface_bati/surface_loyer_reference)),
-                           elasticite_surface_loyer)
-                     * exp(ln(NULLIF(loyer_m2_haut,0)/NULLIF(loyer_m2_mois,0))
-                           * .654) END AS loyer_mensuel_haut,
-           loyer_m2_bas * surface_bati AS loyer_mensuel_bas_officiel,
-           loyer_m2_haut * surface_bati AS loyer_mensuel_haut_officiel
-    FROM rent_model
-), deals AS (
-    SELECT base.*,
-           1200 * loyer_mensuel_estime / NULLIF(prix,0) AS rendement_brut_affiche,
-           1200 * loyer_mensuel_bas / NULLIF(prix,0) AS rendement_brut_prudent,
-           1200 * loyer_mensuel_haut / NULLIF(prix,0) AS rendement_brut_haut,
-           1200 * loyer_mensuel_estime / NULLIF(surface_bati*median_eur_m2,0)
-                AS rendement_brut_marche,
-           CASE WHEN NOT prix_trop_bas
-                THEN ((prix / NULLIF(surface_bati, 0)) - median_eur_m2)
-                     / NULLIF(median_eur_m2, 0) END AS decote,
-           CASE
-             WHEN prix IS NULL OR prix <= 0 THEN 'Prix de vente nul ou absent'
-             WHEN surface_bati IS NULL OR surface_bati <= 0 THEN 'Surface habitable absente ou incohérente'
-             WHEN transaction_atypique THEN 'Mode de vente atypique : comparaison DVF directe non valable'
-             WHEN bien_non_habitable THEN 'Le bien n’est pas encore un logement habitable comparable aux ventes DVF résidentielles'
-             WHEN non_disponible THEN 'L’annonce indique qu’une offre ou un compromis est déjà en cours'
-             WHEN median_eur_m2 IS NOT NULL
-                  AND prix <= surface_bati * median_eur_m2 * .55
-                  THEN 'Décote supérieure à 45 % : prix, état ou nature de la vente à contrôler'
-             ELSE NULL END AS motif_verification,
-           concat_ws(' · ',
-             CASE WHEN bien_occupe THEN 'Bien vendu occupé' END,
-             CASE WHEN residence_geree THEN 'Résidence gérée ou bail commercial' END,
-             CASE WHEN surface_atypique THEN 'Surface Carrez différente de la surface annoncée' END,
-             CASE WHEN travaux_probables THEN 'Travaux importants probables' END,
-             CASE WHEN procedure_copropriete THEN 'Procédure de copropriété en cours' END,
-             CASE WHEN charges_copropriete_annuelles IS NOT NULL AND surface_bati>0
-                       AND charges_copropriete_annuelles/surface_bati>35
-                  THEN 'Charges de copropriété élevées' END,
-             CASE WHEN upper(coalesce(dpe,'')) IN ('F','G') THEN 'DPE énergivore' END,
-             CASE WHEN type_bien='maison' AND surface_terrain IS NULL THEN 'Terrain non renseigné' END,
-             CASE WHEN localisation_approximative THEN 'Localisation approximative' END
-           ) AS risques_evaluation,
-           CASE WHEN NOT prix_trop_bas THEN surface_bati * q1_eur_m2 END AS plafond_q1,
-           CASE WHEN NOT prix_trop_bas THEN surface_bati * median_eur_m2 * 0.75 END AS plafond_excellente,
-           CASE WHEN NOT prix_trop_bas THEN surface_bati * median_eur_m2 * 0.85 END AS plafond_bonne,
-           CASE
-             WHEN categorie <> 'vente' THEN 'a_analyser'
-             WHEN median_eur_m2 IS NULL OR prix IS NULL OR surface_bati IS NULL THEN 'a_analyser'
-             WHEN prix_trop_bas THEN 'a_verifier'
-             WHEN ((prix / NULLIF(surface_bati, 0)) - median_eur_m2)
-                    / NULLIF(median_eur_m2, 0) <= -0.25 THEN 'excellente'
-             WHEN ((prix / NULLIF(surface_bati, 0)) - median_eur_m2)
-                    / NULLIF(median_eur_m2, 0) <= -0.15 THEN 'bonne'
-             WHEN ((prix / NULLIF(surface_bati, 0)) - median_eur_m2)
-                    / NULLIF(median_eur_m2, 0) < 0 THEN 'correcte'
-             ELSE 'hors_cible'
-           END AS niveau_affaire,
-           CASE WHEN prix_trop_bas THEN 'indisponible'
-                WHEN type_bien='local_commercial' THEN 'indicative'
-                WHEN categorie <> 'vente' THEN 'indisponible'
-                WHEN nb_ventes >= 10 AND score_comparabilite<=.65
-                     AND (q3_eur_m2-q1_eur_m2)/NULLIF(median_eur_m2,0)<=.28
-                     AND surface_mediane_reference BETWEEN surface_bati*.85 AND surface_bati*1.15
-                     AND derniere_vente >= current_date-INTERVAL '2 years'
-                     AND NOT localisation_approximative
-                     AND NOT bien_occupe AND NOT bien_non_habitable AND NOT residence_geree
-                     AND NOT non_disponible AND NOT surface_atypique
-                     AND NOT travaux_probables AND NOT procedure_copropriete
-                     AND upper(coalesce(dpe,'')) BETWEEN 'A' AND 'E'
-                     AND length(coalesce(description,''))>=250
-                     AND coalesce(details_json,'{}')<>'{}'
-                     AND NOT (charges_copropriete_annuelles IS NOT NULL AND surface_bati>0
-                              AND charges_copropriete_annuelles/surface_bati>35)
-                     AND upper(coalesce(dpe,'')) NOT IN ('F','G')
-                     AND (type_bien<>'maison' OR surface_terrain IS NOT NULL)
-                     THEN 'fiable'
-                WHEN nb_ventes >= 7 AND score_comparabilite<=1.05
-                     AND (q3_eur_m2-q1_eur_m2)/NULLIF(median_eur_m2,0)<=.45
-                     THEN 'indicative'
-                WHEN nb_ventes IS NOT NULL THEN 'fragile'
-                ELSE 'indisponible' END AS confiance,
-           CASE WHEN categorie <> 'vente' OR median_eur_m2 IS NULL OR prix_trop_bas THEN NULL
-                ELSE round(greatest(0, least(100,
-                     -100 * (((prix / NULLIF(surface_bati, 0)) - median_eur_m2)
-                     / NULLIF(median_eur_m2, 0)) / 0.25))
-                     * CASE
-                         WHEN nb_ventes >= 10 AND score_comparabilite<=.65
-                           AND (q3_eur_m2-q1_eur_m2)/NULLIF(median_eur_m2,0)<=.28
-                           AND surface_mediane_reference BETWEEN surface_bati*.85 AND surface_bati*1.15
-                           AND derniere_vente >= current_date-INTERVAL '2 years'
-                           AND NOT localisation_approximative
-                           AND NOT bien_occupe AND NOT bien_non_habitable AND NOT residence_geree
-                           AND NOT non_disponible AND NOT surface_atypique
-                           AND NOT travaux_probables AND NOT procedure_copropriete
-                           AND upper(coalesce(dpe,'')) BETWEEN 'A' AND 'E'
-                           AND length(coalesce(description,''))>=250
-                           AND coalesce(details_json,'{}')<>'{}'
-                           AND NOT (charges_copropriete_annuelles IS NOT NULL AND surface_bati>0
-                                    AND charges_copropriete_annuelles/surface_bati>35)
-                           AND upper(coalesce(dpe,'')) NOT IN ('F','G')
-                           AND (type_bien<>'maison' OR surface_terrain IS NOT NULL)
-                           THEN 1.0
-                         WHEN nb_ventes >= 7 AND score_comparabilite<=1.05
-                           AND (q3_eur_m2-q1_eur_m2)/NULLIF(median_eur_m2,0)<=.45
-                           THEN .75 ELSE .45 END
-                ) END AS score_opportunite
-    FROM base
-)
-"""
-
 MATERIALIZED_DEALS_CTE = "WITH deals AS (SELECT * FROM deal_analysis) "
 
 
@@ -223,7 +29,11 @@ def _deals_cte(con) -> str:
     exists = con.execute(
         "SELECT count(*) FROM information_schema.tables WHERE table_name='deal_analysis'"
     ).fetchone()[0]
-    return MATERIALIZED_DEALS_CTE if exists else DEALS_CTE
+    if exists:
+        return MATERIALIZED_DEALS_CTE
+    # Avant la première synchronisation : calcul à la volée, plus lent.
+    from immo.analysis import deals_sql
+    return "WITH deals AS (" + deals_sql() + " SELECT * FROM deals_final) "
 
 
 def _json(value: Any) -> Any:
@@ -237,18 +47,27 @@ def _where(
     surface_min: float | None, surface_max: float | None,
     land_min: float | None, land_max: float | None,
     levels: list[str], scored_only: bool,
+    strategies: list[str] | None = None, segments: list[str] | None = None,
+    yield_min: float | None = None, cashflow_positive: bool = False,
+    price_drop: bool = False, auctions: str | None = None,
+    new_days: int | None = None, real_rent: bool = False,
+    include_inactive: bool = False, include_duplicates: bool = False,
 ) -> tuple[str, list[Any]]:
     clauses = ["1=1"]
     params: list[Any] = []
+    if not include_inactive:
+        clauses.append("active IS NOT false")
+    if not include_duplicates:
+        clauses.append("rang_doublon = 1")
     if q:
         clauses.append("(titre ILIKE ? OR description ILIKE ? OR ville ILIKE ?)")
         params.extend([f"%{q}%"] * 3)
-    if sources:
-        clauses.append("source IN (" + ",".join("?" for _ in sources) + ")")
-        params.extend(sources)
-    if types:
-        clauses.append("type_bien IN (" + ",".join("?" for _ in types) + ")")
-        params.extend(types)
+    for column, values in (("source", sources), ("type_bien", types),
+                           ("niveau_affaire", levels), ("strategie", strategies or []),
+                           ("segment", segments or [])):
+        if values:
+            clauses.append(f"{column} IN (" + ",".join("?" for _ in values) + ")")
+            params.extend(values)
     if department:
         prefix = "20" if department.upper() in {"2A", "2B"} else department.zfill(2)
         clauses.append("code_postal LIKE ?")
@@ -259,29 +78,30 @@ def _where(
     if postal_code:
         clauses.append("code_postal LIKE ?")
         params.append(f"{postal_code}%")
-    if price_min is not None:
-        clauses.append("COALESCE(prix, loyer) >= ?")
-        params.append(price_min)
-    if price_max is not None:
-        clauses.append("COALESCE(prix, loyer) <= ?")
-        params.append(price_max)
-    if surface_min is not None:
-        clauses.append("surface_bati >= ?")
-        params.append(surface_min)
-    if surface_max is not None:
-        clauses.append("surface_bati <= ?")
-        params.append(surface_max)
-    if land_min is not None:
-        clauses.append("surface_terrain >= ?")
-        params.append(land_min)
-    if land_max is not None:
-        clauses.append("surface_terrain <= ?")
-        params.append(land_max)
-    if levels:
-        clauses.append("niveau_affaire IN (" + ",".join("?" for _ in levels) + ")")
-        params.extend(levels)
+    for expression, operator, value in (
+        ("COALESCE(prix, loyer)", ">=", price_min), ("COALESCE(prix, loyer)", "<=", price_max),
+        ("surface_bati", ">=", surface_min), ("surface_bati", "<=", surface_max),
+        ("surface_terrain", ">=", land_min), ("surface_terrain", "<=", land_max),
+        ("rendement_net", ">=", yield_min),
+    ):
+        if value is not None:
+            clauses.append(f"{expression} {operator} ?")
+            params.append(value)
     if scored_only:
-        clauses.append("score_opportunite IS NOT NULL")
+        clauses.append("score_global IS NOT NULL")
+    if cashflow_positive:
+        clauses.append("cashflow_mensuel >= 0")
+    if price_drop:
+        clauses.append("baisse_prix_pct >= 1")
+    if real_rent:
+        clauses.append("loyer_reel")
+    if auctions == "only":
+        clauses.append("vente_encheres")
+    elif auctions == "exclude":
+        clauses.append("NOT vente_encheres")
+    if new_days is not None:
+        clauses.append("jours_en_ligne <= ?")
+        params.append(new_days)
     return " AND ".join(clauses), params
 
 
@@ -377,19 +197,31 @@ def deals(
     surface_min: float | None = None, surface_max: float | None = None,
     land_min: float | None = None, land_max: float | None = None,
     level: list[str] = Query(default=[]), scored_only: bool = False,
+    strategie: list[str] = Query(default=[]), segment: list[str] = Query(default=[]),
+    yield_min: float | None = None, cashflow_positive: bool = False,
+    price_drop: bool = False, auctions: str | None = None,
+    new_days: int | None = None, real_rent: bool = False,
+    include_inactive: bool = False, include_duplicates: bool = False,
     sort: str = "deal", limit: int = Query(24, ge=1, le=100),
     offset: int = Query(0, ge=0),
 ) -> dict[str, Any]:
     where, params = _where(
         q, source, type_bien, department, city, postal_code, price_min, price_max,
         surface_min, surface_max, land_min, land_max, level, scored_only,
+        strategie, segment, yield_min, cashflow_positive, price_drop, auctions,
+        new_days, real_rent, include_inactive, include_duplicates,
     )
     sorts = {
-        "deal": "CASE confiance WHEN 'fiable' THEN 0 WHEN 'indicative' THEN 1 WHEN 'fragile' THEN 2 ELSE 3 END, score_opportunite DESC NULLS LAST, decote ASC NULLS LAST, last_seen_at DESC NULLS LAST",
-        "recent": "COALESCE(published_at, last_seen_at) DESC NULLS LAST",
+        "deal": "score_global DESC NULLS LAST, CASE confiance WHEN 'fiable' THEN 0 WHEN 'indicative' THEN 1 ELSE 2 END, last_seen_at DESC NULLS LAST",
+        "yield": "rendement_net DESC NULLS LAST",
+        "cashflow": "cashflow_mensuel DESC NULLS LAST",
+        "discount": "decote ASC NULLS LAST",
+        "drop": "baisse_prix_pct DESC NULLS LAST",
+        "recent": "COALESCE(published_at, first_seen_at) DESC NULLS LAST",
         "price_asc": "prix ASC NULLS LAST",
         "price_desc": "prix DESC NULLS LAST",
         "surface": "surface_bati DESC NULLS LAST",
+        "auction_date": "date_vente ASC NULLS LAST",
     }
     order_by = sorts.get(sort, sorts["deal"])
     try:
@@ -397,16 +229,20 @@ def deals(
             deals_cte = _deals_cte(con)
             summary = con.execute(deals_cte + f"""
                 SELECT count(*),
-                       count(*) FILTER (WHERE niveau_affaire='excellente' AND confiance='fiable'),
-                       count(*) FILTER (WHERE niveau_affaire='bonne' AND confiance='fiable'),
-                       count(*) FILTER (WHERE score_opportunite IS NOT NULL),
-                       count(*) FILTER (WHERE score_opportunite IS NULL),
-                       avg(decote) FILTER (WHERE decote IS NOT NULL)
+                       count(*) FILTER (WHERE niveau_affaire='excellente'),
+                       count(*) FILTER (WHERE niveau_affaire='bonne'),
+                       count(*) FILTER (WHERE score_global IS NOT NULL),
+                       count(*) FILTER (WHERE score_global IS NULL),
+                       avg(decote) FILTER (WHERE decote IS NOT NULL),
+                       count(*) FILTER (WHERE baisse_prix_pct >= 1),
+                       count(*) FILTER (WHERE jours_en_ligne <= 2),
+                       median(rendement_net) FILTER (WHERE rendement_net IS NOT NULL)
                 FROM deals WHERE {where}
             """, params).fetchone()
             cursor = con.execute(deals_cte + f"""
-                SELECT * FROM deals WHERE {where}
-                ORDER BY {order_by} LIMIT ? OFFSET ?
+                SELECT * EXCLUDE (description), left(description, 600) AS description
+                FROM deals WHERE {where}
+                ORDER BY {order_by}, source, external_id LIMIT ? OFFSET ?
             """, [*params, limit, offset])
             columns = [item[0] for item in cursor.description]
             items = [dict(zip(columns, row)) for row in cursor.fetchall()]
@@ -414,12 +250,33 @@ def deals(
             "items": items,
             "summary": {"total": summary[0], "excellent": summary[1],
                         "good": summary[2], "scored": summary[3],
-                        "unscored": summary[4], "average_discount": summary[5]},
+                        "unscored": summary[4], "average_discount": summary[5],
+                        "price_drops": summary[6], "new": summary[7],
+                        "median_net_yield": summary[8]},
             "limit": limit, "offset": offset,
             "has_more": offset + len(items) < summary[0],
         })
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"Lecture impossible : {exc}") from exc
+
+
+@app.get("/api/annonces/{source}/{external_id:path}/historique")
+def price_history(source: str, external_id: str) -> dict[str, Any]:
+    try:
+        with connect() as con:
+            rows = con.execute("""
+                SELECT observed_at, prix, loyer FROM prix_historique
+                WHERE source=? AND external_id=? ORDER BY observed_at
+            """, [source, external_id]).fetchall()
+        return _json({"items": [{"date": r[0], "prix": r[1], "loyer": r[2]} for r in rows]})
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail=f"Lecture impossible : {exc}") from exc
+
+
+@app.get("/api/hypotheses")
+def investment_assumptions() -> dict[str, Any]:
+    from immo.analysis import assumptions
+    return assumptions()
 
 
 @app.get("/api/annonces/{source}/{external_id:path}")
@@ -491,7 +348,27 @@ def deal_detail(source: str, external_id: str) -> dict[str, Any]:
                 ])
                 sales = [dict(zip([c[0] for c in sales_cursor.description], sale))
                          for sale in sales_cursor.fetchall()]
-        return _json({"item": item, "recent_sales": sales})
+            duplicates = []
+            if item.get("groupe_doublon") is not None and item.get("nb_publications", 1) > 1:
+                duplicates = [
+                    {"source": row[0], "external_id": row[1], "url": row[2], "prix": row[3],
+                     "first_seen_at": row[4]}
+                    for row in con.execute(_deals_cte(con) + """
+                        SELECT source, external_id, url, prix, first_seen_at FROM deals
+                        WHERE groupe_doublon=? AND NOT (source=? AND external_id=?)
+                        ORDER BY prix
+                    """, [item["groupe_doublon"], source, external_id]).fetchall()
+                ]
+            history = con.execute("""
+                SELECT observed_at, prix FROM prix_historique
+                WHERE source=? AND external_id=? ORDER BY observed_at
+            """, [source, external_id]).fetchall() if con.execute(
+                "SELECT count(*) FROM information_schema.tables WHERE table_name='prix_historique'"
+            ).fetchone()[0] else []
+        return _json({
+            "item": item, "recent_sales": sales, "duplicates": duplicates,
+            "price_history": [{"date": row[0], "prix": row[1]} for row in history],
+        })
     except HTTPException:
         raise
     except Exception as exc:

@@ -8,13 +8,33 @@ const state = { offset: 0, limit: 24, loading: false, controller: null };
 const money = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
 const number = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 });
 const labels = {
-  excellente: 'Très bonne', bonne: 'Bonne', correcte: 'Sous le marché',
-  hors_cible: 'Au-dessus du marché', a_analyser: 'Non comparée',
+  excellente: 'Excellente', bonne: 'Bonne', correcte: 'Correcte',
+  hors_cible: 'Faible', a_analyser: 'Non évaluée',
   a_verifier: 'À vérifier',
   appartement: 'Appartement', maison: 'Maison', terrain: 'Terrain', bureau: 'Bureau',
-  local_commercial: 'Murs commerciaux', fonds_commerce: 'Fonds de commerce', autre: 'Autre / type à confirmer'
+  local_commercial: 'Murs commerciaux', fonds_commerce: 'Fonds de commerce', immeuble: 'Immeuble', autre: 'Autre / type à confirmer'
 };
-const sourceLabels = { superimmo: 'Superimmo', orpi: 'Orpi', laforet: 'Laforêt', pointdevente: 'PointDeVente', immonot: 'Immonot', geolocaux: 'Geolocaux', iad: 'iad France', leboncoin: 'Leboncoin' };
+const strategyLabels = { decote: 'Sous le marché', rendement: 'Rendement locatif', murs: 'Murs commerciaux', fonds: 'Fonds de commerce' };
+const saleModeLabels = { enchere_judiciaire: 'Enchère judiciaire', enchere_notariale: 'Enchère notariale', vente_interactive: 'Vente interactive', cession_publique: 'Cession publique' };
+const sourceLabels = {
+  superimmo: 'Superimmo', orpi: 'Orpi', laforet: 'Laforêt', pointdevente: 'PointDeVente', immonot: 'Immonot',
+  geolocaux: 'Geolocaux', iad: 'iad France', leboncoin: 'Leboncoin', bienici: 'Bien’ici', notaires: 'Notaires de France',
+  figaro: 'Figaro Immobilier', safti: 'Safti', century21: 'Century 21', era: 'ERA', citya: 'Citya', foncia: 'Foncia',
+  proprietesprivees: 'Propriétés-Privées', entreparticuliers: 'EntreParticuliers', bureauxlocaux: 'BureauxLocaux',
+  bpifrance: 'Bpifrance Transmission', placedescommerces: 'Place des Commerces', msimond: 'Michel Simond',
+  murscommerciaux: 'MursCommerciaux', cbre: 'CBRE', arthurloyd: 'Arthur Loyd', licitor: 'Licitor', avoventes: 'Avoventes',
+  encheresimmo: 'Enchères Immobilières', agorastore: 'Agorastore', heures36: '36h immo', vench: 'Vench'
+};
+const presets = {
+  all: { segment: '', auctions: '', sort: 'deal' },
+  decote: { segment: 'residentiel', auctions: 'exclude', sort: 'discount' },
+  locatif: { segment: 'residentiel', auctions: 'exclude', sort: 'yield' },
+  immeuble: { segment: 'immeuble', auctions: '', sort: 'yield' },
+  murs: { segment: 'murs', auctions: '', sort: 'deal' },
+  fonds: { segment: 'fonds', auctions: '', sort: 'deal' },
+  encheres: { segment: '', auctions: 'only', sort: 'auction_date' }
+};
+let assumptions = null;
 const departments = [
   ['01','Ain'],['02','Aisne'],['03','Allier'],['04','Alpes-de-Haute-Provence'],['05','Hautes-Alpes'],['06','Alpes-Maritimes'],['07','Ardèche'],['08','Ardennes'],['09','Ariège'],['10','Aube'],['11','Aude'],['12','Aveyron'],['13','Bouches-du-Rhône'],['14','Calvados'],['15','Cantal'],['16','Charente'],['17','Charente-Maritime'],['18','Cher'],['19','Corrèze'],['2A','Corse-du-Sud'],['2B','Haute-Corse'],['21','Côte-d’Or'],['22','Côtes-d’Armor'],['23','Creuse'],['24','Dordogne'],['25','Doubs'],['26','Drôme'],['27','Eure'],['28','Eure-et-Loir'],['29','Finistère'],['30','Gard'],['31','Haute-Garonne'],['32','Gers'],['33','Gironde'],['34','Hérault'],['35','Ille-et-Vilaine'],['36','Indre'],['37','Indre-et-Loire'],['38','Isère'],['39','Jura'],['40','Landes'],['41','Loir-et-Cher'],['42','Loire'],['43','Haute-Loire'],['44','Loire-Atlantique'],['45','Loiret'],['46','Lot'],['47','Lot-et-Garonne'],['48','Lozère'],['49','Maine-et-Loire'],['50','Manche'],['51','Marne'],['52','Haute-Marne'],['53','Mayenne'],['54','Meurthe-et-Moselle'],['55','Meuse'],['56','Morbihan'],['57','Moselle'],['58','Nièvre'],['59','Nord'],['60','Oise'],['61','Orne'],['62','Pas-de-Calais'],['63','Puy-de-Dôme'],['64','Pyrénées-Atlantiques'],['65','Hautes-Pyrénées'],['66','Pyrénées-Orientales'],['67','Bas-Rhin'],['68','Haut-Rhin'],['69','Rhône'],['70','Haute-Saône'],['71','Saône-et-Loire'],['72','Sarthe'],['73','Savoie'],['74','Haute-Savoie'],['75','Paris'],['76','Seine-Maritime'],['77','Seine-et-Marne'],['78','Yvelines'],['79','Deux-Sèvres'],['80','Somme'],['81','Tarn'],['82','Tarn-et-Garonne'],['83','Var'],['84','Vaucluse'],['85','Vendée'],['86','Vienne'],['87','Haute-Vienne'],['88','Vosges'],['89','Yonne'],['90','Territoire de Belfort'],['91','Essonne'],['92','Hauts-de-Seine'],['93','Seine-Saint-Denis'],['94','Val-de-Marne'],['95','Val-d’Oise'],['971','Guadeloupe'],['972','Martinique'],['973','Guyane'],['974','La Réunion'],['975','Saint-Pierre-et-Miquelon'],['976','Mayotte']
 ];
@@ -278,6 +298,62 @@ function rentalAnalysis(item) {
   </section>`;
 }
 
+function pct(value) { return value == null ? '—' : `${number.format(value)} %`; }
+
+function scoreBadge(item) {
+  if (item.score_global == null) return '';
+  const strategy = strategyLabels[item.strategie] || '';
+  return `<span class="score-badge ${esc(item.niveau_affaire)}" title="Score sur 100 de la meilleure stratégie applicable"><strong>${Math.round(item.score_global)}</strong><small>${esc(strategy)}</small></span>`;
+}
+
+function signalChips(item) {
+  const chips = [];
+  if (item.baisse_prix_pct >= 1) chips.push(['drop', `Prix −${number.format(item.baisse_prix_pct)} %`]);
+  if (item.jours_en_ligne != null && item.jours_en_ligne <= 2) chips.push(['new', 'Nouvelle']);
+  if (item.loyer_reel) chips.push(['rent', 'Loyer réel publié']);
+  if (item.vente_encheres) chips.push(['auction', saleModeLabels[item.mode_vente] || 'Enchère']);
+  if (item.nb_publications > 1) chips.push(['dup', `Sur ${item.nb_publications} sites`]);
+  if (item.active === false) chips.push(['gone', 'Retirée']);
+  if (item.jours_en_ligne > 120) chips.push(['old', `En ligne depuis ${item.jours_en_ligne} j`]);
+  return chips.length ? `<div class="signal-chips">${chips.map(([kind, text]) => `<span class="signal ${kind}">${esc(text)}</span>`).join('')}</div>` : '';
+}
+
+function investmentBlock(item) {
+  const segment = item.segment;
+  if (segment === 'fonds') {
+    const rows = [
+      ['Prix de cession', euro(item.prix)],
+      ['Chiffre d’affaires', euro(item.chiffre_affaires)],
+      ['EBE', euro(item.ebe)],
+      ['Prix / EBE', item.multiple_ebe == null ? '—' : `${number.format(item.multiple_ebe)} ×`],
+      ['Prix / CA', item.multiple_ca == null ? '—' : `${number.format(item.multiple_ca * 100)} %`],
+      ['Loyer / CA', item.poids_loyer_ca == null ? '—' : pct(item.poids_loyer_ca * 100)]
+    ];
+    const verdict = item.score_fonds == null
+      ? '<p class="invest-note">Ni chiffre d’affaires ni EBE publiés : le fonds ne peut pas être évalué sans le bilan. Demandez les trois dernières liasses fiscales.</p>'
+      : `<p class="invest-note">Un petit commerce se négocie généralement entre 2 et 4 fois l’EBE retraité. Score fonds : <strong>${Math.round(item.score_fonds)}/100</strong>.</p>`;
+    return `<section class="invest-block"><h4>Fonds de commerce</h4><div class="invest-grid">${rows.map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>${verdict}</section>`;
+  }
+  if (!['residentiel','immeuble','murs'].includes(segment) || item.rendement_net == null) return '';
+  const rentLabel = item.loyer_reel ? 'Loyer réel publié' : 'Loyer estimé prudent';
+  const rows = [
+    [rentLabel, `${euro(item.loyer_mensuel_retenu)} / mois`],
+    ['Coût total', euro(item.cout_total)],
+    ['Rendement brut', pct(item.rendement_brut_retenu)],
+    ['Rendement net', pct(item.rendement_net)],
+  ];
+  if (segment !== 'murs') rows.push(['Cash-flow après crédit', item.cashflow_mensuel == null ? '—' : `${item.cashflow_mensuel >= 0 ? '+' : ''}${euro(item.cashflow_mensuel)} / mois`]);
+  if (item.travaux_estimes > 0) rows.push(['Travaux intégrés', euro(item.travaux_estimes)]);
+  const title = segment === 'murs' ? 'Murs commerciaux' : segment === 'immeuble' ? 'Immeuble de rapport' : 'Investissement locatif';
+  return `<section class="invest-block ${item.cashflow_mensuel >= 0 ? 'positive' : ''}"><h4>${title}</h4><div class="invest-grid">${rows.map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div></section>`;
+}
+
+function auctionBlock(item) {
+  if (!item.vente_encheres) return '';
+  const date = item.date_vente ? new Date(item.date_vente).toLocaleDateString('fr-FR', { dateStyle: 'long' }) : 'date non précisée';
+  return `<div class="auction-note"><strong>${esc(saleModeLabels[item.mode_vente] || 'Vente aux enchères')} · ${esc(date)}</strong>Mise à prix ${euro(item.prix)}${item.prix_adjuge ? ` · adjugé ${euro(item.prix_adjuge)}` : ` · prix final probable ≈ ${euro(item.prix_compare)}`}. La comparaison au marché utilise ce prix probable, pas la mise à prix.</div>`;
+}
+
 function card(item) {
   const url = safeUrl(item.url);
   const facts = [
@@ -288,15 +364,17 @@ function card(item) {
   ].filter(Boolean).map(value => `<span class="fact">${esc(value)}</span>`).join('');
   const location = [item.ville, item.code_postal].filter(Boolean).join(' · ') || 'Localisation non précisée';
   return `<article class="deal-card">
-    <div class="card-top"><span class="source-tag">${esc(sourceLabels[item.source] || item.source)}</span><div class="card-badges"><span class="deal-badge ${esc(item.niveau_affaire)}">${esc(labels[item.niveau_affaire])}</span>${marketGapBadge(item)}</div></div>
+    <div class="card-top"><span class="source-tag">${esc(sourceLabels[item.source] || item.source)}</span><div class="card-badges">${scoreBadge(item)}<span class="deal-badge ${esc(item.niveau_affaire)}">${esc(labels[item.niveau_affaire])}</span>${marketGapBadge(item)}</div></div>
     <div class="card-content"><div class="card-main">
       <h3>${esc(displayTitle(item))}</h3>
       <div class="location"><i aria-hidden="true"></i><span><small>Localisation</small><strong>${esc(location)}</strong></span></div>
     <div class="price-row"><span class="asking-price"><small>${item.categorie === 'location' ? 'Loyer affiché · bien professionnel' : 'Prix de vente affiché'}</small>${euro(item.categorie === 'location' ? item.loyer : item.prix)}</span><span class="price-m2">${item.prix_trop_bas ? 'Données ou mode de vente à vérifier' : (item.categorie === 'location' ? 'Location commerciale · hors classement DVF' : (item.prix_m2 ? `${euro(item.prix_m2)} / m²` : 'prix au m² indisponible'))}</span></div>
       <div class="facts">${facts || '<span class="fact">Informations partielles</span>'}</div>
+      ${signalChips(item)}
     </div><div class="card-analysis">
-      ${negotiation(item)}
-      ${rentalAnalysis(item)}
+      ${auctionBlock(item)}
+      ${investmentBlock(item)}
+      ${item.segment === 'residentiel' ? negotiation(item) : ''}
       <div class="card-actions"><button class="detail-button" data-source="${esc(item.source)}" data-id="${esc(item.external_id)}">Analyse détaillée</button><a class="listing-link" ${url ? `href="${esc(url)}" target="_blank" rel="noopener noreferrer"` : 'aria-disabled="true"'}>Voir l’annonce</a></div>
     </div></div>
   </article>`;
@@ -306,10 +384,12 @@ function renderMetrics(summary) {
   document.querySelector('#metric-total').textContent = number.format(summary.total || 0);
   document.querySelector('#metric-excellent').textContent = number.format(summary.excellent || 0);
   document.querySelector('#metric-good').textContent = number.format(summary.good || 0);
-  document.querySelector('#metric-unscored').textContent = number.format(summary.unscored || 0);
+  document.querySelector('#metric-drops').textContent = number.format(summary.price_drops || 0);
+  document.querySelector('#metric-new').textContent = number.format(summary.new || 0);
   const coverage = summary.total ? Math.round(100 * summary.scored / summary.total) : 0;
-  document.querySelector('#metric-coverage').textContent = `${coverage} % disposent d’un classement`;
-  document.querySelector('#result-count').textContent = `${number.format(summary.scored || 0)} classée${summary.scored > 1 ? 's' : ''} · ${number.format(summary.unscored || 0)} sans référence · ${number.format(summary.total || 0)} au total`;
+  document.querySelector('#metric-coverage').textContent = `${coverage} % évaluées · sans doublons`;
+  const median = summary.median_net_yield == null ? '' : ` · rendement net médian ${pct(summary.median_net_yield)}`;
+  document.querySelector('#result-count').textContent = `${number.format(summary.scored || 0)} évaluée${summary.scored > 1 ? 's' : ''} · ${number.format(summary.unscored || 0)} sans évaluation · ${number.format(summary.total || 0)} au total${median}`;
 }
 
 function renderActiveFilters() {
@@ -319,7 +399,7 @@ function renderActiveFilters() {
     surface_min: 'Habitable min.', surface_max: 'Habitable max.', land_min: 'Terrain min.', land_max: 'Terrain max.'
   };
   for (const [key, value] of new FormData(form).entries()) {
-    if (!value || key === 'scored_only') continue;
+    if (!value || ['scored_only','segment','auctions'].includes(key)) continue;
     if (key === 'department') {
       entries.push(`Département : ${departmentSearch.value}`);
       continue;
@@ -486,11 +566,98 @@ async function openDetail(source, id) {
       <section class="detail-section"><h3>Description complète</h3><div class="detail-description">${descriptionHtml(item.description)}</div></section>
       <section class="detail-section"><h3>Annonceur et provenance</h3><div class="detail-meta"><div><small>Annonceur</small><strong>${esc(item.seller_name||'Non précisé')}</strong></div><div><small>Source</small><strong>${esc(sourceLabels[item.source]||item.source)}</strong></div><div><small>Référence</small><strong>${esc(item.reference_annonce||'Non précisée')}</strong></div></div>${listingUrl?`<a class="detail-source-link" href="${esc(listingUrl)}" target="_blank" rel="noopener">Ouvrir l’annonce originale</a>`:''}</section>
       <section class="detail-section"><h3>Analyse du prix</h3>${comparisonWarningHtml}${item.prix_trop_bas ? `<div class="data-warning"><strong>Données à vérifier</strong>${esc(item.motif_verification || 'La comparaison directe est suspendue.')}</div>` : `<div class="dialog-grid"><div><small>Prix au m²</small><strong>${euro(item.prix_m2)} / m²</strong></div><div><small>Médiane des comparables</small><strong>${euro(item.median_eur_m2)} / m²</strong></div><div><small>Ventes retenues</small><strong>${item.nb_ventes==null?'—':number.format(item.nb_ventes)}</strong></div><div><small>Surface médiane comparée</small><strong>${num(item.surface_mediane_reference,' m²')}</strong></div><div><small>Décote</small><strong>${item.decote==null?'—':`${num(item.decote*100)} %`}</strong></div><div><small>Confiance</small><strong>${esc(item.confiance)}</strong></div></div>`}</section>
-      ${rentalAnalysis(item)}
+      ${investmentBlock(item)}
+      ${financingSimulator(item)}
+      ${historySection(data.price_history || [])}
+      ${duplicatesSection(data.duplicates || [])}
+      ${item.segment === 'residentiel' ? rentalAnalysis(item) : ''}
       <section class="detail-section"><h3>Ventes DVF les plus comparables</h3>${rows ? `<div class="sales-wrap"><table class="sales-table"><thead><tr><th>Date</th><th>Commune</th><th>Surface</th><th>Pièces</th><th>Terrain</th><th>Prix</th><th>€/m²</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<p>Moins de cinq mutations suffisamment comparables : aucun prix cible n’est calculé.</p>'}</section>
     </div>`;
+    bindSimulator(item);
   } catch (error) { dialogContent.innerHTML = `<div class="dialog-body"><h2 id="dialog-title">Analyse indisponible</h2><p>${esc(error.message)}</p></div>`; }
 }
+
+function historySection(history) {
+  if (history.length < 2) return '';
+  const rows = history.map(point => `<tr><td>${esc(new Date(point.date).toLocaleDateString('fr-FR'))}</td><td>${euro(point.prix)}</td></tr>`).join('');
+  return `<section class="detail-section"><h3>Historique du prix</h3><div class="sales-wrap"><table class="sales-table"><thead><tr><th>Observé le</th><th>Prix</th></tr></thead><tbody>${rows}</tbody></table></div></section>`;
+}
+
+function duplicatesSection(duplicates) {
+  if (!duplicates.length) return '';
+  const rows = duplicates.map(entry => {
+    const link = safeUrl(entry.url);
+    return `<li><strong>${esc(sourceLabels[entry.source] || entry.source)}</strong> · ${euro(entry.prix)}${link ? ` · <a href="${esc(link)}" target="_blank" rel="noopener">voir</a>` : ''}</li>`;
+  }).join('');
+  return `<section class="detail-section"><h3>Aussi publiée sur</h3><ul class="duplicate-list">${rows}</ul><p class="invest-note">Un écart de prix entre plateformes est un argument de négociation.</p></section>`;
+}
+
+function financingSimulator(item) {
+  if (!['residentiel','immeuble','murs'].includes(item.segment) || item.loyer_mensuel_retenu == null || !item.prix) return '';
+  const h = assumptions || {};
+  return `<section class="detail-section simulator" data-simulator>
+    <h3>Simulation de financement</h3>
+    <div class="field-grid simulator-inputs">
+      <label><span>Prix négocié</span><div class="unit-input"><input data-sim="prix" type="number" step="1000" value="${Math.round(item.prix)}"><i>€</i></div></label>
+      <label><span>Loyer mensuel</span><div class="unit-input"><input data-sim="loyer" type="number" step="10" value="${Math.round(item.loyer_mensuel_retenu)}"><i>€</i></div></label>
+      <label><span>Travaux</span><div class="unit-input"><input data-sim="travaux" type="number" step="1000" value="${Math.round(item.travaux_estimes || 0)}"><i>€</i></div></label>
+      <label><span>Apport</span><div class="unit-input"><input data-sim="apport" type="number" step="1" value="${h.apport_pct ?? 10}"><i>%</i></div></label>
+      <label><span>Taux du crédit</span><div class="unit-input"><input data-sim="taux" type="number" step="0.05" value="${h.taux_credit ?? 3.4}"><i>%</i></div></label>
+      <label><span>Durée</span><div class="unit-input"><input data-sim="duree" type="number" step="1" value="${h.duree_credit ?? 20}"><i>ans</i></div></label>
+    </div>
+    <div class="invest-grid" data-sim-output></div>
+    <p class="invest-note">Frais d’acquisition ${h.notaire_pct ?? 7.5} %, ${h.vacance_mois ?? 1} mois de vacance par an, taxe foncière ${item.taxe_fonciere ? 'publiée' : 'estimée'} (${euro(item.taxe_fonciere_retenue)}), entretien ${h.entretien_pct ?? 5} % et assurance ${euro(h.pno_eur ?? 200)}. Fiscalité non incluse.</p>
+  </section>`;
+}
+
+function bindSimulator(item) {
+  const root = dialogContent.querySelector('[data-simulator]');
+  if (!root) return;
+  const h = assumptions || {};
+  const compute = () => {
+    const value = name => Number(root.querySelector(`[data-sim="${name}"]`).value) || 0;
+    const price = value('prix'), rent = value('loyer'), works = value('travaux');
+    const total = price * (1 + (h.notaire_pct ?? 7.5) / 100) + works;
+    const collected = rent * (12 - (h.vacance_mois ?? 1));
+    const net = collected - (item.taxe_fonciere_retenue || 0) - (item.copro_non_recuperable || 0)
+      - (h.pno_eur ?? 200) - collected * ((h.entretien_pct ?? 5) + (h.gestion_pct ?? 0)) / 100;
+    const borrowed = total * (1 - value('apport') / 100);
+    const rate = value('taux') / 1200, months = value('duree') * 12;
+    const payment = months ? (rate ? borrowed * rate / (1 - Math.pow(1 + rate, -months)) : borrowed / months) : 0;
+    const cashflow = net / 12 - payment;
+    root.querySelector('[data-sim-output]').innerHTML = [
+      ['Coût total', euro(total)], ['Rendement brut', pct(price ? rent * 12 / price * 100 : null)],
+      ['Rendement net', pct(total ? net / total * 100 : null)], ['Mensualité', `${euro(payment)} / mois`],
+      ['Cash-flow', `${cashflow >= 0 ? '+' : ''}${euro(cashflow)} / mois`]
+    ].map(([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`).join('');
+    root.querySelector('[data-sim-output]').classList.toggle('positive', cashflow >= 0);
+  };
+  root.addEventListener('input', compute);
+  compute();
+}
+
+function applyPreset(name) {
+  const preset = presets[name] || presets.all;
+  document.querySelector('#segment-value').value = preset.segment;
+  document.querySelector('#auctions-value').value = preset.auctions;
+  document.querySelector('#sort-select').value = preset.sort;
+  document.querySelectorAll('.strategy-tabs [data-preset]').forEach(tab => tab.setAttribute('aria-selected', String(tab.dataset.preset === name)));
+  loadDeals(false);
+}
+
+document.querySelector('.strategy-tabs').addEventListener('click', event => {
+  const tab = event.target.closest('[data-preset]');
+  if (tab) applyPreset(tab.dataset.preset);
+});
+
+async function loadAssumptions() {
+  try {
+    const response = await apiFetch('/api/hypotheses');
+    assumptions = await response.json();
+    document.querySelector('#assumptions-note').textContent = `Hypothèses : crédit ${assumptions.taux_credit} % sur ${assumptions.duree_credit} ans, apport ${assumptions.apport_pct} %, frais ${assumptions.notaire_pct} %, ${assumptions.vacance_mois} mois de vacance, DPE F/G et travaux chiffrés. Réglables dans .env (INVEST_*).`;
+  } catch { /* les valeurs par défaut du simulateur restent utilisables */ }
+}
+loadAssumptions();
 
 let debounce;
 form.addEventListener('input', event => {
@@ -508,7 +675,7 @@ document.querySelector('#reset-filters').addEventListener('click', () => {
   document.querySelector('#city-hint').textContent = 'Villes disponibles dans toute la France';
   document.querySelectorAll('.search-combo').forEach(closeCombo);
   const slider = document.querySelector('#price-max-range'); slider.value = slider.max; updatePriceRange();
-  loadDeals(false);
+  applyPreset('all');
 });
 document.querySelector('#filter-toggle').addEventListener('click', () => {
   const panel = document.querySelector('#filters-panel');

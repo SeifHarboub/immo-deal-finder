@@ -11,8 +11,8 @@ import threading
 
 from immo.connectors.base import register
 from immo.connectors.licitor import (
-    EnchereConnector, cle_enchere, clean_text, make_record, occupation, parse_amount,
-    parse_contenance, parse_fr_date, parse_surface, plain, round_robin, type_from_text,
+    EnchereConnector, cle_enchere, clean_text, land_surface, make_record, occupation, parse_amount,
+    parse_fr_date, parse_surface, plain, round_robin, type_from_text,
 )
 
 
@@ -107,7 +107,7 @@ class AvoventesConnector(EnchereConnector):
         documents = [{"titre": clean_text(label), "url": href} for href, label in re.findall(
             r'<a href="(https://avoventes\.fr/public/uploads/[^"]+\.pdf)"[^>]*>(.*?)</a>', html)]
         images = list(dict.fromkeys(re.findall(
-            r'(https://avoventes\.fr/public/uploads/cabinet/\d+/images/(?!cropped_)[^"\'\s)]+\.(?:jpe?g|png|webp))',
+            r'(https://avoventes\.fr/public/uploads/cabinet/\d+/images/resized_[^"\'\s)]+\.(?:jpe?g|png|webp))',
             html)))
         full_text = "\n\n".join(part for part in (description, complement) if part)
         tribunal = _tribunal(full_text)
@@ -128,12 +128,12 @@ class AvoventesConnector(EnchereConnector):
             "Consignation": parse_amount(_first(r"Consignation\s*:\s*([\d\s.,]+)\s*€", head_text)),
             "Charges annuelles": parse_amount(_first(r"Charges annuelles\s*:\s*([^<]+)", html)),
             "Adresse": address or None, "Catégorie site": badges[0] if badges else None,
-            "Documents": documents, "Clé enchère": cle_enchere(tribunal or city, date_vente, city, mise),
+            "Documents": documents, "Clé enchère": cle_enchere(tribunal, date_vente, city, mise),
         }
         yield make_record(
             id=page_url.rstrip("/").rsplit("/", 1)[-1], name=title, price=mise, prix_adjuge=adjuge,
             surface=None if kind == "terrain" else surface,
-            land_surface=parse_contenance(full_text) if kind != "terrain" else (surface or parse_contenance(full_text)),
+            land_surface=land_surface(kind, full_text, surface),
             rooms=stats.get("pièces") or stats.get("pieces"), bedrooms=stats.get("chambres"),
             zipcode=postal.group(1) if postal else None, city=city,
             lat=marker.group(1) if marker else None, lng=marker.group(2) if marker else None,

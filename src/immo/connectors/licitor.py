@@ -36,7 +36,7 @@ MOIS = {
     "janvier": 1, "fevrier": 2, "mars": 3, "avril": 4, "mai": 5, "juin": 6,
     "juillet": 7, "aout": 8, "septembre": 9, "octobre": 10, "novembre": 11, "decembre": 12,
 }
-STATUTS_FINAUX = {"adjugé", "carence", "retiré"}
+STATUTS_FINAUX = {"adjugé", "carence", "retiré", "non communiqué"}
 TYPES_BIEN = {"appartement", "maison", "immeuble", "terrain", "local_commercial",
               "fonds_commerce", "bureau", "autre"}
 MODES_VENTE = {"enchere_judiciaire", "enchere_notariale", "vente_interactive",
@@ -62,7 +62,7 @@ def clean_text(fragment) -> str:
         return ""
     text = re.sub(r"<(script|style|svg)\b.*?</\1>", " ", str(fragment), flags=re.S | re.I)
     text = re.sub(r"<br\s*/?>|</p>|</div>|</li>|</h\d>", "\n", text, flags=re.I)
-    text = htmllib.unescape(re.sub(r"<[^>]+>", " ", text))
+    text = htmllib.unescape(re.sub(r"<(?:[^>\"']|\"[^\"]*\"|'[^']*')*>", " ", text))
     lines = [re.sub(r"[ \t  ]+", " ", line).strip() for line in text.splitlines()]
     return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
 
@@ -106,11 +106,18 @@ def parse_contenance(text) -> float | None:
     return parse_amount(match.group(1)) if match else None
 
 
+def land_surface(kind: str, text, surface=None) -> float | None:
+    """Terrain propre au bien : jamais la contenance d'une copropriété."""
+    if kind == "terrain":
+        return surface or parse_contenance(text)
+    return parse_contenance(text) if kind in {"maison", "immeuble"} else None
+
+
 def parse_rooms(text) -> int | None:
     match = re.search(r"\b(\d{1,2}|un|une|deux|trois|quatre|cinq|six|sept|huit|neuf|dix)\s+pieces?\b",
                       plain(text))
     if not match:
-        match = re.search(r"\b[tf](\d{1,2})\b", plain(text))
+        match = re.search(r"\b(?:[tf]|type\s*)(\d{1,2})\b", plain(text))
     if not match:
         return None
     value = match.group(1)
@@ -200,6 +207,7 @@ def postcode_from_city(city) -> str | None:
 
 def city_key(city) -> str:
     text = re.sub(r"\b\d+\s*(?:er|e|eme)?\b|\bcedex\b|\barrondissement\b", " ", plain(city))
+    text = re.sub(r"\bste?\b", lambda match: "sainte" if match.group(0) == "ste" else "saint", text)
     return slug(text)
 
 
@@ -210,7 +218,7 @@ def cle_enchere(tribunal, date_vente, ville, mise_a_prix) -> str | None:
     court = re.sub(r"\(.*?\)", " ", plain(tribunal)).split(",")[0].strip()
     court = re.sub(r"^(?:tribunal (?:judiciaire|de grande instance|de commerce)|tj|tgi)\s*(?:de |d'|du )?",
                    "", court).strip()
-    return "|".join([slug(court) or "?", str(date_vente)[:10], city_key(ville) or "?",
+    return "|".join([city_key(court) or "?", str(date_vente)[:10], city_key(ville) or "?",
                      str(int(round(float(mise_a_prix))))])
 
 
@@ -225,6 +233,9 @@ def make_record(**values) -> dict:
         "published_at", "reference_annonce", "raw_payload", "mode_vente", "date_vente", "prix_adjuge",
     )}
     record.update(values)
+    for key in ("rooms", "bedrooms"):
+        if isinstance(record[key], float) and record[key].is_integer():
+            record[key] = int(record[key])
     for key in ("price", "surface", "land_surface", "rooms", "bedrooms", "lat", "lng", "prix_adjuge"):
         if record[key] is not None:
             record[key] = str(record[key])
@@ -710,7 +721,7 @@ class LicitorConnector(EnchereConnector):
             yield make_record(
                 id=identifier, name=f"{titles[0] if titles else 'Bien'} - {city}".strip(" -"),
                 price=mise, prix_adjuge=adjuge, surface=None if kind == "terrain" else surface,
-                land_surface=parse_contenance(description) or (surface if kind == "terrain" else None),
+                land_surface=land_surface(kind, description, surface),
                 rooms=parse_rooms(description), zipcode=postcode_from_city(city), city=city or None,
                 lat=coords.group(1) if coords else None, lng=coords.group(2) if coords else None,
                 type_hint=kind, url=page_url, body=body, seller_name=lawyer or None,
