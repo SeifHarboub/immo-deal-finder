@@ -21,7 +21,7 @@ import unicodedata
 import duckdb
 
 
-PARSER_VERSION = 9
+PARSER_VERSION = 10
 
 _AMOUNT = r"(\d{1,3}(?:[  .]\d{3})+(?:,\d+)?|\d+(?:[.,]\d+)?)\s*(k|m|millions?|milliers?)?\s*(?:€|euros?|eur\b|(?<=\d)e\b)"
 _AMOUNT_RE = re.compile(_AMOUNT, re.I)
@@ -281,7 +281,7 @@ def extract(
 
 
 _FONDS = re.compile(
-    r"fonds de commerce|cession de fonds|vente (?:du|d.un) fonds|droit au bail|pas.de.porte|"
+    r"fonds? de commerce|cession de fonds|vente (?:du|d.un) fonds|droit au bail|pas.de.porte|"
     r"cession de bail|fonds a ceder|cede (?:son|le) fonds|licence (?:iv|4)|clientele|"
     r"chiffre d.affaires|\bebe\b|affaire a reprendre|reprise d.activite"
 )

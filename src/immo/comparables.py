@@ -6,11 +6,42 @@ import duckdb
 
 
 FINGERPRINT = """hash(
-    'dvf-comparables-v4',
+    'dvf-comparables-v5',
     a.categorie, a.type_bien, a.surface_bati, a.surface_terrain,
     a.nb_pieces, a.code_postal, a.ville, a.lat, a.lng,
     lower(coalesce(a.details_json,'')) LIKE '%approximative%'
 )"""
+
+
+def ensure_price_index(con: duckdb.DuckDBPyConnection, rebuild: bool = False) -> None:
+    """Indice de prix DVF par département, type et année.
+
+    Les comparables remontent jusqu'à quatre ans ; sans correction, la baisse
+    des prix depuis 2022 (jusqu'à −12 % sur les appartements des grandes villes)
+    passait pour une décote. Chaque vente est ramenée au niveau de la dernière
+    année disponible de son département.
+    """
+    exists = con.execute(
+        "SELECT count(*) FROM information_schema.tables WHERE table_name='dvf_indice'"
+    ).fetchone()[0]
+    if exists and not rebuild:
+        return
+    con.execute("""
+        CREATE OR REPLACE TABLE dvf_indice AS
+        WITH annuel AS (
+            SELECT code_departement, type_local, year(date_mutation) AS annee,
+                   median(prix_m2) AS mediane, count(*) AS ventes
+            FROM ventes_dvf
+            WHERE type_local IN ('Appartement', 'Maison') AND prix_m2 > 0
+            GROUP BY ALL HAVING count(*) >= 150
+        )
+        SELECT a.code_departement, a.type_local, a.annee,
+               greatest(.8, least(1.25, last.mediane / a.mediane)) AS ratio
+        FROM annuel a
+        JOIN (SELECT code_departement, type_local, arg_max(mediane, annee) AS mediane
+              FROM annuel GROUP BY ALL) last
+          USING (code_departement, type_local)
+    """)
 
 
 def refresh_comparables(
@@ -28,6 +59,7 @@ def refresh_comparables(
         scope.append("a.external_id=?")
         params.append(external_id)
     source_clause = "AND " + " AND ".join(scope) if scope else ""
+    ensure_price_index(con)
     con.execute(f"""
         DELETE FROM annonce_reference AS ref
         USING annonces_stg AS a
@@ -75,7 +107,7 @@ def refresh_comparables(
                        quantile_cont(prix_m2,.25) OVER () AS raw_q1,
                        quantile_cont(prix_m2,.75) OVER () AS raw_q3
                 FROM (
-                SELECT v.*,
+                SELECT v.* REPLACE (v.prix_m2 * coalesce(idx.ratio, 1) AS prix_m2),
                        abs(ln(v.surface_bati/a.surface_bati))*4
                        + CASE
                            WHEN lower(strip_accents(v.commune))=lower(strip_accents(a.ville)) THEN 0
@@ -101,6 +133,9 @@ def refresh_comparables(
                        + greatest(0,date_diff('day',v.date_mutation,current_date))
                          /365.25*.08 AS distance_comparabilite
                 FROM ventes_dvf v
+                LEFT JOIN dvf_indice idx
+                  ON idx.code_departement=v.code_departement AND idx.type_local=v.type_local
+                 AND idx.annee=year(v.date_mutation)
                 WHERE v.type_local=CASE a.type_bien
                         WHEN 'appartement' THEN 'Appartement'
                         WHEN 'maison' THEN 'Maison'

@@ -34,11 +34,11 @@ def main() -> None:
     assert mapped["image_count"] == 2
     assert '"list_id": 42' in mapped["raw_payload"]
     records = [
-        {"list_id": "apt-deal", "subject": "Appartement Bobigny", "price": 180000,
+        {"list_id": "apt-deal", "subject": "Appartement Bobigny", "price": 156000, "body": "Bel appartement lumineux en étage élevé, proche des transports, des écoles et des commerces, cuisine équipée, double vitrage, cave et place de stationnement.",
          "attr_square": 60, "attr_rooms": 3, "attr_land": None,
          "attr_real_estate_type": "2", "zipcode": "93000", "city": "Bobigny",
          "lat": 48.91, "lng": 2.44, "url": "https://example.test/apt", "first_publication_date": None},
-        {"list_id": "house-deal", "subject": "Maison Bobigny", "price": 250000,
+        {"list_id": "house-deal", "subject": "Maison Bobigny", "price": 236250, "body": "Bel maison lumineux en étage élevé, proche des transports, des écoles et des commerces, cuisine équipée, double vitrage, cave et place de stationnement.",
          "attr_square": 90, "attr_rooms": 4, "attr_land": 180,
          "attr_real_estate_type": "1", "zipcode": "93000", "city": "Bobigny",
          "lat": 48.91, "lng": 2.44, "url": "https://example.test/house", "first_publication_date": None},
@@ -70,9 +70,9 @@ def main() -> None:
     by_title = {row[3]: row for row in rows}
     assert by_title["Appartement Bobigny"][0] == "excellente"
     assert by_title["Appartement Bobigny"][1] == "decote"
-    assert by_title["Appartement Bobigny"][6] == -25.0
+    assert by_title["Appartement Bobigny"][6] == -35.0
     assert by_title["Maison Bobigny"][0] == "bonne"
-    assert by_title["Maison Bobigny"][6] == -20.6
+    assert by_title["Maison Bobigny"][6] == -25.0
     assert "Appartement au marché" not in by_title
     changed = {**records[0], "price": 174000, "subject": "Appartement Bobigny actualisé"}
     assert _write_bronze("leboncoin", [changed]) == 1

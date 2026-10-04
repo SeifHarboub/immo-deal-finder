@@ -56,7 +56,8 @@ NON_HABITABLE = (
     "ancien garage|garage.?atelier|garages attenants|plateau brut|plateaux.{0,50}a rendre habitable|"
     "a rendre habitable|volume brut|local a transformer|transformation complete en espace habitable|"
     "a transformer en habitation|changement de destination|raccordement.{0,40}a prevoir|"
-    "assainissement.{0,40}a prevoir"
+    "assainissement.{0,40}a prevoir|pouvant etre transforme|transformable en (?:habitation|logement)|"
+    "a amenager entierement|grange a renover|ruine"
 )
 NON_DISPONIBLE = "compromis en cours|sous compromis|sous offre|offre acceptee|vente realisee|bien vendu"
 OCCUPE = (
@@ -66,6 +67,11 @@ OCCUPE = (
 RESIDENCE_GEREE = (
     "residence (?:hoteliere|seniors?|services?|etudiante|de tourisme|d.affaires|de vacances|geree)|"
     "ehpad|loyer garanti|lmnp|lmp\\b|bail commercial (?:avec|aupres d)"
+)
+# Travaux lourds (≈ INVEST_TRAVAUX_RENOVATION_M2) ; le reste est un rafraîchissement.
+TRAVAUX_LOURDS = (
+    "a renover entierement|renovation complete|rehabilitation|gros travaux|refection complete|"
+    "entierement a renover|tout a refaire|a restaurer|gros oeuvre|toiture a refaire"
 )
 TRAVAUX = (
     "a renover|a finir de renover|travaux.{0,60}a prevoir|travaux restants|quelques travaux|"
@@ -191,6 +197,9 @@ WITH prix_signaux AS (
            -- Un fonds ou un terrain s'analyse sans surface bâtie.
            (prix IS NULL OR prix <= 0
             OR (segment NOT IN ('fonds','terrain') AND coalesce(surface_bati, 0) <= 0)
+            -- Sous 14 m², un « appartement » est presque toujours un parking,
+            -- une cave ou une chambre de service.
+            OR (segment='residentiel' AND surface_bati < 14)
             OR bien_non_habitable OR non_disponible OR transaction_atypique) AS donnees_invalides
     FROM rent_model
 ), base AS (
@@ -200,18 +209,18 @@ WITH prix_signaux AS (
            CASE WHEN type_bien IN ('local_commercial','bureau') OR segment='murs'
                 THEN loyer_m2_mois * surface_bati
                 ELSE loyer_m2_mois * surface_loyer_reference
-                     * pow(greatest(.25, least(3.5, surface_bati/surface_loyer_reference)),
+                     * pow(greatest(.25, least(1.6, surface_bati/surface_loyer_reference)),
                            elasticite_surface_loyer) END AS loyer_mensuel_estime,
            CASE WHEN type_bien IN ('local_commercial','bureau') OR segment='murs'
                 THEN loyer_m2_bas * surface_bati
                 ELSE loyer_m2_mois * surface_loyer_reference
-                     * pow(greatest(.25, least(3.5, surface_bati/surface_loyer_reference)),
+                     * pow(greatest(.25, least(1.6, surface_bati/surface_loyer_reference)),
                            elasticite_surface_loyer)
                      * exp(ln(NULLIF(loyer_m2_bas,0)/NULLIF(loyer_m2_mois,0)) * .654) END AS loyer_mensuel_bas,
            CASE WHEN type_bien IN ('local_commercial','bureau') OR segment='murs'
                 THEN loyer_m2_haut * surface_bati
                 ELSE loyer_m2_mois * surface_loyer_reference
-                     * pow(greatest(.25, least(3.5, surface_bati/surface_loyer_reference)),
+                     * pow(greatest(.25, least(1.6, surface_bati/surface_loyer_reference)),
                            elasticite_surface_loyer)
                      * exp(ln(NULLIF(loyer_m2_haut,0)/NULLIF(loyer_m2_mois,0)) * .654) END AS loyer_mensuel_haut,
            loyer_m2_bas * surface_bati AS loyer_mensuel_bas_officiel,
@@ -219,9 +228,12 @@ WITH prix_signaux AS (
            -- Travaux : montant annoncé, sinon forfait rénovation, sinon mise aux
            -- normes DPE (G interdit à la location depuis 2025, F en 2028).
            CASE WHEN travaux_annonces > 0 THEN travaux_annonces
-                WHEN regexp_matches(lower(strip_accents(coalesce(titre,'') || ' ' || coalesce(description,''))), '{TRAVAUX}')
+                WHEN regexp_matches(lower(strip_accents(coalesce(titre,'') || ' ' || coalesce(description,''))), '{TRAVAUX_LOURDS}')
                      AND segment IN ('residentiel','immeuble')
                      THEN surface_bati * {h['travaux_renovation_m2']}
+                WHEN regexp_matches(lower(strip_accents(coalesce(titre,'') || ' ' || coalesce(description,''))), '{TRAVAUX}')
+                     AND segment IN ('residentiel','immeuble')
+                     THEN surface_bati * {h['travaux_renovation_m2']} * .4
                 WHEN upper(coalesce(dpe,''))='G' AND segment IN ('residentiel','immeuble')
                      THEN surface_bati * {h['travaux_dpe_g_m2']}
                 WHEN upper(coalesce(dpe,''))='F' AND segment IN ('residentiel','immeuble')
@@ -278,13 +290,20 @@ WITH prix_signaux AS (
            coalesce(loyer_bail_annuel_structure,
                     CASE WHEN segment='fonds' THEN loyer_annuel_declare END)
                / NULLIF(chiffre_affaires,0) AS poids_loyer_ca,
+           -- Décote nette : les travaux s'ajoutent au prix, et un logement
+           -- occupé se vend normalement environ 15 % sous la valeur libre.
            CASE WHEN NOT prix_trop_bas AND segment IN ('residentiel','immeuble','murs')
-                THEN ((prix_compare / NULLIF(surface_bati, 0)) - median_eur_m2) / NULLIF(median_eur_m2, 0) END AS decote,
+                THEN ((prix_compare + CASE WHEN segment='residentiel' THEN travaux_estimes ELSE 0 END)
+                      / NULLIF(surface_bati * median_eur_m2
+                               * CASE WHEN segment='residentiel' AND bien_occupe THEN .85 ELSE 1 END, 0)) - 1 END AS decote,
+           CASE WHEN NOT prix_trop_bas AND segment IN ('residentiel','immeuble','murs')
+                THEN (prix_compare / NULLIF(surface_bati, 0) - median_eur_m2) / NULLIF(median_eur_m2, 0) END AS decote_brute,
            100 * (prix_max_observe - prix) / NULLIF(prix_max_observe, 0) AS baisse_prix_pct,
            date_diff('day', COALESCE(published_at, first_seen_at), now()) AS jours_en_ligne,
            CASE
              WHEN prix IS NULL OR prix <= 0 THEN 'Prix de vente nul ou absent'
              WHEN surface_bati IS NULL OR surface_bati <= 0 THEN 'Surface absente ou incohérente'
+             WHEN segment='residentiel' AND surface_bati < 14 THEN 'Surface inférieure à 14 m² : parking, cave ou chambre de service probable'
              WHEN transaction_atypique THEN 'Viager, nue-propriété ou parts : comparaison directe non valable'
              WHEN bien_non_habitable THEN 'Le bien n’est pas encore un logement habitable comparable aux ventes DVF résidentielles'
              WHEN non_disponible THEN 'L’annonce indique qu’une offre ou un compromis est déjà en cours'
@@ -324,18 +343,25 @@ WITH prix_signaux AS (
            -- Le DVF commercial mélange boutiques, bureaux et entrepôts : sa
            -- décote reste affichée mais ne classe que le résidentiel.
            CASE WHEN decote IS NULL OR median_eur_m2 IS NULL OR segment <> 'residentiel' THEN NULL
-                ELSE round({_clamp('-100 * decote / 0.25')}
-                     * CASE confiance WHEN 'fiable' THEN 1.0 WHEN 'indicative' THEN .75 ELSE .45 END) END
+                ELSE round({_clamp('-100 * decote / 0.30')}
+                     * CASE confiance WHEN 'fiable' THEN 1.0 WHEN 'indicative' THEN .75 ELSE .45 END
+                     -- Sans terrain ni description, la comparaison reste grossière.
+                     * CASE WHEN type_bien='maison' AND surface_terrain IS NULL THEN .85 ELSE 1 END
+                     * CASE WHEN length(coalesce(description,'')) < 120 THEN .8 ELSE 1 END) END
                AS score_decote,
            CASE WHEN segment NOT IN ('residentiel','immeuble') OR prix_trop_bas
                      OR rendement_net IS NULL OR residence_geree THEN NULL
                 -- Un rendement élevé obtenu en payant au-dessus du marché expose
                 -- à une moins-value à la revente : le score est réduit d'autant.
-                ELSE round({_clamp('(rendement_net - 3) / (8 - 3) * 100')}
+                -- Un loyer seulement estimé ne peut pas, à lui seul, désigner une
+                -- excellente affaire : plafond à 70 sans loyer réel publié.
+                ELSE round(least(CASE WHEN loyer_reel THEN 100 ELSE 70 END,
+                     {_clamp('(rendement_net - 3) / (8 - 3) * 100')}
                      * CASE WHEN decote > 0 THEN greatest(.35, 1 - decote) ELSE 1.0 END
                      * CASE WHEN loyer_reel THEN 1.0
                             WHEN nb_observations_loyer >= 30 AND coalesce(r2_loyer, 1) >= .5 THEN .85
-                            ELSE .65 END) END AS score_rendement,
+                            ELSE .65 END
+                     * CASE WHEN length(coalesce(description,'')) < 120 THEN .8 ELSE 1 END)) END AS score_rendement,
            CASE WHEN segment <> 'murs' OR donnees_invalides OR rendement_net IS NULL THEN NULL
                 ELSE round({_clamp('(rendement_net - 4) / (10 - 4) * 100')}
                      * CASE WHEN loyer_reel THEN 1.0
@@ -348,8 +374,9 @@ WITH prix_signaux AS (
                      THEN round({_clamp('(4.5 - prix / ebe) / (4.5 - 1.5) * 100')}
                           * CASE WHEN poids_loyer_ca > .12 THEN .7 ELSE 1.0 END
                           * CASE WHEN ebe / NULLIF(chiffre_affaires, 0) > .45 THEN .6 ELSE 1.0 END)
+                -- Sans EBE, le chiffre d'affaires ne dit rien de la marge : au mieux « bonne ».
                 WHEN chiffre_affaires > 0
-                     THEN round({_clamp('(1.0 - prix / chiffre_affaires) / (1.0 - 0.25) * 70')}
+                     THEN round({_clamp('(1.0 - prix / chiffre_affaires) / (1.0 - 0.25) * 60')}
                           * CASE WHEN poids_loyer_ca > .12 THEN .7 ELSE 1.0 END)
                 END AS score_fonds
     FROM deals

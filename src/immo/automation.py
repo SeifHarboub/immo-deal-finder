@@ -68,6 +68,8 @@ def sync_once() -> dict[str, int]:
             # invalide puis reconstruit toutes les références d'annonces.
             from immo.comparables import refresh_comparables
             with connect() as con:
+                from immo.comparables import ensure_price_index
+                ensure_price_index(con, rebuild=True)
                 con.execute("DELETE FROM annonce_reference")
                 refresh_comparables(con)
 

@@ -60,6 +60,8 @@ def main(argv: list[str] | None = None) -> int:
         from immo.comparables import refresh_comparables
         from immo.warehouse import connect
         with connect() as con:
+            from immo.comparables import ensure_price_index
+            ensure_price_index(con, rebuild=True)
             con.execute("DELETE FROM annonce_reference")
             refresh_comparables(con)
         print("Référentiel DVF actualisé.")

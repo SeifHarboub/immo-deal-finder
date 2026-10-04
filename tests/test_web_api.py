@@ -17,9 +17,10 @@ def main() -> None:
         con.execute("""
             INSERT INTO annonces_stg (
                 source, external_id, categorie, type_bien, prix, surface_bati,
-                code_postal, ville, titre, url, collected_at, last_seen_at, active
+                code_postal, ville, titre, url, collected_at, last_seen_at, active, description
             ) VALUES ('immonot','web-1','vente','appartement',180000,60,
-                      '93000','Bobigny','Appartement test','https://example.test',now(),now(),true)
+                      '93000','Bobigny','Appartement test','https://example.test',now(),now(),true,
+                      repeat('Appartement lumineux proche des transports et des commerces. ', 3))
         """)
         con.execute("""
             INSERT INTO prix_reference VALUES
@@ -43,7 +44,8 @@ def main() -> None:
         strategie=[], segment=[], sort="deal", limit=24, offset=0,
     )
     item = result["items"][0]
-    assert item["niveau_affaire"] == "excellente"
+    # −25 % en confiance moyenne : bonne affaire ; l'excellence exige −30 % net.
+    assert item["niveau_affaire"] == "bonne"
     assert item["strategie"] == "decote" and item["segment"] == "residentiel"
     assert item["plafond_excellente"] == 180000
     assert item["plafond_bonne"] == 204000
