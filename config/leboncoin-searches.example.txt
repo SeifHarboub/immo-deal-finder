@@ -1,0 +1,3 @@
+# Copiez ici des URL Leboncoin filtrées, une par département/zone et tranche de prix.
+# Une recherche nationale unique est plafonnée côté site : partitionner augmente la couverture.
+https://www.leboncoin.fr/recherche?category=9&locations=93000

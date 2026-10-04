@@ -1,0 +1,2 @@
+"""Données de référence immobilières."""
+

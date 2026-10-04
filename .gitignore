@@ -1,0 +1,14 @@
+.venv/
+.env
+__pycache__/
+*.py[cod]
+.pytest_cache/
+data/*.duckdb*
+data/*.log
+data/*.lock
+data/*.last_refresh
+data/leboncoin-blocked.png
+data/schema-report.json
+.playwright-profile/
+data/runtime/
+data/*.txt
