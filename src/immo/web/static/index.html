@@ -3,170 +3,183 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Classement local des opportunités immobilières comparées aux ventes DVF.">
-  <title>Immo Radar — Les vraies affaires</title>
-  <link rel="stylesheet" href="/static/styles.css?v=20261004-2">
+  <meta name="description" content="Classement local des opportunités immobilières : décote DVF, rendement locatif net, murs, fonds de commerce et enchères.">
+  <title>Immo Radar</title>
+  <link rel="stylesheet" href="/static/styles.css?v=20261004-3">
 </head>
 <body>
   <a class="skip-link" href="#results">Aller aux résultats</a>
   <header class="topbar">
-    <div class="brand" aria-label="Immo Radar, accueil">
+    <div class="brand" aria-label="Immo Radar">
       <span class="brand-mark" aria-hidden="true">IR</span>
-      <span><strong>Immo Radar</strong><small>Décisions guidées par les ventes réelles</small></span>
+      <span><strong>Immo Radar</strong><small>Les vraies affaires, chiffrées</small></span>
     </div>
+    <section class="kpis" aria-label="Synthèse des résultats filtrés">
+      <div><strong id="metric-total">—</strong><span>annonces</span></div>
+      <div class="kpi-green"><strong id="metric-excellent">—</strong><span>excellentes</span></div>
+      <div class="kpi-lime"><strong id="metric-good">—</strong><span>bonnes</span></div>
+      <div class="kpi-amber"><strong id="metric-drops">—</strong><span>baisses de prix</span></div>
+      <div class="kpi-blue"><strong id="metric-new">—</strong><span>nouvelles 48 h</span></div>
+    </section>
     <div class="status" id="db-status" role="status"><span class="status-dot"></span> Base locale</div>
   </header>
 
-  <main>
-    <section class="hero" aria-labelledby="page-title">
-      <div>
-        <p class="eyebrow">Analyse immobilière locale</p>
-        <h1 id="page-title">Les vraies affaires, <em>toutes stratégies.</em></h1>
-        <p class="hero-copy">Achat sous le marché comparé aux ventes DVF, investissement locatif chiffré en net et en cash-flow, murs commerciaux, fonds de commerce et enchères. Les annonces retirées et les doublons entre plateformes sont écartés.</p>
+  <nav class="strategy-tabs" aria-label="Stratégie d’investissement" role="tablist">
+    <button type="button" role="tab" aria-selected="true" data-preset="all"><b>Toutes</b><small>Meilleur score</small><em data-count="all"></em></button>
+    <button type="button" role="tab" aria-selected="false" data-preset="decote"><b>Sous le marché</b><small>Décote DVF nette</small><em data-count="decote"></em></button>
+    <button type="button" role="tab" aria-selected="false" data-preset="locatif"><b>Locatif</b><small>Rendement net</small><em data-count="locatif"></em></button>
+    <button type="button" role="tab" aria-selected="false" data-preset="immeuble"><b>Immeubles</b><small>De rapport</small><em data-count="immeuble"></em></button>
+    <button type="button" role="tab" aria-selected="false" data-preset="murs"><b>Murs</b><small>Commerciaux</small><em data-count="murs"></em></button>
+    <button type="button" role="tab" aria-selected="false" data-preset="fonds"><b>Fonds</b><small>De commerce</small><em data-count="fonds"></em></button>
+    <button type="button" role="tab" aria-selected="false" data-preset="encheres"><b>Enchères</b><small>Prix probable</small><em data-count="encheres"></em></button>
+  </nav>
+
+  <main class="workspace" id="workspace">
+    <aside class="filters" id="filters-panel" aria-labelledby="filters-title">
+      <div class="filter-heading">
+        <h2 id="filters-title">Filtres</h2>
+        <button class="text-button" id="reset-filters" type="button">Tout effacer</button>
       </div>
-    </section>
 
-    <section class="metrics" aria-label="Synthèse des résultats">
-      <article><span>Annonces en ligne</span><strong id="metric-total">—</strong><small id="metric-coverage">sans doublons</small></article>
-      <article class="metric-green"><span>Excellentes</span><strong id="metric-excellent">—</strong><small>score ≥ 75 / 100</small></article>
-      <article class="metric-lime"><span>Bonnes</span><strong id="metric-good">—</strong><small>score 55 à 75</small></article>
-      <article class="metric-amber"><span>Baisses de prix</span><strong id="metric-drops">—</strong><small>depuis la première observation</small></article>
-      <article class="metric-blue"><span>Nouveautés</span><strong id="metric-new">—</strong><small>publiées depuis 48 h</small></article>
-    </section>
-
-    <nav class="strategy-tabs" aria-label="Stratégie d’investissement" role="tablist">
-      <button type="button" role="tab" aria-selected="true" data-preset="all"><b>Toutes</b><small>Meilleur score</small></button>
-      <button type="button" role="tab" aria-selected="false" data-preset="decote"><b>Sous le marché</b><small>Décote DVF</small></button>
-      <button type="button" role="tab" aria-selected="false" data-preset="locatif"><b>Locatif</b><small>Rendement net</small></button>
-      <button type="button" role="tab" aria-selected="false" data-preset="immeuble"><b>Immeubles</b><small>De rapport</small></button>
-      <button type="button" role="tab" aria-selected="false" data-preset="murs"><b>Murs commerciaux</b><small>Loyer et rendement</small></button>
-      <button type="button" role="tab" aria-selected="false" data-preset="fonds"><b>Fonds de commerce</b><small>Multiples CA / EBE</small></button>
-      <button type="button" role="tab" aria-selected="false" data-preset="encheres"><b>Enchères</b><small>Prix probable</small></button>
-    </nav>
-
-    <div class="workspace" id="workspace">
-      <aside class="filters" id="filters-panel" aria-labelledby="filters-title">
-        <div class="filter-heading">
-          <div><p class="eyebrow">Affiner</p><h2 id="filters-title">Filtres</h2></div>
-          <button class="text-button" id="reset-filters" type="button">Réinitialiser</button>
-        </div>
-        <section class="saved-searches" aria-labelledby="saved-title">
-          <div class="saved-heading"><h3 id="saved-title">Mes recherches</h3><small>Alertes à chaque synchronisation</small></div>
-          <div id="saved-list"><p class="filter-note">Réglez les filtres puis « Enregistrer et m’alerter ».</p></div>
-        </section>
-        <form id="filter-form">
-          <input type="hidden" name="segment" id="segment-value">
-          <input type="hidden" name="auctions" id="auctions-value">
-          <details class="filter-group invest-group" open>
-            <summary><span>Investissement</span><small>Rendement, cash-flow et signaux</small></summary>
-            <div class="filter-group-body">
-              <div class="field-grid">
-                <label><span>Rendement net min.</span><div class="unit-input"><input name="yield_min" type="number" min="0" max="30" step="0.5" placeholder="Ex. 6"><i>%</i></div></label>
-                <label><span>Publiée depuis</span><select name="new_days"><option value="">Toutes</option><option value="2">48 heures</option><option value="7">7 jours</option><option value="30">30 jours</option></select></label>
-              </div>
-              <label class="toggle"><input type="checkbox" name="cashflow_positive" value="true"><span></span>Cash-flow positif après crédit</label>
-              <label class="toggle"><input type="checkbox" name="real_rent" value="true"><span></span>Loyer réel publié (bien loué)</label>
-              <label class="toggle"><input type="checkbox" name="price_drop" value="true"><span></span>Prix déjà baissé</label>
-              <label class="toggle"><input type="checkbox" name="include_duplicates" value="true"><span></span>Afficher les doublons entre sites</label>
-              <label class="toggle"><input type="checkbox" name="include_inactive" value="true"><span></span>Inclure les annonces retirées</label>
-              <p class="filter-note" id="assumptions-note">Hypothèses : chargement…</p>
-            </div>
-          </details>
-          <details class="filter-group rank-group" open>
-            <summary><span>Potentiel</span><small>Écart estimé avec le marché</small></summary>
-            <fieldset>
-              <label class="check"><input type="checkbox" name="level" value="excellente"><span class="swatch excellent"></span><b>Excellente</b><small>Score ≥ 75</small></label>
-              <label class="check"><input type="checkbox" name="level" value="bonne"><span class="swatch good"></span><b>Bonne</b><small>Score 55 à 75</small></label>
-              <label class="check"><input type="checkbox" name="level" value="correcte"><span class="swatch correct"></span><b>Correcte</b><small>Score 30 à 55</small></label>
-              <label class="check"><input type="checkbox" name="level" value="hors_cible"><span class="swatch off"></span><b>Faible</b><small>Score sous 30</small></label>
-              <label class="check"><input type="checkbox" name="level" value="a_analyser"><span class="swatch unknown"></span><b>Non évaluée</b><small>Données insuffisantes</small></label>
-              <label class="check"><input type="checkbox" name="level" value="a_verifier"><span class="swatch warning"></span><b>À vérifier</b><small>Prix ou nature atypique</small></label>
-              <label class="toggle"><input type="checkbox" name="scored_only" value="true"><span></span>Uniquement les annonces évaluées</label>
-              <p class="filter-note">Le score retient la meilleure stratégie applicable : décote DVF, rendement net, rendement des murs ou multiple d’un fonds.</p>
-            </fieldset>
-          </details>
-
-          <details class="filter-group asset-group" open>
-            <summary><span>Type et source</span><small>Nature du bien et provenance</small></summary>
-            <fieldset><legend>Type de bien</legend><div id="type-options" class="dynamic-options"><span class="skeleton-line"></span></div><p class="filter-note"><strong>« Autre / type à confirmer »</strong> : la source ne fournit pas une catégorie assez fiable. L’annonce reste visible mais doit être contrôlée.</p></fieldset>
-            <fieldset><legend>Source</legend><div id="source-options" class="dynamic-options"><span class="skeleton-line"></span></div></fieldset>
-          </details>
-
-          <details class="filter-group location-group" open>
-            <summary><span>Zone</span><small>Département, ville ou code postal</small></summary>
-            <div class="filter-group-body">
-              <div class="search-combo" id="department-combo">
-                <label for="department-search">Département</label>
-                <div class="combo-control">
-                  <input id="department-search" class="combo-search" type="search" autocomplete="off" placeholder="Numéro ou nom du département" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="department-list">
-                  <button class="combo-clear" type="button" aria-label="Effacer le département" hidden>×</button>
-                  <span class="combo-chevron" aria-hidden="true"></span>
-                  <input type="hidden" name="department" id="department-value">
-                </div>
-                <div class="combo-list" id="department-list" role="listbox" hidden></div>
-              </div>
-              <div class="search-combo" id="city-combo">
-                <label for="city-search">Ville</label>
-                <div class="combo-control">
-                  <input id="city-search" class="combo-search" type="search" autocomplete="off" placeholder="Rechercher une ville" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="city-list">
-                  <button class="combo-clear" type="button" aria-label="Effacer la ville" hidden>×</button>
-                  <span class="combo-chevron" aria-hidden="true"></span>
-                  <input type="hidden" name="city" id="city-value">
-                </div>
-                <div class="combo-list" id="city-list" role="listbox" hidden></div>
-                <small class="combo-hint" id="city-hint">Villes disponibles dans toute la France</small>
-              </div>
-              <div class="field-grid">
-                <label><span>Code postal</span><input name="postal_code" inputmode="numeric" maxlength="5" placeholder="Ex. 75008"></label>
-                <label><span>Mot-clé</span><input name="q" type="search" placeholder="Ex. jardin, travaux"></label>
-              </div>
-            </div>
-          </details>
-
-          <details class="filter-group budget-group" open>
-            <summary><span>Budget</span><small>Fourchette de prix total</small></summary>
-            <div class="filter-group-body">
-              <div class="field-grid">
-                <label><span>Prix minimum</span><div class="unit-input"><input name="price_min" type="number" min="0" step="1000"><i>€</i></div></label>
-                <label><span>Prix maximum</span><div class="unit-input"><input name="price_max" id="price-max-number" type="number" min="0" step="1000"><i>€</i></div></label>
-              </div>
-              <label class="range-field"><span>Plafond rapide <output id="price-range-output">Aucun plafond</output></span><input id="price-max-range" type="range" min="0" max="2000000" step="10000" value="2000000"></label>
-            </div>
-          </details>
-
-          <details class="filter-group surface-group" open>
-            <summary><span>Surfaces</span><small>Habitable et terrain</small></summary>
-            <div class="filter-group-body">
-              <p class="field-caption">Surface habitable</p>
-              <div class="field-grid compact-grid">
-                <label><span>Minimum</span><div class="unit-input"><input name="surface_min" type="number" min="0" step="1"><i>m²</i></div></label>
-                <label><span>Maximum</span><div class="unit-input"><input name="surface_max" type="number" min="0" step="1"><i>m²</i></div></label>
-              </div>
-              <p class="field-caption">Surface du terrain</p>
-              <div class="field-grid compact-grid">
-                <label><span>Minimum</span><div class="unit-input"><input name="land_min" type="number" min="0" step="10"><i>m²</i></div></label>
-                <label><span>Maximum</span><div class="unit-input"><input name="land_max" type="number" min="0" step="10"><i>m²</i></div></label>
-              </div>
-            </div>
-          </details>
-        </form>
-      </aside>
-
-      <section class="results" id="results" aria-labelledby="results-title" tabindex="-1">
-        <div class="results-bar">
-          <div><p class="eyebrow">Opportunités</p><h2 id="results-title">Classement des annonces</h2></div>
-          <div class="result-controls"><button class="save-search" id="save-search" type="button">Enregistrer et m’alerter</button><button class="filter-toggle" id="filter-toggle" type="button" aria-controls="filters-panel" aria-expanded="true"><i aria-hidden="true">☰</i><b id="filter-toggle-label">Masquer les filtres</b> <span id="filter-count">0</span></button><label class="sort"><span>Trier par</span><select id="sort-select" aria-label="Trier les annonces">
-            <option value="deal">Meilleur score</option><option value="yield">Rendement net</option><option value="cashflow">Cash-flow</option><option value="discount">Plus forte décote</option><option value="drop">Plus forte baisse</option><option value="recent">Plus récente</option><option value="auction_date">Date d’enchère</option>
-            <option value="price_asc">Prix croissant</option><option value="price_desc">Prix décroissant</option>
-            <option value="surface">Plus grande surface</option>
-          </select></label></div>
-        </div>
-        <div class="active-filters" id="active-filters" aria-live="polite"></div>
-        <p class="result-count" id="result-count" aria-live="polite">Chargement des annonces…</p>
-        <div class="cards" id="cards" aria-live="polite" aria-busy="true"></div>
-        <button class="load-more" id="load-more" type="button" hidden>Afficher plus d’annonces</button>
+      <section class="saved-searches" aria-labelledby="saved-title">
+        <div class="saved-heading"><h3 id="saved-title">Mes recherches</h3><small>Alertes à chaque synchronisation</small></div>
+        <div id="saved-list"><p class="filter-note">Réglez les filtres puis « Enregistrer et m’alerter ».</p></div>
       </section>
-    </div>
+
+      <form id="filter-form">
+        <input type="hidden" name="segment" id="segment-value">
+        <input type="hidden" name="auctions" id="auctions-value">
+
+        <details class="filter-group" open>
+          <summary>Zone</summary>
+          <div class="filter-group-body">
+            <div class="search-combo" id="department-combo">
+              <label for="department-search">Département</label>
+              <div class="combo-control">
+                <input id="department-search" class="combo-search" type="search" autocomplete="off" placeholder="Numéro ou nom" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="department-list">
+                <button class="combo-clear" type="button" aria-label="Effacer le département" hidden>×</button>
+                <span class="combo-chevron" aria-hidden="true"></span>
+                <input type="hidden" name="department" id="department-value">
+              </div>
+              <div class="combo-list" id="department-list" role="listbox" hidden></div>
+            </div>
+            <div class="search-combo" id="city-combo">
+              <label for="city-search">Ville</label>
+              <div class="combo-control">
+                <input id="city-search" class="combo-search" type="search" autocomplete="off" placeholder="Rechercher une ville" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="city-list">
+                <button class="combo-clear" type="button" aria-label="Effacer la ville" hidden>×</button>
+                <span class="combo-chevron" aria-hidden="true"></span>
+                <input type="hidden" name="city" id="city-value">
+              </div>
+              <div class="combo-list" id="city-list" role="listbox" hidden></div>
+              <small class="combo-hint" id="city-hint">Villes disponibles dans toute la France</small>
+            </div>
+            <div class="field-grid">
+              <label><span>Code postal</span><input name="postal_code" inputmode="numeric" maxlength="5" placeholder="75008"></label>
+              <label><span>Mot-clé</span><input name="q" type="search" placeholder="jardin, loué…"></label>
+            </div>
+          </div>
+        </details>
+
+        <details class="filter-group" open>
+          <summary>Budget et surface</summary>
+          <div class="filter-group-body">
+            <div class="field-grid">
+              <label><span>Prix min.</span><div class="unit-input"><input name="price_min" type="number" min="0" step="1000"><i>€</i></div></label>
+              <label><span>Prix max.</span><div class="unit-input"><input name="price_max" id="price-max-number" type="number" min="0" step="1000"><i>€</i></div></label>
+            </div>
+            <label class="range-field"><span>Plafond rapide <output id="price-range-output">Aucun plafond</output></span><input id="price-max-range" type="range" min="0" max="2000000" step="10000" value="2000000" aria-label="Plafond de prix"></label>
+            <div class="field-grid">
+              <label><span>Surface min.</span><div class="unit-input"><input name="surface_min" type="number" min="0" step="1"><i>m²</i></div></label>
+              <label><span>Surface max.</span><div class="unit-input"><input name="surface_max" type="number" min="0" step="1"><i>m²</i></div></label>
+              <label><span>Terrain min.</span><div class="unit-input"><input name="land_min" type="number" min="0" step="10"><i>m²</i></div></label>
+              <label><span>Terrain max.</span><div class="unit-input"><input name="land_max" type="number" min="0" step="10"><i>m²</i></div></label>
+            </div>
+          </div>
+        </details>
+
+        <details class="filter-group" open>
+          <summary>Rentabilité et signaux</summary>
+          <div class="filter-group-body">
+            <div class="field-grid">
+              <label><span>Rendement net min.</span><div class="unit-input"><input name="yield_min" type="number" min="0" max="30" step="0.5" placeholder="6"><i>%</i></div></label>
+              <label><span>Publiée depuis</span><select name="new_days"><option value="">Toutes</option><option value="2">48 heures</option><option value="7">7 jours</option><option value="30">30 jours</option></select></label>
+            </div>
+            <label class="toggle"><input type="checkbox" name="cashflow_positive" value="true"><span></span>Cash-flow positif après crédit</label>
+            <label class="toggle"><input type="checkbox" name="real_rent" value="true"><span></span>Loyer réel publié (bien loué)</label>
+            <label class="toggle"><input type="checkbox" name="price_drop" value="true"><span></span>Prix déjà baissé</label>
+            <p class="filter-note" id="assumptions-note">Hypothèses : chargement…</p>
+          </div>
+        </details>
+
+        <details class="filter-group">
+          <summary>Niveau d’affaire</summary>
+          <fieldset>
+            <legend class="sr-only">Niveau d’affaire</legend>
+            <label class="check"><input type="checkbox" name="level" value="excellente"><span class="swatch excellent"></span><b>Excellente</b><small>score ≥ 75</small></label>
+            <label class="check"><input type="checkbox" name="level" value="bonne"><span class="swatch good"></span><b>Bonne</b><small>55 à 75</small></label>
+            <label class="check"><input type="checkbox" name="level" value="correcte"><span class="swatch correct"></span><b>Correcte</b><small>30 à 55</small></label>
+            <label class="check"><input type="checkbox" name="level" value="hors_cible"><span class="swatch off"></span><b>Faible</b><small>sous 30</small></label>
+            <label class="check"><input type="checkbox" name="level" value="a_analyser"><span class="swatch unknown"></span><b>Non évaluée</b><small>données insuffisantes</small></label>
+            <label class="check"><input type="checkbox" name="level" value="a_verifier"><span class="swatch warning"></span><b>À vérifier</b><small>prix ou nature atypique</small></label>
+            <label class="toggle"><input type="checkbox" name="scored_only" value="true"><span></span>Uniquement les annonces évaluées</label>
+          </fieldset>
+        </details>
+
+        <details class="filter-group">
+          <summary>Type de bien</summary>
+          <fieldset><legend class="sr-only">Type de bien</legend><div id="type-options" class="dynamic-options"><span class="skeleton-line"></span></div></fieldset>
+        </details>
+
+        <details class="filter-group">
+          <summary>Sources et affichage</summary>
+          <fieldset><legend class="sr-only">Sources</legend><div id="source-options" class="dynamic-options source-grid"><span class="skeleton-line"></span></div></fieldset>
+          <div class="filter-group-body">
+            <label class="toggle"><input type="checkbox" name="include_duplicates" value="true"><span></span>Afficher les doublons entre sites</label>
+            <label class="toggle"><input type="checkbox" name="include_inactive" value="true"><span></span>Inclure les annonces retirées</label>
+          </div>
+        </details>
+      </form>
+    </aside>
+
+    <section class="results" id="results" aria-labelledby="results-title" tabindex="-1">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <button class="filter-toggle" id="filter-toggle" type="button" aria-controls="filters-panel" aria-expanded="true"><b id="filter-toggle-label">Masquer les filtres</b> <span id="filter-count">0</span></button>
+          <h2 id="results-title" class="sr-only">Résultats</h2>
+          <p class="result-count" id="result-count" aria-live="polite">Chargement…</p>
+        </div>
+        <div class="toolbar-right">
+          <div class="view-switch" role="group" aria-label="Affichage">
+            <button type="button" data-view="cards" aria-pressed="true">Cartes</button>
+            <button type="button" data-view="table" aria-pressed="false">Tableau</button>
+          </div>
+          <label class="sort"><span>Trier</span><select id="sort-select" aria-label="Trier les annonces">
+            <option value="deal">Meilleur score</option><option value="yield">Rendement net</option><option value="cashflow">Cash-flow</option>
+            <option value="discount">Plus forte décote</option><option value="drop">Plus forte baisse</option><option value="recent">Plus récente</option>
+            <option value="price_asc">Prix croissant</option><option value="price_desc">Prix décroissant</option><option value="surface">Plus grande surface</option>
+            <option value="auction_date">Date d’enchère</option>
+          </select></label>
+          <a class="ghost-button" id="export-csv" href="/api/deals.csv">Exporter CSV</a>
+          <button class="save-search" id="save-search" type="button">Enregistrer et m’alerter</button>
+        </div>
+      </div>
+      <div class="active-filters" id="active-filters" aria-live="polite"></div>
+      <div class="cards" id="cards" aria-live="polite" aria-busy="true"></div>
+      <div class="table-wrap" id="table-view" hidden>
+        <table class="deals-table">
+          <thead><tr>
+            <th><button type="button" data-sort="deal">Score</button></th><th>Bien</th><th>Ville</th>
+            <th class="num"><button type="button" data-sort="price_asc">Prix</button></th><th class="num">€/m²</th>
+            <th class="num"><button type="button" data-sort="discount">Décote</button></th>
+            <th class="num"><button type="button" data-sort="yield">Rdt net</button></th>
+            <th class="num"><button type="button" data-sort="cashflow">Cash-flow</button></th><th>Signaux</th><th>Source</th>
+          </tr></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <button class="load-more" id="load-more" type="button" hidden>Afficher plus d’annonces</button>
+    </section>
   </main>
 
   <dialog id="detail-dialog" aria-labelledby="dialog-title">
@@ -175,6 +188,6 @@
   </dialog>
 
   <template id="loading-template"><article class="deal-card loading" aria-hidden="true"><div></div><div></div><div></div></article></template>
-  <script src="/static/app.js?v=20261004-2" defer></script>
+  <script src="/static/app.js?v=20261004-3" defer></script>
 </body>
 </html>

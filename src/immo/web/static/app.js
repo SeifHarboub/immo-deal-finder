@@ -168,8 +168,14 @@ function descriptionHtml(value) {
   return lines.map(line=>`<p>${esc(line)}</p>`).join('');
 }
 
+function typeLabel(item) {
+  if (item.segment === 'immeuble') return 'Immeuble';
+  if (item.segment === 'fonds' && item.type_bien !== 'fonds_commerce') return 'Fonds de commerce';
+  return labels[item.type_bien] || 'Bien immobilier';
+}
+
 function displayTitle(item) {
-  let type = labels[item.type_bien] || 'Bien immobilier';
+  let type = typeLabel(item);
   if (item.type_bien === 'local_commercial' && item.categorie === 'location') type = 'Local commercial à louer';
   const surface = item.type_bien === 'terrain'
     ? item.surface_terrain
@@ -354,96 +360,209 @@ function auctionBlock(item) {
   return `<div class="auction-note"><strong>${esc(saleModeLabels[item.mode_vente] || 'Vente aux enchères')} · ${esc(date)}</strong>Mise à prix ${euro(item.prix)}${item.prix_adjuge ? ` · adjugé ${euro(item.prix_adjuge)}` : ` · prix final probable ≈ ${euro(item.prix_compare)}`}. La comparaison au marché utilise ce prix probable, pas la mise à prix.</div>`;
 }
 
+function firstImage(item) {
+  const images = jsonValue(item.images_json, []);
+  const first = Array.isArray(images) ? images.map(value => typeof value === 'string' ? value : value?.url).find(Boolean) : null;
+  return first ? safeUrl(first) : '';
+}
+
+function signedPct(value) {
+  if (value == null) return '—';
+  const rounded = Math.round(value * 10) / 10;
+  return `${rounded > 0 ? '+' : ''}${number.format(rounded)} %`;
+}
+
+function keyMetrics(item) {
+  const metrics = [];
+  if (item.segment === 'fonds') {
+    metrics.push(['Chiffre d’affaires', euro(item.chiffre_affaires)], ['EBE', euro(item.ebe)],
+      ['Prix / EBE', item.multiple_ebe == null ? '—' : `${number.format(item.multiple_ebe)} ×`]);
+  } else {
+    if (item.vente_encheres) {
+      metrics.push(['Prix probable', euro(item.prix_compare)]);
+      if (item.date_vente) metrics.push(['Vente le', new Date(item.date_vente).toLocaleDateString('fr-FR')]);
+    }
+    if (item.decote != null && item.median_eur_m2 != null) {
+      metrics.push(['Écart au marché', signedPct(item.decote * 100), item.decote < 0 ? 'good' : 'bad']);
+    }
+    if (item.rendement_net != null) metrics.push(['Rendement net', pct(item.rendement_net), item.rendement_net >= 6 ? 'good' : '']);
+    if (item.cashflow_mensuel != null && item.segment !== 'murs') {
+      metrics.push(['Cash-flow', `${item.cashflow_mensuel >= 0 ? '+' : ''}${euro(item.cashflow_mensuel)}/mois`, item.cashflow_mensuel >= 0 ? 'good' : 'bad']);
+    }
+  }
+  return metrics.slice(0, 4);
+}
+
 function card(item) {
   const url = safeUrl(item.url);
+  const image = firstImage(item);
   const facts = [
-    item.type_bien && labels[item.type_bien], item.surface_bati != null && num(item.surface_bati,' m²'),
-    item.surface_terrain != null && `Terrain ${num(item.surface_terrain,' m²')}`,
-    item.nb_pieces != null && `${item.nb_pieces} pièce${item.nb_pieces > 1 ? 's' : ''}`,
+    item.surface_bati != null && num(item.surface_bati, ' m²'),
+    item.surface_terrain != null && `terrain ${num(item.surface_terrain, ' m²')}`,
+    item.nb_pieces ? `${item.nb_pieces} p.` : null,
     item.dpe && `DPE ${item.dpe}`
-  ].filter(Boolean).map(value => `<span class="fact">${esc(value)}</span>`).join('');
+  ].filter(Boolean).join(' · ');
   const location = [item.ville, item.code_postal].filter(Boolean).join(' · ') || 'Localisation non précisée';
-  return `<article class="deal-card">
-    <div class="card-top"><span class="source-tag">${esc(sourceLabels[item.source] || item.source)}</span><div class="card-badges">${scoreBadge(item)}<span class="deal-badge ${esc(item.niveau_affaire)}">${esc(labels[item.niveau_affaire])}</span>${marketGapBadge(item)}</div></div>
-    <div class="card-content"><div class="card-main">
-      <h3>${esc(displayTitle(item))}</h3>
-      <div class="location"><i aria-hidden="true"></i><span><small>Localisation</small><strong>${esc(location)}</strong></span></div>
-    <div class="price-row"><span class="asking-price"><small>${item.categorie === 'location' ? 'Loyer affiché · bien professionnel' : 'Prix de vente affiché'}</small>${euro(item.categorie === 'location' ? item.loyer : item.prix)}</span><span class="price-m2">${item.prix_trop_bas ? 'Données ou mode de vente à vérifier' : (item.categorie === 'location' ? 'Location commerciale · hors classement DVF' : (item.prix_m2 ? `${euro(item.prix_m2)} / m²` : 'prix au m² indisponible'))}</span></div>
-      <div class="facts">${facts || '<span class="fact">Informations partielles</span>'}</div>
+  const metrics = keyMetrics(item);
+  const score = item.score_global == null ? '' : `<span class="score-ring ${esc(item.niveau_affaire)}" style="--score:${Math.round(item.score_global)}"><strong>${Math.round(item.score_global)}</strong></span>`;
+  const risks = item.risques_evaluation ? `<p class="card-risks" title="${esc(item.risques_evaluation)}">⚠ ${esc(item.risques_evaluation)}</p>` : '';
+  return `<article class="deal-card level-${esc(item.niveau_affaire)}">
+    <div class="card-media">${image ? `<img src="${esc(image)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ''}
+      <span class="media-type">${esc(typeLabel(item))}</span>${score}</div>
+    <div class="card-body">
+      <div class="card-head"><div><h3>${esc(displayTitle(item))}</h3><p class="card-location">${esc(location)}</p></div>
+        <span class="deal-badge ${esc(item.niveau_affaire)}">${esc(labels[item.niveau_affaire])}${item.strategie ? ` · ${esc(strategyLabels[item.strategie] || '')}` : ''}</span></div>
+      <div class="card-price"><strong>${euro(item.categorie === 'location' ? item.loyer : item.prix)}</strong>
+        <span>${item.categorie === 'location' ? 'loyer mensuel' : (item.prix_m2 ? `${euro(item.prix_m2)} / m²` : '')}${facts ? ` · ${esc(facts)}` : ''}</span></div>
+      ${metrics.length ? `<dl class="card-metrics">${metrics.map(([k, v, tone]) => `<div class="${tone || ''}"><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>` : ''}
       ${signalChips(item)}
-    </div><div class="card-analysis">
-      ${auctionBlock(item)}
-      ${investmentBlock(item)}
-      ${item.segment === 'residentiel' ? negotiation(item) : ''}
-      <div class="card-actions"><button class="detail-button" data-source="${esc(item.source)}" data-id="${esc(item.external_id)}">Analyse détaillée</button><a class="listing-link" ${url ? `href="${esc(url)}" target="_blank" rel="noopener noreferrer"` : 'aria-disabled="true"'}>Voir l’annonce</a></div>
-    </div></div>
+      ${risks}
+      <div class="card-actions"><button class="detail-button" data-source="${esc(item.source)}" data-id="${esc(item.external_id)}">Analyse détaillée</button>
+        <a class="listing-link" ${url ? `href="${esc(url)}" target="_blank" rel="noopener noreferrer"` : 'aria-disabled="true"'}>${esc(sourceLabels[item.source] || item.source)} ↗</a></div>
+    </div>
   </article>`;
 }
 
-function renderMetrics(summary) {
+function tableRow(item) {
+  const signals = [
+    item.baisse_prix_pct >= 1 ? `−${number.format(item.baisse_prix_pct)} %` : null,
+    item.loyer_reel ? 'loué' : null, item.vente_encheres ? 'enchère' : null,
+    item.jours_en_ligne != null && item.jours_en_ligne <= 2 ? 'nouvelle' : null,
+    item.nb_publications > 1 ? `${item.nb_publications} sites` : null
+  ].filter(Boolean).join(' · ');
+  const tone = value => value == null ? '' : value < 0 ? 'good' : 'bad';
+  return `<tr data-source="${esc(item.source)}" data-id="${esc(item.external_id)}" tabindex="0">
+    <td>${item.score_global == null ? '—' : `<span class="score-pill ${esc(item.niveau_affaire)}">${Math.round(item.score_global)}</span>`}</td>
+    <td><strong>${esc(typeLabel(item))}</strong><small>${item.surface_bati != null ? num(item.surface_bati, ' m²') : ''}${item.strategie ? ` · ${esc(strategyLabels[item.strategie])}` : ''}</small></td>
+    <td>${esc(item.ville || '—')}<small>${esc(item.code_postal || '')}</small></td>
+    <td class="num">${euro(item.prix)}</td>
+    <td class="num">${item.prix_m2 ? euro(item.prix_m2) : '—'}</td>
+    <td class="num ${tone(item.decote)}">${item.decote == null ? '—' : signedPct(item.decote * 100)}</td>
+    <td class="num">${item.rendement_net == null ? '—' : pct(item.rendement_net)}</td>
+    <td class="num ${item.cashflow_mensuel == null ? '' : item.cashflow_mensuel >= 0 ? 'good' : 'bad'}">${item.cashflow_mensuel == null || item.segment === 'murs' ? '—' : `${item.cashflow_mensuel >= 0 ? '+' : ''}${euro(item.cashflow_mensuel)}`}</td>
+    <td><small>${esc(signals)}</small></td>
+    <td><small>${esc(sourceLabels[item.source] || item.source)}</small></td>
+  </tr>`;
+}
+
+function renderMetrics(summary, tabs) {
   document.querySelector('#metric-total').textContent = number.format(summary.total || 0);
   document.querySelector('#metric-excellent').textContent = number.format(summary.excellent || 0);
   document.querySelector('#metric-good').textContent = number.format(summary.good || 0);
   document.querySelector('#metric-drops').textContent = number.format(summary.price_drops || 0);
   document.querySelector('#metric-new').textContent = number.format(summary.new || 0);
-  const coverage = summary.total ? Math.round(100 * summary.scored / summary.total) : 0;
-  document.querySelector('#metric-coverage').textContent = `${coverage} % évaluées · sans doublons`;
   const median = summary.median_net_yield == null ? '' : ` · rendement net médian ${pct(summary.median_net_yield)}`;
-  document.querySelector('#result-count').textContent = `${number.format(summary.scored || 0)} évaluée${summary.scored > 1 ? 's' : ''} · ${number.format(summary.unscored || 0)} sans évaluation · ${number.format(summary.total || 0)} au total${median}`;
+  document.querySelector('#result-count').innerHTML = `<strong>${number.format(summary.total || 0)}</strong> annonce${summary.total > 1 ? 's' : ''} · ${number.format(summary.scored || 0)} évaluée${summary.scored > 1 ? 's' : ''}${median}`;
+  if (tabs) document.querySelectorAll('[data-count]').forEach(node => { node.textContent = number.format(tabs[node.dataset.count] || 0); });
 }
 
-function renderActiveFilters() {
+function activeFilterEntries() {
   const entries = [];
   const fieldLabels = {
     q: 'Mot-clé', postal_code: 'Code postal', price_min: 'Prix min.', price_max: 'Prix max.',
-    surface_min: 'Habitable min.', surface_max: 'Habitable max.', land_min: 'Terrain min.', land_max: 'Terrain max.',
+    surface_min: 'Surface min.', surface_max: 'Surface max.', land_min: 'Terrain min.', land_max: 'Terrain max.',
     yield_min: 'Rendement net min.', new_days: 'Publiée depuis'
   };
   for (const [key, value] of new FormData(form).entries()) {
-    if (!value || ['scored_only','segment','auctions'].includes(key)) continue;
-    if (key === 'department') {
-      entries.push(`Département : ${departmentSearch.value}`);
-      continue;
-    }
-    if (key === 'city') {
-      entries.push(`Ville : ${value}`);
-      continue;
-    }
-    if (fieldLabels[key]) {
+    if (!value || ['segment', 'auctions'].includes(key)) continue;
+    let label;
+    if (key === 'department') label = `Département ${departmentSearch.value}`;
+    else if (key === 'city') label = `Ville : ${value}`;
+    else if (fieldLabels[key]) {
       const formatted = key.startsWith('price_') ? euro(Number(value))
         : key === 'yield_min' ? `${value} %`
         : key === 'new_days' ? `${value} jour${value > 1 ? 's' : ''}`
         : `${value}${key.includes('surface') || key.startsWith('land_') ? ' m²' : ''}`;
-      entries.push(`${fieldLabels[key]} : ${formatted}`);
-      continue;
+      label = `${fieldLabels[key]} : ${formatted}`;
+    } else {
+      const input = form.querySelector(`[name="${CSS.escape(key)}"][value="${CSS.escape(value)}"]`);
+      label = (input?.closest('label')?.querySelector('b')?.textContent || input?.closest('label')?.textContent || value).trim().replace(/\s+/g, ' ');
     }
-    const input = form.querySelector(`[name="${CSS.escape(key)}"][value="${CSS.escape(value)}"]`);
-    const text = input?.closest('label')?.textContent?.trim() || value;
-    entries.push(text.replace(/\s+/g, ' '));
+    entries.push({ key, value, label });
   }
-  if (form.elements.scored_only?.checked) entries.push('Avec référence DVF');
-  document.querySelector('#active-filters').innerHTML = entries.map(value => `<span class="filter-chip">${esc(value)}</span>`).join('');
-  document.querySelector('#filter-count').textContent = entries.length;
-  document.querySelector('#filter-toggle').setAttribute('aria-label', `Afficher les filtres, ${entries.length} actif${entries.length > 1 ? 's' : ''}`);
+  return entries;
 }
+
+function renderActiveFilters() {
+  const entries = activeFilterEntries();
+  document.querySelector('#active-filters').innerHTML = entries.map(entry =>
+    `<button type="button" class="filter-chip" data-key="${esc(entry.key)}" data-value="${esc(entry.value)}" aria-label="Retirer le filtre ${esc(entry.label)}">${esc(entry.label)} <span aria-hidden="true">×</span></button>`).join('');
+  document.querySelector('#filter-count').textContent = entries.length;
+}
+
+function removeFilter(key, value) {
+  if (key === 'department') { departmentCombo.querySelector('.combo-clear').click(); return; }
+  if (key === 'city') { clearCity(true); return; }
+  form.querySelectorAll(`[name="${CSS.escape(key)}"]`).forEach(field => {
+    if (field.type === 'checkbox') { if (field.value === value) field.checked = false; } else field.value = '';
+  });
+  if (key === 'price_max') { const slider = document.querySelector('#price-max-range'); slider.value = slider.max; updatePriceRange(); }
+  loadDeals(false);
+}
+
+document.querySelector('#active-filters').addEventListener('click', event => {
+  const chip = event.target.closest('.filter-chip');
+  if (chip) removeFilter(chip.dataset.key, chip.dataset.value);
+});
+
+let currentView = 'cards';
+try { currentView = localStorage.getItem('immo-view') === 'table' ? 'table' : 'cards'; } catch { /* stockage indisponible */ }
+
+function applyView() {
+  document.querySelectorAll('.view-switch [data-view]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.view === currentView)));
+  cards.hidden = currentView !== 'cards';
+  document.querySelector('#table-view').hidden = currentView !== 'table';
+}
+
+document.querySelector('.view-switch').addEventListener('click', event => {
+  const button = event.target.closest('[data-view]');
+  if (!button) return;
+  currentView = button.dataset.view;
+  try { localStorage.setItem('immo-view', currentView); } catch { /* stockage indisponible */ }
+  applyView();
+});
+
+document.querySelector('.deals-table thead').addEventListener('click', event => {
+  const button = event.target.closest('[data-sort]');
+  if (!button) return;
+  document.querySelector('#sort-select').value = button.dataset.sort;
+  loadDeals(false);
+});
+
+document.querySelector('#table-body').addEventListener('click', event => {
+  const row = event.target.closest('tr[data-id]');
+  if (row) openDetail(row.dataset.source, row.dataset.id);
+});
+document.querySelector('#table-body').addEventListener('keydown', event => {
+  const row = event.target.closest('tr[data-id]');
+  if (row && event.key === 'Enter') openDetail(row.dataset.source, row.dataset.id);
+});
 
 async function loadDeals(append=false) {
   if (state.loading) state.controller?.abort();
   state.loading = true; state.controller = new AbortController();
-  if (!append) { state.offset = 0; loadingCards(); renderActiveFilters(); }
+  const tableBody = document.querySelector('#table-body');
+  if (!append) { state.offset = 0; loadingCards(); tableBody.innerHTML = '<tr><td colspan="10" class="table-loading">Chargement…</td></tr>'; renderActiveFilters(); }
   try {
     const response = await apiFetch(`/api/deals?${params()}`, { signal: state.controller.signal });
     const data = await response.json(); if (!response.ok) throw new Error(data.detail || 'Erreur de lecture');
-    renderMetrics(data.summary);
-    if (!append) cards.innerHTML = '';
+    renderMetrics(data.summary, data.tabs);
+    if (!append) { cards.innerHTML = ''; tableBody.innerHTML = ''; }
     cards.insertAdjacentHTML('beforeend', data.items.map(card).join(''));
-    if (!data.items.length && !append) cards.innerHTML = `<div class="empty"><strong>Aucune annonce pour le moment</strong>La collecte locale alimente cette page automatiquement. Modifiez les filtres ou revenez après le prochain lot.</div>`;
+    tableBody.insertAdjacentHTML('beforeend', data.items.map(tableRow).join(''));
+    if (!data.items.length && !append) {
+      cards.innerHTML = `<div class="empty"><strong>Aucune annonce avec ces filtres</strong>Élargissez la zone ou le budget, ou retirez un filtre ci-dessus.</div>`;
+      tableBody.innerHTML = '<tr><td colspan="10" class="table-loading">Aucune annonce avec ces filtres.</td></tr>';
+    }
     state.offset += data.items.length; loadMore.hidden = !data.has_more;
+    document.querySelector('#export-csv').href = `/api/deals.csv?${currentFilters()}`;
     cards.setAttribute('aria-busy','false');
   } catch (error) {
-    if (error.name !== 'AbortError') cards.innerHTML = `<div class="empty error"><strong>Base momentanément indisponible</strong>${esc(error.message)}</div>`;
+    if (error.name !== 'AbortError') cards.innerHTML = `<div class="empty error"><strong>Base momentanément indisponible</strong>${esc(error.message)}. Une synchronisation écrit peut-être en base : nouvel essai automatique dans une minute.</div>`;
   } finally { state.loading = false; }
 }
+
+applyView();
 
 function option(name, value) {
   const colorClass = name === 'type_bien' ? `type-${value}` : 'source';
@@ -554,7 +673,9 @@ async function openDetail(source, id) {
     const images = jsonValue(item.images_json, []).map(safeUrl).filter(Boolean);
     const listingUrl = safeUrl(item.url);
     const gallery = images.length ? `<div class="detail-gallery">${images.slice(0,8).map((url,index)=>`<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="Photo ${index+1} de ${esc(displayTitle(item))}" loading="lazy"></a>`).join('')}</div>` : '';
-    const characteristics = Object.entries(details).filter(([,value])=>value != null && String(value).trim()).map(([key,value])=>`<div><small>${esc(key)}</small><strong>${esc(String(value).replace(/\n/g,' '))}</strong></div>`).join('');
+    // Les champs déjà présentés dans la grille principale ne sont pas répétés.
+    const shown = /^(surface( habitable| terrain)?|pi[eè]ces|nombre de pi[eè]ces|chambres|terrain|coordonn[ée]es.*|localisation cartographique|pr[ée]cision cartographique|code insee)$/i;
+    const characteristics = Object.entries(details).filter(([key,value])=>value != null && String(value).trim() && !shown.test(key.trim())).map(([key,value])=>`<div><small>${esc(key)}</small><strong>${esc(String(value).replace(/\n/g,' '))}</strong></div>`).join('');
     const comparisonWarnings = [];
     if (item.motif_verification) comparisonWarnings.push(item.motif_verification);
     if (item.risques_evaluation) comparisonWarnings.push(item.risques_evaluation);
@@ -566,11 +687,12 @@ async function openDetail(source, id) {
     dialogContent.innerHTML = `<div class="dialog-body">
       <header class="detail-header"><div><p class="eyebrow">${esc(sourceLabels[item.source] || item.source)}${item.reference_annonce ? ` · Réf. ${esc(item.reference_annonce)}` : ''}</p><h2 id="dialog-title">${esc(displayTitle(item))}</h2><p class="detail-location">${esc([item.ville,item.code_postal].filter(Boolean).join(' · '))}</p></div><div class="detail-price"><small>${item.categorie==='location'?'Loyer affiché':'Prix affiché'}</small><strong>${euro(item.categorie==='location'?item.loyer:item.prix)}</strong></div></header>
       ${gallery}
-      <section class="detail-section"><h3>Caractéristiques du bien</h3><div class="detail-facts"><div><small>Type</small><strong>${esc(labels[item.type_bien]||'Bien immobilier')}</strong></div><div><small>Surface</small><strong>${num(item.surface_bati,' m²')}</strong></div><div><small>Terrain</small><strong>${num(item.surface_terrain,' m²')}</strong></div><div><small>Pièces</small><strong>${item.nb_pieces==null?'—':number.format(item.nb_pieces)}</strong></div><div><small>Chambres</small><strong>${item.nb_chambres==null?'—':number.format(item.nb_chambres)}</strong></div><div><small>DPE / GES</small><strong>${esc(item.dpe||'—')} / ${esc(item.ges||'—')}</strong></div>${characteristics}</div></section>
+      ${auctionBlock(item)}
+      ${investmentBlock(item)}
+      <section class="detail-section"><h3>Caractéristiques du bien</h3><div class="detail-facts"><div><small>Type</small><strong>${esc(typeLabel(item))}</strong></div><div><small>Surface</small><strong>${num(item.surface_bati,' m²')}</strong></div><div><small>Terrain</small><strong>${num(item.surface_terrain,' m²')}</strong></div><div><small>Pièces</small><strong>${item.nb_pieces==null?'—':number.format(item.nb_pieces)}</strong></div><div><small>Chambres</small><strong>${item.nb_chambres==null?'—':number.format(item.nb_chambres)}</strong></div><div><small>DPE / GES</small><strong>${esc(item.dpe||'—')} / ${esc(item.ges||'—')}</strong></div>${characteristics}</div></section>
       <section class="detail-section"><h3>Description complète</h3><div class="detail-description">${descriptionHtml(item.description)}</div></section>
       <section class="detail-section"><h3>Annonceur et provenance</h3><div class="detail-meta"><div><small>Annonceur</small><strong>${esc(item.seller_name||'Non précisé')}</strong></div><div><small>Source</small><strong>${esc(sourceLabels[item.source]||item.source)}</strong></div><div><small>Référence</small><strong>${esc(item.reference_annonce||'Non précisée')}</strong></div></div>${listingUrl?`<a class="detail-source-link" href="${esc(listingUrl)}" target="_blank" rel="noopener">Ouvrir l’annonce originale</a>`:''}</section>
-      <section class="detail-section"><h3>Analyse du prix</h3>${comparisonWarningHtml}${item.prix_trop_bas ? `<div class="data-warning"><strong>Données à vérifier</strong>${esc(item.motif_verification || 'La comparaison directe est suspendue.')}</div>` : `<div class="dialog-grid"><div><small>Prix au m²</small><strong>${euro(item.prix_m2)} / m²</strong></div><div><small>Médiane des comparables</small><strong>${euro(item.median_eur_m2)} / m²</strong></div><div><small>Ventes retenues</small><strong>${item.nb_ventes==null?'—':number.format(item.nb_ventes)}</strong></div><div><small>Surface médiane comparée</small><strong>${num(item.surface_mediane_reference,' m²')}</strong></div><div><small>Décote</small><strong>${item.decote==null?'—':`${num(item.decote*100)} %`}</strong></div><div><small>Confiance</small><strong>${esc(item.confiance)}</strong></div></div>`}</section>
-      ${investmentBlock(item)}
+      <section class="detail-section"><h3>Analyse du prix</h3>${item.segment === 'residentiel' && !item.prix_trop_bas ? negotiation(item) : ''}${comparisonWarningHtml}${item.prix_trop_bas ? `<div class="data-warning"><strong>Données à vérifier</strong>${esc(item.motif_verification || 'La comparaison directe est suspendue.')}</div>` : `<div class="dialog-grid"><div><small>Prix au m²</small><strong>${euro(item.prix_m2)} / m²</strong></div><div><small>Médiane des comparables</small><strong>${euro(item.median_eur_m2)} / m²</strong></div><div><small>Ventes retenues</small><strong>${item.nb_ventes==null?'—':number.format(item.nb_ventes)}</strong></div><div><small>Surface médiane comparée</small><strong>${num(item.surface_mediane_reference,' m²')}</strong></div><div><small>Décote</small><strong>${item.decote==null?'—':`${num(item.decote*100)} %`}</strong></div><div><small>Confiance</small><strong>${esc(item.confiance)}</strong></div></div>`}</section>
       ${financingSimulator(item)}
       ${historySection(data.price_history || [])}
       ${duplicatesSection(data.duplicates || [])}
@@ -683,7 +805,7 @@ document.querySelector('#reset-filters').addEventListener('click', () => {
 });
 document.querySelector('#filter-toggle').addEventListener('click', () => {
   const panel = document.querySelector('#filters-panel');
-  const desktop = window.matchMedia('(min-width: 761px)').matches;
+  const desktop = window.matchMedia('(min-width: 861px)').matches;
   let open;
   if (desktop) {
     open = document.querySelector('#workspace').classList.toggle('filters-collapsed') === false;
@@ -799,3 +921,9 @@ document.querySelector('#save-search').addEventListener('click', async () => {
 });
 
 loadSavedSearches();
+
+// Sur mobile, le panneau de filtres démarre replié.
+if (!window.matchMedia('(min-width: 861px)').matches) {
+  document.querySelector('#filter-toggle').setAttribute('aria-expanded', 'false');
+  document.querySelector('#filter-toggle-label').textContent = 'Afficher les filtres';
+}

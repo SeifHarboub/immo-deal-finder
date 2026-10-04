@@ -168,8 +168,10 @@ WITH prix_signaux AS (
            CASE WHEN a.categorie='vente' THEN a.prix / NULLIF(a.surface_bati, 0) END AS prix_m2,
            lower(coalesce(a.details_json,'')) LIKE '%approximative%' AS localisation_approximative,
            regexp_matches({TEXT}, '{ATYPIQUE}') AS transaction_atypique,
-           a.mode_vente IN ('enchere_judiciaire','enchere_notariale','vente_interactive','cession_publique')
-               OR (a.mode_vente IS NULL AND regexp_matches({TEXT}, '{ENCHERE}')) AS vente_encheres,
+           -- coalesce : un NULL ici excluait toute annonce sans mode de vente
+           -- du filtre « hors enchères ».
+           coalesce(a.mode_vente IN ('enchere_judiciaire','enchere_notariale','vente_interactive','cession_publique'), false)
+               OR (a.mode_vente IS NULL AND coalesce(regexp_matches({TEXT}, '{ENCHERE}'), false)) AS vente_encheres,
            regexp_matches({TEXT}, '{OCCUPE}') OR coalesce(f.bien_loue, false) AS bien_occupe,
            regexp_matches({TEXT}, '{NON_HABITABLE}') AS bien_non_habitable,
            regexp_matches({TEXT}, '{RESIDENCE_GEREE}') AS residence_geree,

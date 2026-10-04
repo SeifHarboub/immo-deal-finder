@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from immo.filters import where as _where
@@ -175,6 +175,21 @@ def deals(
                        median(rendement_net) FILTER (WHERE rendement_net IS NOT NULL)
                 FROM deals WHERE {where}
             """, params).fetchone()
+            tab_where, tab_params = _where(
+                q, source, type_bien, department, city, postal_code, price_min, price_max,
+                surface_min, surface_max, land_min, land_max, level, scored_only,
+                strategie, [], yield_min, cashflow_positive, price_drop, None,
+                new_days, real_rent, include_inactive, include_duplicates,
+            )
+            tabs = con.execute(deals_cte + f"""
+                SELECT count(*),
+                       count(*) FILTER (WHERE segment='residentiel' AND NOT vente_encheres),
+                       count(*) FILTER (WHERE segment='immeuble'),
+                       count(*) FILTER (WHERE segment='murs'),
+                       count(*) FILTER (WHERE segment='fonds'),
+                       count(*) FILTER (WHERE vente_encheres)
+                FROM deals WHERE {tab_where}
+            """, tab_params).fetchone()
             cursor = con.execute(deals_cte + f"""
                 SELECT * EXCLUDE (description), left(description, 600) AS description
                 FROM deals WHERE {where}
@@ -189,11 +204,80 @@ def deals(
                         "unscored": summary[4], "average_discount": summary[5],
                         "price_drops": summary[6], "new": summary[7],
                         "median_net_yield": summary[8]},
+            "tabs": {"all": tabs[0], "decote": tabs[1], "locatif": tabs[1], "immeuble": tabs[2],
+                     "murs": tabs[3], "fonds": tabs[4], "encheres": tabs[5]},
             "limit": limit, "offset": offset,
             "has_more": offset + len(items) < summary[0],
         })
     except Exception as exc:
         raise HTTPException(status_code=503, detail=f"Lecture impossible : {exc}") from exc
+
+
+CSV_COLUMNS = [
+    ("score_global", "Score"), ("niveau_affaire", "Niveau"), ("strategie", "Stratégie"),
+    ("segment", "Segment"), ("type_bien", "Type"), ("ville", "Ville"), ("code_postal", "Code postal"),
+    ("prix", "Prix"), ("surface_bati", "Surface"), ("surface_terrain", "Terrain"),
+    ("prix_m2", "Prix au m²"), ("median_eur_m2", "Médiane DVF au m²"), ("decote", "Décote nette"),
+    ("loyer_mensuel_retenu", "Loyer mensuel retenu"), ("loyer_reel", "Loyer réel"),
+    ("rendement_brut_retenu", "Rendement brut %"), ("rendement_net", "Rendement net %"),
+    ("cashflow_mensuel", "Cash-flow mensuel"), ("chiffre_affaires", "Chiffre d'affaires"),
+    ("ebe", "EBE"), ("multiple_ebe", "Prix / EBE"), ("dpe", "DPE"),
+    ("baisse_prix_pct", "Baisse de prix %"), ("jours_en_ligne", "Jours en ligne"),
+    ("nb_publications", "Publications"), ("mode_vente", "Mode de vente"), ("date_vente", "Date de vente"),
+    ("risques_evaluation", "Points de vigilance"), ("source", "Source"), ("url", "Annonce"),
+]
+
+
+@app.get("/api/deals.csv", include_in_schema=False)
+def deals_csv(
+    q: str | None = None,
+    source: list[str] = Query(default=[]), type_bien: list[str] = Query(default=[]),
+    department: str | None = None, city: str | None = None, postal_code: str | None = None,
+    price_min: float | None = None, price_max: float | None = None,
+    surface_min: float | None = None, surface_max: float | None = None,
+    land_min: float | None = None, land_max: float | None = None,
+    level: list[str] = Query(default=[]), scored_only: bool = False,
+    strategie: list[str] = Query(default=[]), segment: list[str] = Query(default=[]),
+    yield_min: float | None = None, cashflow_positive: bool = False,
+    price_drop: bool = False, auctions: str | None = None,
+    new_days: int | None = None, real_rent: bool = False,
+    include_inactive: bool = False, include_duplicates: bool = False,
+    sort: str = "deal",
+) -> Response:
+    """Export tableur des résultats filtrés (5 000 lignes au plus)."""
+    import csv
+    import io
+    data = deals(q, source, type_bien, department, city, postal_code, price_min, price_max,
+                 surface_min, surface_max, land_min, land_max, level, scored_only, strategie,
+                 segment, yield_min, cashflow_positive, price_drop, auctions, new_days,
+                 real_rent, include_inactive, include_duplicates, sort, 100, 0)
+    rows = data["items"]
+    offset = len(rows)
+    while data["has_more"] and offset < 5000:
+        data = deals(q, source, type_bien, department, city, postal_code, price_min, price_max,
+                     surface_min, surface_max, land_min, land_max, level, scored_only, strategie,
+                     segment, yield_min, cashflow_positive, price_drop, auctions, new_days,
+                     real_rent, include_inactive, include_duplicates, sort, 100, offset)
+        rows.extend(data["items"])
+        offset += len(data["items"])
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, delimiter=";")
+    writer.writerow([label for _, label in CSV_COLUMNS])
+    for row in rows:
+        values = []
+        for key, _ in CSV_COLUMNS:
+            value = row.get(key)
+            if isinstance(value, bool):
+                value = "oui" if value else "non"
+            elif key == "decote" and value is not None:
+                value = round(value * 100, 1)
+            elif isinstance(value, float):
+                value = round(value, 2)
+            values.append("" if value is None else str(value).replace(".", ",") if isinstance(value, float) else value)
+        writer.writerow(values)
+    # BOM UTF-8 : Excel ouvre directement les accents correctement.
+    return Response("\ufeff" + buffer.getvalue(), media_type="text/csv; charset=utf-8",
+                    headers={"Content-Disposition": 'attachment; filename="immo-radar.csv"'})
 
 
 @app.get("/api/annonces/{source}/{external_id:path}/historique")
