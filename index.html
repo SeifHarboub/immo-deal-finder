@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Immo Radar</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .lock { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+    .lock form { width: min(380px, 100%); padding: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .lock .brand { margin-bottom: 20px; }
+    .lock label { display: block; margin-bottom: 6px; color: var(--muted); font-size: 13px; font-weight: 650; }
+    .lock button[type="submit"] { width: 100%; margin-top: 14px; min-height: 42px; border: 0; border-radius: 10px; background: var(--brand); color: var(--brand-ink); font-weight: 750; cursor: pointer; }
+    .lock button[disabled] { opacity: .6; cursor: progress; }
+    .lock .toggle { margin-top: 12px; }
+    .lock-error { min-height: 20px; margin: 10px 0 0; color: var(--bad); font-size: 13px; }
+    .lock-note { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .updated { color: var(--muted); font-size: 12px; }
+    .logout { padding: 4px 8px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); font-size: 12px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <section class="lock" id="lock">
+    <form id="lock-form">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">IR</span><span><strong>Immo Radar</strong><small>Accès privé</small></span></div>
+      <label for="password">Mot de passe</label>
+      <input id="password" type="password" autocomplete="current-password" required autofocus>
+      <label class="toggle"><input type="checkbox" id="remember"><span></span>Se souvenir sur cet appareil</label>
+      <button type="submit" id="unlock">Ouvrir</button>
+      <p class="lock-error" id="lock-error" role="alert"></p>
+      <p class="lock-note">Les annonces sont chiffrées : elles ne sont déchiffrées que dans ce navigateur, avec le mot de passe.</p>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">IR</span>
+        <span><strong>Immo Radar</strong><small class="updated" id="updated">—</small></span></div>
+      <section class="kpis" aria-label="Synthèse">
+        <div><strong id="k-total">—</strong><span>affaires</span></div>
+        <div class="kpi-green"><strong id="k-excellent">—</strong><span>excellentes</span></div>
+        <div class="kpi-lime"><strong id="k-good">—</strong><span>bonnes</span></div>
+        <div class="kpi-amber"><strong id="k-drops">—</strong><span>baisses de prix</span></div>
+        <div class="kpi-blue"><strong id="k-new">—</strong><span>nouvelles 48 h</span></div>
+      </section>
+      <button class="logout" id="logout" type="button">Verrouiller</button>
+    </header>
+
+    <nav class="strategy-tabs" aria-label="Stratégie" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-preset="all"><b>Toutes</b><small>Meilleur score</small><em data-count="all"></em></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="decote"><b>Sous le marché</b><small>Décote DVF nette</small><em data-count="decote"></em></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="locatif"><b>Locatif</b><small>Rendement net</small><em data-count="locatif"></em></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="immeuble"><b>Immeubles</b><small>De rapport</small><em data-count="immeuble"></em></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="murs"><b>Murs</b><small>Commerciaux</small><em data-count="murs"></em></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="fonds"><b>Fonds</b><small>De commerce</small><em data-count="fonds"></em></button>
+      <button type="button" role="tab" aria-selected="false" data-preset="encheres"><b>Enchères</b><small>Prix probable</small><em data-count="encheres"></em></button>
+    </nav>
+
+    <main class="workspace" id="workspace">
+      <aside class="filters" id="filters-panel" aria-labelledby="filters-title">
+        <div class="filter-heading"><h2 id="filters-title">Filtres</h2><button class="text-button" id="reset" type="button">Tout effacer</button></div>
+        <form id="filters">
+          <details class="filter-group" open>
+            <summary>Zone</summary>
+            <div class="filter-group-body">
+              <label><span>Département</span><select name="department" id="f-department"><option value="">Tous</option></select></label>
+              <div class="field-grid">
+                <label><span>Ville ou code postal</span><input name="place" type="search" placeholder="Lyon, 59000"></label>
+                <label><span>Mot-clé</span><input name="q" type="search" placeholder="jardin, loué…"></label>
+              </div>
+            </div>
+          </details>
+          <details class="filter-group" open>
+            <summary>Budget et surface</summary>
+            <div class="filter-group-body">
+              <div class="field-grid">
+                <label><span>Prix min.</span><div class="unit-input"><input name="price_min" type="number" min="0" step="1000"><i>€</i></div></label>
+                <label><span>Prix max.</span><div class="unit-input"><input name="price_max" type="number" min="0" step="1000"><i>€</i></div></label>
+                <label><span>Surface min.</span><div class="unit-input"><input name="surface_min" type="number" min="0"><i>m²</i></div></label>
+                <label><span>Surface max.</span><div class="unit-input"><input name="surface_max" type="number" min="0"><i>m²</i></div></label>
+              </div>
+            </div>
+          </details>
+          <details class="filter-group" open>
+            <summary>Rentabilité et signaux</summary>
+            <div class="filter-group-body">
+              <div class="field-grid">
+                <label><span>Rendement net min.</span><div class="unit-input"><input name="yield_min" type="number" min="0" step="0.5" placeholder="ex. 6"><i>%</i></div></label>
+                <label><span>Publiée depuis</span><select name="new_days"><option value="">Toutes</option><option value="2">48 heures</option><option value="7">7 jours</option><option value="30">30 jours</option></select></label>
+              </div>
+              <label class="toggle"><input type="checkbox" name="cashflow"><span></span>Cash-flow positif après crédit</label>
+              <label class="toggle"><input type="checkbox" name="real_rent"><span></span>Loyer réel publié (bien loué)</label>
+              <label class="toggle"><input type="checkbox" name="drop"><span></span>Prix déjà baissé</label>
+              <label class="toggle"><input type="checkbox" name="excellent_only"><span></span>Excellentes uniquement</label>
+            </div>
+          </details>
+          <details class="filter-group">
+            <summary>Type et source</summary>
+            <div class="filter-group-body">
+              <label><span>Type de bien</span><select name="type" id="f-type"><option value="">Tous</option></select></label>
+              <label><span>Source</span><select name="source" id="f-source"><option value="">Toutes</option></select></label>
+            </div>
+          </details>
+        </form>
+      </aside>
+
+      <section class="results" id="results">
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <button class="filter-toggle" id="filter-toggle" type="button" aria-controls="filters-panel" aria-expanded="true"><b id="filter-toggle-label">Masquer les filtres</b> <span id="filter-count">0</span></button>
+            <p class="result-count" id="count" aria-live="polite"></p>
+          </div>
+          <div class="toolbar-right">
+            <div class="view-switch" role="group" aria-label="Affichage">
+              <button type="button" data-view="cards" aria-pressed="true">Cartes</button>
+              <button type="button" data-view="table" aria-pressed="false">Tableau</button>
+            </div>
+            <label class="sort"><span>Trier</span><select id="sort">
+              <option value="score">Meilleur score</option><option value="yield">Rendement net</option><option value="cashflow">Cash-flow</option>
+              <option value="discount">Plus forte décote</option><option value="drop">Plus forte baisse</option><option value="recent">Plus récente</option>
+              <option value="price_asc">Prix croissant</option><option value="price_desc">Prix décroissant</option><option value="auction">Date d’enchère</option>
+            </select></label>
+            <button class="ghost-button" id="export" type="button">Exporter CSV</button>
+          </div>
+        </div>
+        <div class="active-filters" id="chips"></div>
+        <div class="cards" id="cards"></div>
+        <div class="table-wrap" id="table-view" hidden>
+          <table class="deals-table">
+            <thead><tr>
+              <th><button type="button" data-sort="score">Score</button></th><th>Bien</th><th>Ville</th>
+              <th class="num"><button type="button" data-sort="price_asc">Prix</button></th><th class="num">€/m²</th>
+              <th class="num"><button type="button" data-sort="discount">Décote</button></th>
+              <th class="num"><button type="button" data-sort="yield">Rdt net</button></th>
+              <th class="num"><button type="button" data-sort="cashflow">Cash-flow</button></th><th>Signaux</th><th>Source</th>
+            </tr></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+        <button class="load-more" id="more" type="button" hidden>Afficher plus d’annonces</button>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="detail" aria-labelledby="detail-title">
+    <button class="dialog-close" type="button" aria-label="Fermer">×</button>
+    <div id="detail-content"></div>
+  </dialog>
+  <script src="site.js" defer></script>
+</body>
+</html>
